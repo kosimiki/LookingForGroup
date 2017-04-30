@@ -1,0 +1,40 @@
+<resources>
+    <string name="app_name">LookingForGroup</string>
+
+    <!-- Strings related to login -->
+    <string name="signed_in_fmt">Signed in as: %s</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password (optional)</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email
+        completions."
+    </string>
+
+    <string name="signed_out" >Signed out</string>
+    <string name="failed">failed</string>
+    <string name="lorem_ipsum">lorem_ipsum dolorem</string>
+    <string name="no_username">No username</string>
+    <string name="summoner_name">No summoner name</string>
+    <string name="map_name">No map</string>
+    <string name="lvl">lvl</string>
+    <string name="owner">Owner:</string>
+    <string name="map">Map:</string>
+    <string name="open_positions">Open positions</string>
+    <string name="role_top">Top</string>
+    <string name="role_mid">Mid</string>
+    <string name="role_jungler">Jungler</string>
+    <string name="role_support">Support</string>
+    <string name="role_bot">Bot</string>
+    <string name="role_any">Any</string>
+    <string name="required_rank">Rank</string>
+    <string name="description">Description</string>
+    <string name="description_placeholder">No description</string>
+    <string name="next">Next</string>
+    <string name="new_post">New post</string>
+    <string name="prev">Previous</string>
+</resources>

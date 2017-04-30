@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent"
+              android:layout_height="match_parent" android:orientation="vertical"
+            android:id="@+id/user_profile">
+
+    <ImageView
+            android:layout_width="150dp"
+            android:layout_height="150dp" app:srcCompat="@color/colorAccent"
+            android:layout_marginLeft="14dp" android:layout_marginStart="14dp" android:layout_marginTop="15dp"
+            android:id="@+id/profile_picture" android:layout_alignParentTop="true" android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"/>
+    <TextView
+            android:text="@string/summoner_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="33dp" android:id="@+id/summoner_name"
+            android:layout_alignBottom="@+id/profile_picture" android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" android:layout_marginRight="47dp" android:layout_marginEnd="47dp"/>
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/username"
+            android:text="@string/no_username"
+            android:layout_above="@+id/summoner_name" android:layout_alignLeft="@+id/summoner_name"
+            android:layout_alignStart="@+id/summoner_name" android:layout_marginBottom="36dp"/>
+    <TextView
+            android:text="@string/lvl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:layout_alignTop="@+id/profile_picture"
+            android:layout_alignParentRight="true" android:layout_alignParentEnd="true"
+            android:layout_marginRight="14dp" android:layout_marginEnd="14dp" android:id="@+id/summoner_level"/>
+</RelativeLayout>

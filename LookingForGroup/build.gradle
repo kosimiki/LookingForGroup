@@ -1,0 +1,76 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "25.0.1"
+    defaultConfig {
+        applicationId "hu.blog.megosztanam"
+        minSdkVersion 15
+        targetSdkVersion 25
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+    signingConfigs {
+        release
+        config {
+            keyAlias KEY_ALIAS
+            keyPassword KEY_PASSWORD
+            storeFile file(STORE_FILE)
+            storePassword STORE_PASSWORD
+        }
+    }
+    buildTypes {
+        debug {
+            debuggable true
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
+        }
+    }
+}
+buildscript {
+    repositories {
+        maven { url 'http://repo1.maven.org/maven2' }
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.2.3'
+        classpath 'com.google.gms:google-services:3.0.0'
+    }
+}
+
+
+
+
+repositories {
+    maven { url 'http://repo1.maven.org/maven2' }
+    maven { url 'https://jitpack.io' }
+    jcenter()
+    mavenLocal()
+
+}
+dependencies {
+    compile 'com.github.techfreak:wizardpager:1.0.3'
+    compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'com.android.support:support-v13:25.0.1'
+    compile 'com.google.android.gms:play-services-auth:10.0.1'
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    compile 'com.android.support:appcompat-v7:25.0.1'
+    compile 'com.android.support:design:25.0.1'
+    compile 'junit:junit:4.12'
+    compile 'com.google.code.gson:gson:2.6.2'
+    compile 'com.squareup.retrofit2:retrofit:2.1.0'
+    compile 'com.squareup.retrofit2:converter-gson:2.1.0'
+    compile 'hu.blog.megosztanam:lfg-shared-pojo:0.1'
+
+}
+
+apply plugin: 'com.google.gms.google-services'
