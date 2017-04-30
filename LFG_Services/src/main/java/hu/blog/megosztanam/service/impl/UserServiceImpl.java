@@ -1,9 +1,10 @@
 package hu.blog.megosztanam.service.impl;
 
-import hu.blog.megosztanam.model.UserIds;
+import hu.blog.megosztanam.model.UserDetails;
 import hu.blog.megosztanam.model.shared.LoginResponse;
 import hu.blog.megosztanam.model.shared.LoginStatus;
 import hu.blog.megosztanam.model.shared.User;
+import hu.blog.megosztanam.model.shared.summoner.Server;
 import hu.blog.megosztanam.service.ISummonerService;
 import hu.blog.megosztanam.service.IUserService;
 import hu.blog.megosztanam.sql.UserDao;
@@ -36,16 +37,15 @@ public class UserServiceImpl implements IUserService {
         if (user.getAuthenticated()) {
             loginResponse.setUser(user);
             if(userDao.isRegisteredUser(user.getEmail())){
-                UserIds ids = userDao.getSummonerId(user.getEmail());
-                user.setUserId(ids.getUserId());
-                user.setSummoner(summonerService.getSummoner(ids.getSummonerId()));
+                UserDetails userDetails = userDao.getSummonerId(user.getEmail());
+                user.setUserId(userDetails.getUserId());
+                user.setSummoner(summonerService.getSummoner(userDetails.getSummonerId(), userDetails.getServer()));
                 loginResponse.setLoginStatus(LoginStatus.SUCCESSFUL);
                 LOGGER.info(loginResponse.toString());
                 return loginResponse;
             }else{
                 loginResponse.setLoginStatus(LoginStatus.REGISTRATION_REQUIRED);
                 LOGGER.info(loginResponse.toString());
-
                 return loginResponse;
             }
 
@@ -58,11 +58,11 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public LoginResponse register(String idTokenString, Integer summonerId) {
+    public LoginResponse register(String idTokenString, Integer summonerId, Server server) {
         LoginResponse registrationResponse = new LoginResponse();
         User user = authenticateWithRest(idTokenString);
         if(user.getAuthenticated()){
-            user.setUserId(userDao.saveUser(user.getEmail(), summonerId));
+            user.setUserId(userDao.saveUser(user.getEmail(), summonerId ,server));
             registrationResponse.setUser(user);
             registrationResponse.setLoginStatus(LoginStatus.SUCCESSFUL);
         }else {

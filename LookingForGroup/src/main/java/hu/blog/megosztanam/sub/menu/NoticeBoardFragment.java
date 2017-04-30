@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
 import com.example.lookingforgroup.R;
-import hu.blog.megosztanam.LoginActivity;
+import hu.blog.megosztanam.login.LoginActivity;
 import hu.blog.megosztanam.model.parcelable.ParcelableLoginResponse;
 import hu.blog.megosztanam.model.shared.Post;
 import hu.blog.megosztanam.rest.LFGServicesImpl;

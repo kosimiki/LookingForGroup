@@ -2,6 +2,7 @@ package hu.blog.megosztanam.sql;
 
 import hu.blog.megosztanam.model.shared.OpenPosition;
 import hu.blog.megosztanam.model.shared.Post;
+import hu.blog.megosztanam.model.shared.summoner.Server;
 import hu.blog.megosztanam.sql.mapper.RoleRowMapper;
 import hu.blog.megosztanam.sql.mapper.SearchForMemberPostRowMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,6 +71,7 @@ public class PostDao {
     }
 
     public List<Post> getSearchForMemberPosts(){
+        rowMapper.setServer(Server.EUW);
         List<Post> posts = simpleTemplate.query(SELECT_LFM_POST, rowMapper);
         posts.forEach( post -> {
             post.setOpenPositions(template.query(SELECT_OPEN_ROLES, new MapSqlParameterSource("looking_for_member_id", post.getPostId()), new RoleRowMapper()));

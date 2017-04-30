@@ -1,6 +1,7 @@
 package hu.blog.megosztanam.service;
 
 import hu.blog.megosztanam.model.shared.LoginResponse;
+import hu.blog.megosztanam.model.shared.summoner.Server;
 
 /**
  * Created by Miklós on 2017. 04. 20..
@@ -8,5 +9,5 @@ import hu.blog.megosztanam.model.shared.LoginResponse;
 public interface IUserService {
 
     LoginResponse doLogin(String idTokenString);
-    LoginResponse register(String idTokenString, Integer summonerId);
+    LoginResponse register(String idTokenString, Integer summonerId, Server server);
 }

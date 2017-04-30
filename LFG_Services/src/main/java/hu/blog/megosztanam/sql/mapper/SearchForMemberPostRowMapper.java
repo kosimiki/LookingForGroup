@@ -8,6 +8,7 @@ import hu.blog.megosztanam.model.shared.PostType;
 import hu.blog.megosztanam.model.shared.elo.Division;
 import hu.blog.megosztanam.model.shared.elo.Rank;
 import hu.blog.megosztanam.model.shared.elo.Tier;
+import hu.blog.megosztanam.model.shared.summoner.Server;
 import hu.blog.megosztanam.service.ISummonerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
@@ -27,12 +28,18 @@ public class SearchForMemberPostRowMapper implements RowMapper<Post> {
     @Autowired
     private ISummonerService summonerService;
 
+    private Server server;
+
+    public void setServer(Server server){
+        this.server = server;
+    }
+
     @Override
     public Post mapRow(ResultSet rs, int rowNum) throws SQLException {
         Post post = new Post();
         post.setPostId(rs.getInt("id"));
         post.setUserId(rs.getInt("user_id"));
-        post.setOwner(summonerService.getSummoner(rs.getInt("summoner_id")));
+        post.setOwner(summonerService.getSummoner(rs.getInt("summoner_id"), server));
         post.setCreatedAt(rs.getTimestamp("created_at"));
         post.setDescription(rs.getString("description"));
         post.setGameType(new GameType(GameMap.valueOf(rs.getString("map")), rs.getBoolean("ranked")));

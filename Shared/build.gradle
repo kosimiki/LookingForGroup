@@ -12,11 +12,15 @@ buildscript {
     repositories {
         mavenLocal()
     }
+    tasks.withType(JavaCompile) {
+        sourceCompatibility = JavaVersion.VERSION_1_7
+        targetCompatibility = JavaVersion.VERSION_1_7
+    }
 }
 
 jar {
     baseName = 'lfg-shared-pojo'
-    version =  '0.1.0'
+    version = '0.1.0'
 }
 
 

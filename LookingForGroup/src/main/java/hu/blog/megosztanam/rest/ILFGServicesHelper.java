@@ -3,6 +3,7 @@ package hu.blog.megosztanam.rest;
 import hu.blog.megosztanam.model.shared.LoginResponse;
 import hu.blog.megosztanam.model.shared.Post;
 import hu.blog.megosztanam.model.shared.Summoner;
+import hu.blog.megosztanam.model.shared.summoner.Server;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -17,15 +18,16 @@ import java.util.List;
 
 public interface ILFGServicesHelper {
 
-    @GET("/Summoner/{name}")
-    Call<Summoner> getSummoner(@Path("name") String name);
+    @GET("/{server}/summoners/{name}")
+    Call<Summoner> getSummoner(@Path("name") String name, @Path("server")Server server);
 
     @POST("/login")
     Call<LoginResponse> doLogin(@Body String idToken);
 
-    @POST("/registration/{summonerId}")
+    @POST("/{server}/registration/{summonerId}")
     Call<LoginResponse> doRegistration(@Body String idToken,
-                                       @Path("summonerId") Integer summonerId);
+                                       @Path("summonerId") Integer summonerId,
+                                       @Path("server") Server server);
     @GET("/post")
     Call<List<Post>> getSearchForMemberPosts();
 

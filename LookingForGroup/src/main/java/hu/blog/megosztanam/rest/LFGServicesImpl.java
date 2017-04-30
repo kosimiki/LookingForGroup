@@ -4,6 +4,7 @@ import com.google.gson.*;
 import hu.blog.megosztanam.model.shared.LoginResponse;
 import hu.blog.megosztanam.model.shared.Post;
 import hu.blog.megosztanam.model.shared.Summoner;
+import hu.blog.megosztanam.model.shared.summoner.Server;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -36,8 +37,8 @@ public class LFGServicesImpl {
         servicesHelper = retrofit.create(ILFGServicesHelper.class);
     }
 
-    public Call<Summoner> getSummoner(String name) {
-        return servicesHelper.getSummoner(name);
+    public Call<Summoner> getSummoner(String name, Server server) {
+        return servicesHelper.getSummoner(name, server);
     }
 
 
@@ -45,8 +46,8 @@ public class LFGServicesImpl {
         return servicesHelper.doLogin(idToken);
     }
 
-    public Call<LoginResponse> doRegistration(String idToken, Integer summonerId) {
-        return servicesHelper.doRegistration(idToken, summonerId);
+    public Call<LoginResponse> doRegistration(String idToken, Integer summonerId, Server server) {
+        return servicesHelper.doRegistration(idToken, summonerId, server);
     }
 
     public Call<List<Post>> getSearchForMemberPosts() {

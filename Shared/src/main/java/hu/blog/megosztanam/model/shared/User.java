@@ -1,5 +1,7 @@
 package hu.blog.megosztanam.model.shared;
 
+import hu.blog.megosztanam.model.shared.summoner.Server;
+
 /**
  * Created by Miklós on 2016. 12. 10..
  */
@@ -14,6 +16,15 @@ public class User {
     protected Boolean authenticated;
     protected Summoner summoner;
     protected String idToken;
+    protected Server server;
+
+    public Server getServer() {
+        return server;
+    }
+
+    public void setServer(Server server) {
+        this.server = server;
+    }
 
     public String getIdToken() {
         return idToken;

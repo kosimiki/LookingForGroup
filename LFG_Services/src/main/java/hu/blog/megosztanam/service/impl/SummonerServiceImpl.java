@@ -2,10 +2,14 @@ package hu.blog.megosztanam.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hu.blog.megosztanam.model.shared.Summoner;
+import hu.blog.megosztanam.model.shared.summoner.Server;
+import hu.blog.megosztanam.model.shared.summoner.Servers;
+import hu.blog.megosztanam.service.IRestHelper;
 import hu.blog.megosztanam.service.ISummonerService;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
@@ -19,10 +23,13 @@ import java.io.IOException;
  */
 @Service
 public class SummonerServiceImpl implements ISummonerService {
-
-    private static final String SUMMONER_DETAILS_BY_NAME = "https://euw.api.pvp.net/api/lol/euw/v1.4/summoner/by-name/";
-    private static final String SUMMONER_DETAILS_BY_ID = "https://euw.api.pvp.net/api/lol/euw/v1.4/summoner/";
+    private static final String SUMMONER_DETAILS_BY_NAME_V3 = ".api.riotgames.com/lol/summoner/v3/summoners/by-name/";
+    private static final String SUMMONER_DETAILS_BY_ID_V3 = ".api.riotgames.com/lol/summoner/v3/summoners/";
+    private static final String HTTPS = "https://";
     private static final Logger LOGGER = LoggerFactory.getLogger(SummonerServiceImpl.class);
+
+    @Autowired
+    private IRestHelper restHelper;
 
     @Value("${lol.api.key}")
     private String apiKey;
@@ -30,49 +37,34 @@ public class SummonerServiceImpl implements ISummonerService {
     @Value("${google.oauth.client.id}")
     private String clientId;
 
-    public Summoner getSummoner(String summonerName){
+    @Override
+    public Summoner getSummoner(String summonerName, Server server) {
         Summoner summoner = new Summoner();
         summoner.setId(-1);
         summoner.setName("NAME NOT FOUND");
         try {
-            RestTemplate restTemplate = new RestTemplate();
-            ObjectMapper mapper = new ObjectMapper();
-            String url = SUMMONER_DETAILS_BY_NAME + summonerName + apiKey;
+            String url = HTTPS + Servers.getServerV3(server) + SUMMONER_DETAILS_BY_NAME_V3 + summonerName + apiKey;
             LOGGER.info("Calling GET on: " + url);
-            String json = restTemplate.getForObject(url, String.class);
-            JSONObject jsonObject = new JSONObject(json);
-            LOGGER.info("Received :" + jsonObject.toString());
-            try {
-                return mapper.readValue(jsonObject.getJSONObject(getNameKey(summonerName)).toString(), Summoner.class);
-            } catch (IOException e) {
-                LOGGER.error("Exception while get summoner: " + e.getMessage(), e);
-            }
-            return summoner;
+            return restHelper.getForObject(url, Summoner.class);
         }catch (RestClientException e){
             LOGGER.error("REST CLIENT EX: " + e.getMessage(), e);
             return summoner;
         }
     }
 
-
     @Override
-    public Summoner getSummoner(Integer summonerId){
-        RestTemplate restTemplate = new RestTemplate();
-        ObjectMapper mapper = new ObjectMapper();
-        String url = SUMMONER_DETAILS_BY_ID + summonerId + apiKey;
+    public Summoner getSummoner(Integer summonerId, Server server) {
+        Summoner summoner = new Summoner();
+        summoner.setId(-1);
+        summoner.setName("NAME NOT FOUND");
+        String url = HTTPS + Servers.getServerV3(server) + SUMMONER_DETAILS_BY_ID_V3 + summonerId + apiKey;
         LOGGER.info("Calling GET on: " + url);
-        String json = restTemplate.getForObject(url, String.class);
-        JSONObject jsonObject = new JSONObject(json);
-        LOGGER.info("Received :" + jsonObject.toString());
         try {
-            return mapper.readValue(jsonObject.getJSONObject(summonerId.toString()).toString(), Summoner.class);
-        } catch (IOException e) {
-            LOGGER.error(e.getMessage(),e);
+            return restHelper.getForObject(url, Summoner.class);
+        } catch (RestClientException e){
+            LOGGER.error("REST CLIENT EX: " + e.getMessage(), e);
+            return summoner;
         }
-        return null;
     }
 
-    private String getNameKey(String name){
-        return name.replace(" ","").toLowerCase().trim();
-    }
 }

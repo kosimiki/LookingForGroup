@@ -1,4 +1,4 @@
-package hu.blog.megosztanam;
+package hu.blog.megosztanam.login;
 
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Intent;
@@ -18,9 +18,11 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import hu.blog.megosztanam.MainMenuActivity;
 import hu.blog.megosztanam.model.parcelable.ParcelableLoginResponse;
 import hu.blog.megosztanam.model.shared.LoginResponse;
 import hu.blog.megosztanam.model.shared.Summoner;
+import hu.blog.megosztanam.model.shared.summoner.Server;
 import hu.blog.megosztanam.rest.LFGServicesImpl;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -47,6 +49,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        checkLogin();
 
         registrationRequired = false;
         setContentView(R.layout.activity_login);
@@ -65,6 +68,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 .build();
 
         findViewById(R.id.sign_in_button).setOnClickListener(this);
+    }
+
+    private void checkLogin(){
+       String token = SaveSharedPreference.getIdToken(this.getBaseContext());
+       if(token != null && !token.isEmpty()){
+           doBackEndLogin(token);
+       }
     }
 
     @Override
@@ -125,6 +135,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 switch (loginResponse.getLoginStatus()){
                     case SUCCESSFUL: updateUI(true, loginResponse.getUser().getGivenName() + "\n "+ loginResponse.getUser().getSummoner().getName() );
                         registrationRequired = false;
+                        SaveSharedPreference.setTokenId(getBaseContext(), idToken);
                         updateUISuccessfulLogin(loginResponse);
                         break;
                     case REGISTRATION_REQUIRED:
@@ -188,7 +199,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     private void handleSummonerName(){
         LFGServicesImpl lfgServices = new LFGServicesImpl();
-        Call<Summoner> summonerCall = lfgServices.getSummoner( summonerName.getText().toString());
+        Call<Summoner> summonerCall = lfgServices.getSummoner(summonerName.getText().toString(), Server.EUW);
         summonerCall.enqueue(new Callback<Summoner>() {
             @Override
             public void onResponse(Call<Summoner> call, Response<Summoner> response) {
@@ -210,7 +221,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     private void handleRegistration(Integer summonerId){
         LFGServicesImpl lfgServices = new LFGServicesImpl();
-        Call<LoginResponse> loginResponse = lfgServices.doRegistration(idToken, summonerId);
+        Call<LoginResponse> loginResponse = lfgServices.doRegistration(idToken, summonerId, Server.EUW);
         loginResponse.enqueue(new Callback<LoginResponse>() {
             @Override
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {

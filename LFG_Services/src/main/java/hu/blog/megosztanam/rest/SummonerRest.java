@@ -5,6 +5,7 @@ package hu.blog.megosztanam.rest;
 import hu.blog.megosztanam.model.shared.LoginResponse;
 import hu.blog.megosztanam.model.shared.Post;
 import hu.blog.megosztanam.model.shared.Summoner;
+import hu.blog.megosztanam.model.shared.summoner.Server;
 import hu.blog.megosztanam.service.IPostService;
 import hu.blog.megosztanam.service.ISummonerService;
 import hu.blog.megosztanam.service.IUserService;
@@ -31,9 +32,9 @@ public class SummonerRest {
 
     private static final Logger log = LoggerFactory.getLogger(SummonerRest.class);
 
-    @RequestMapping(value = "/Summoner/{name}", method = RequestMethod.GET)
-    public Summoner getSummoner(@PathVariable String name){
-        return summonerService.getSummoner(name);
+    @RequestMapping(value = "/{server}/summoners/{name}", method = RequestMethod.GET)
+    public Summoner getSummoner(@PathVariable String name, @PathVariable Server server){
+        return summonerService.getSummoner(name, server);
     }
 
     @RequestMapping(value = "/post", method = RequestMethod.POST)
@@ -56,10 +57,11 @@ public class SummonerRest {
         return response;
     }
 
-    @RequestMapping(value = "/registration/{summonerId}", method = RequestMethod.POST)
+    @RequestMapping(value = "/{server}/registration/{summonerId}", method = RequestMethod.POST)
     public LoginResponse doRegistration(@RequestBody String idToken,
-                                        @PathVariable @NotNull @Min(1) Integer summonerId){
-        return userService.register(idToken,summonerId);
+                                        @PathVariable @NotNull @Min(1) Integer summonerId,
+                                        @PathVariable Server server){
+        return userService.register(idToken,summonerId, server);
     }
 
 }

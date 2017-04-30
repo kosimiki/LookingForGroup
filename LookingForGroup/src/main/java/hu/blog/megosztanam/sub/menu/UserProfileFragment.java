@@ -11,7 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.example.lookingforgroup.R;
 import com.squareup.picasso.Picasso;
-import hu.blog.megosztanam.LoginActivity;
+import hu.blog.megosztanam.login.LoginActivity;
 import hu.blog.megosztanam.model.shared.LoginResponse;
 
 /**

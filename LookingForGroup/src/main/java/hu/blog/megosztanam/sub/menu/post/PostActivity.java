@@ -35,7 +35,7 @@ import com.tech.freak.wizardpager.model.Page;
 import com.tech.freak.wizardpager.ui.PageFragmentCallbacks;
 import com.tech.freak.wizardpager.ui.ReviewFragment;
 import com.tech.freak.wizardpager.ui.StepPagerStrip;
-import hu.blog.megosztanam.LoginActivity;
+import hu.blog.megosztanam.login.LoginActivity;
 import hu.blog.megosztanam.MainMenuActivity;
 import hu.blog.megosztanam.model.parcelable.ParcelableLoginResponse;
 import hu.blog.megosztanam.model.shared.*;
