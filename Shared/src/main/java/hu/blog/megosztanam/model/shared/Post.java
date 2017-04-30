@@ -2,6 +2,7 @@ package hu.blog.megosztanam.model.shared;
 
 
 import hu.blog.megosztanam.model.shared.elo.Rank;
+import hu.blog.megosztanam.model.shared.summoner.Server;
 
 import java.util.Date;
 import java.util.List;
@@ -21,6 +22,15 @@ public class Post {
     protected String description;
     protected Date createdAt;
     protected Boolean persistent;
+    protected Server server;
+
+    public Server getServer() {
+        return server;
+    }
+
+    public void setServer(Server server) {
+        this.server = server;
+    }
 
     public Boolean getPersistent() {
         return persistent;

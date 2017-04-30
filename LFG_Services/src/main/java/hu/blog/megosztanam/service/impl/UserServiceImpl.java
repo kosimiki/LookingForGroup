@@ -39,6 +39,7 @@ public class UserServiceImpl implements IUserService {
             if(userDao.isRegisteredUser(user.getEmail())){
                 UserDetails userDetails = userDao.getSummonerId(user.getEmail());
                 user.setUserId(userDetails.getUserId());
+                user.setServer(userDetails.getServer());
                 user.setSummoner(summonerService.getSummoner(userDetails.getSummonerId(), userDetails.getServer()));
                 loginResponse.setLoginStatus(LoginStatus.SUCCESSFUL);
                 LOGGER.info(loginResponse.toString());
@@ -63,10 +64,13 @@ public class UserServiceImpl implements IUserService {
         User user = authenticateWithRest(idTokenString);
         if(user.getAuthenticated()){
             user.setUserId(userDao.saveUser(user.getEmail(), summonerId ,server));
+            user.setSummoner(summonerService.getSummoner(summonerId, server));
             registrationResponse.setUser(user);
             registrationResponse.setLoginStatus(LoginStatus.SUCCESSFUL);
+            LOGGER.info("SUCCESS REG");
         }else {
             registrationResponse.setLoginStatus(LoginStatus.FAILED);
+            LOGGER.info("FAILED REG");
         }
         return registrationResponse;
     }

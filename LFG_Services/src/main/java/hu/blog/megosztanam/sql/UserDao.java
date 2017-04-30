@@ -4,9 +4,11 @@ import hu.blog.megosztanam.model.UserDetails;
 import hu.blog.megosztanam.model.shared.summoner.Server;
 import hu.blog.megosztanam.sql.mapper.DetailsRowMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 
@@ -16,8 +18,14 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class UserDao {
 
-    @Autowired
     private NamedParameterJdbcTemplate template;
+    private SimpleJdbcInsert insert;
+
+    @Autowired
+    public UserDao(JdbcTemplate simpleTemplate){
+        this.insert = new SimpleJdbcInsert(simpleTemplate).withTableName("users").usingGeneratedKeyColumns("id");
+        this.template = new NamedParameterJdbcTemplate(simpleTemplate);
+    }
 
     private static final String EXISTING_USER =
             "SELECT COUNT(*) FROM users WHERE email_address = :email_address";
@@ -41,7 +49,7 @@ public class UserDao {
                 .addValue("email_address", email)
                 .addValue("summoner_id", summonerId)
                 .addValue("region", server.getValue());
-        return template.update(INSERT_USER,parameterSource);
+        return insert.executeAndReturnKey(parameterSource).intValue();
     }
 
 

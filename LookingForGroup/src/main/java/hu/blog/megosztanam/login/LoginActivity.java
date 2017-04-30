@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import com.example.lookingforgroup.R;
 import com.google.android.gms.auth.api.Auth;
@@ -45,12 +46,15 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private boolean registrationRequired;
     private String idToken;
     private GoogleSignInAccount acct;
+    private Server server;
+    private RadioGroup radioGroup;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         checkLogin();
 
+        server = Server.EUNE;
         registrationRequired = false;
         setContentView(R.layout.activity_login);
         mStatusTextView = (TextView) findViewById(R.id.status);
@@ -68,6 +72,18 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 .build();
 
         findViewById(R.id.sign_in_button).setOnClickListener(this);
+
+        radioGroup = (RadioGroup) findViewById(R.id.region_group);
+        radioGroup.setVisibility(View.INVISIBLE);
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId){
+                    case R.id.radio_button_eune: server = Server.EUNE; break;
+                    case R.id.radio_button_euw: server = Server.EUW; break;
+                }
+            }
+        });
     }
 
     private void checkLogin(){
@@ -190,6 +206,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     private void updateForReg(String msg){
         summonerName.setVisibility(View.VISIBLE);
+        findViewById(R.id.region_group).setVisibility(View.VISIBLE);
         mStatusTextView.setText(msg);
         registrationRequired = true;
     }
@@ -199,7 +216,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     private void handleSummonerName(){
         LFGServicesImpl lfgServices = new LFGServicesImpl();
-        Call<Summoner> summonerCall = lfgServices.getSummoner(summonerName.getText().toString(), Server.EUW);
+        Call<Summoner> summonerCall = lfgServices.getSummoner(summonerName.getText().toString(), server);
         summonerCall.enqueue(new Callback<Summoner>() {
             @Override
             public void onResponse(Call<Summoner> call, Response<Summoner> response) {
@@ -220,15 +237,21 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     }
 
     private void handleRegistration(Integer summonerId){
+        Log.i(TAG,"REG SUMMONER:  " + summonerId);
+
         LFGServicesImpl lfgServices = new LFGServicesImpl();
-        Call<LoginResponse> loginResponse = lfgServices.doRegistration(idToken, summonerId, Server.EUW);
+        Call<LoginResponse> loginResponse = lfgServices.doRegistration(idToken, summonerId, server);
         loginResponse.enqueue(new Callback<LoginResponse>() {
             @Override
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
+                Log.i(TAG, response.message());
+                Log.i(TAG, response.body().toString());
                 LoginResponse loginResponse = response.body();
                 switch (loginResponse.getLoginStatus()){
-                    case SUCCESSFUL: updateUI(true, loginResponse.getUser().getGivenName() + "\n "+ loginResponse.getUser().getSummoner().getName()  + "\n "+ loginResponse.getUser().getSummoner().getId() );
+                    case SUCCESSFUL:
+                        updateUI(true, loginResponse.getUser().getGivenName() + "\n "+ loginResponse.getUser().getSummoner().getName()  + "\n "+ loginResponse.getUser().getSummoner().getId() );
                         registrationRequired = false;
+                        Log.i(TAG,"SUCCESSFUL REG " + loginResponse.toString());
                         updateUISuccessfulLogin(loginResponse);
                         break;
                     case REGISTRATION_REQUIRED:

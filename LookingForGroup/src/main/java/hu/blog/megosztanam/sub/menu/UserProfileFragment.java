@@ -2,16 +2,19 @@ package hu.blog.megosztanam.sub.menu;
 
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.example.lookingforgroup.R;
 import com.squareup.picasso.Picasso;
 import hu.blog.megosztanam.login.LoginActivity;
+import hu.blog.megosztanam.login.SaveSharedPreference;
 import hu.blog.megosztanam.model.shared.LoginResponse;
 
 /**
@@ -40,6 +43,15 @@ public class UserProfileFragment extends Fragment {
 
         TextView summonerLevel = (TextView) rootView.findViewById(R.id.summoner_level);
         summonerLevel.setText(userDetails.getUser().getSummoner().getSummonerLevel().toString());
+        Button logoutButton = (Button) rootView.findViewById(R.id.logou_button);
+        logoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SaveSharedPreference.setTokenId(getActivity().getBaseContext(), "");
+                Intent redirect = new Intent(getActivity(),LoginActivity.class);
+                getActivity().startActivity(redirect);
+            }
+        });
         return rootView;
     }
 }
