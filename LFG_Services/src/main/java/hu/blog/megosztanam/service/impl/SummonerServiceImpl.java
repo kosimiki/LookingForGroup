@@ -2,10 +2,15 @@ package hu.blog.megosztanam.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hu.blog.megosztanam.model.shared.Summoner;
+import hu.blog.megosztanam.model.shared.SummonerGameStatistics;
+import hu.blog.megosztanam.model.shared.elo.Division;
+import hu.blog.megosztanam.model.shared.elo.Rank;
+import hu.blog.megosztanam.model.shared.elo.Tier;
 import hu.blog.megosztanam.model.shared.summoner.Server;
 import hu.blog.megosztanam.model.shared.summoner.Servers;
 import hu.blog.megosztanam.service.IRestHelper;
 import hu.blog.megosztanam.service.ISummonerService;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +21,8 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Miklós on 2016. 11. 27..
@@ -25,6 +32,8 @@ import java.io.IOException;
 public class SummonerServiceImpl implements ISummonerService {
     private static final String SUMMONER_DETAILS_BY_NAME_V3 = ".api.riotgames.com/lol/summoner/v3/summoners/by-name/";
     private static final String SUMMONER_DETAILS_BY_ID_V3 = ".api.riotgames.com/lol/summoner/v3/summoners/";
+    private static final String SUMMONER_LEAGUE_V2  = ".api.riotgames.com/api/lol/EUNE/v2.5/league/by-summoner/";
+    private static final String ENTRY = "/entry";
     private static final String HTTPS = "https://";
     private static final Logger LOGGER = LoggerFactory.getLogger(SummonerServiceImpl.class);
 
@@ -67,4 +76,49 @@ public class SummonerServiceImpl implements ISummonerService {
         }
     }
 
+    @Override
+    public SummonerGameStatistics getStatistics(Integer summonerId, Server server) {
+
+        SummonerGameStatistics gameStatistics = new SummonerGameStatistics();
+        Rank unRanked = new Rank();
+        unRanked.setDivision(Division.I);
+        unRanked.setTier(Tier.UNRANKED);
+        gameStatistics.setTwistedRank(unRanked);
+        gameStatistics.setFlexRank(unRanked);
+        gameStatistics.setSoloRank(unRanked);
+
+        String url = HTTPS + Servers.getServerV2(server) + SUMMONER_LEAGUE_V2 + summonerId + ENTRY + apiKey;
+        LOGGER.info("Calling GET on: " + url);
+        String json = restHelper.getForObject(url, String.class);
+        if(json != null){
+            JSONObject jsonObject = new JSONObject(json);
+            JSONArray types = jsonObject.getJSONArray(summonerId.toString());
+            for(int i = 0; i<types.length(); i++){
+                JSONObject type = types.getJSONObject(i);
+                Tier tier = Tier.valueOf(type.getString("tier"));
+                String queue = type.getString("queue");
+                JSONArray entries = type.getJSONArray("entries");
+                Division division = Division.I;
+                if(entries.length()==1){
+                    division = Division.valueOf(entries.getJSONObject(0).getString("division"));
+                }
+                Rank rank = new Rank();
+                rank.setDivision(division);
+                rank.setTier(tier);
+                if(queue != null && queue.contains("SOLO")){
+                    gameStatistics.setSoloRank(rank);
+                }
+                if(queue != null && queue.contains("FLEX")){
+                    gameStatistics.setFlexRank(rank);
+                }
+
+                if(queue != null && queue.contains("3x3")){
+                    gameStatistics.setTwistedRank(rank);
+                }
+            }
+        }else{
+            return gameStatistics;
+        }
+        return gameStatistics;
+    }
 }

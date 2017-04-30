@@ -5,6 +5,7 @@ package hu.blog.megosztanam.rest;
 import hu.blog.megosztanam.model.shared.LoginResponse;
 import hu.blog.megosztanam.model.shared.Post;
 import hu.blog.megosztanam.model.shared.Summoner;
+import hu.blog.megosztanam.model.shared.SummonerGameStatistics;
 import hu.blog.megosztanam.model.shared.summoner.Server;
 import hu.blog.megosztanam.service.IPostService;
 import hu.blog.megosztanam.service.ISummonerService;
@@ -62,6 +63,11 @@ public class SummonerRest {
                                         @PathVariable @NotNull @Min(1) Integer summonerId,
                                         @PathVariable Server server){
         return userService.register(idToken,summonerId, server);
+    }
+    @RequestMapping(value = "/{server}/league/{summonerId}", method = RequestMethod.GET)
+    public SummonerGameStatistics getStats(@PathVariable @NotNull @Min(1) Integer summonerId,
+                                           @PathVariable Server server){
+        return summonerService.getStatistics(summonerId, server);
     }
 
 }

@@ -9,16 +9,16 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.RadioGroup;
-import android.widget.TextView;
+import android.widget.*;
 import com.example.lookingforgroup.R;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.squareup.picasso.Picasso;
 import hu.blog.megosztanam.MainMenuActivity;
 import hu.blog.megosztanam.model.parcelable.ParcelableLoginResponse;
 import hu.blog.megosztanam.model.shared.LoginResponse;
@@ -48,6 +48,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private GoogleSignInAccount acct;
     private Server server;
     private RadioGroup radioGroup;
+    private Button acceptSummonerButton;
+    private Button searchSummonerButton;
+    private SignInButton googleSignInButton;
+    private ImageView summonerIcon;
+    private TextView summonerLevel;
+    private TextView summonerLevelLabel;
+    private LinearLayout regForm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +66,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         setContentView(R.layout.activity_login);
         mStatusTextView = (TextView) findViewById(R.id.status);
         summonerName = (EditText) findViewById(R.id.summonerName);
-        summonerName.setVisibility(View.INVISIBLE);
+
+
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(CLIENT_ID)
@@ -71,10 +79,32 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
 
-        findViewById(R.id.sign_in_button).setOnClickListener(this);
+
+        googleSignInButton = (SignInButton) findViewById(R.id.sign_in_button);
+        googleSignInButton.setOnClickListener(this);
+
+        acceptSummonerButton = (Button) findViewById(R.id.button_accept_summoner);
+        searchSummonerButton = (Button) findViewById(R.id.button_search_new);
+        acceptSummonerButton.setOnClickListener(this);
+        acceptSummonerButton.setEnabled(false);
+        searchSummonerButton.setOnClickListener(this);
+
+        summonerName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                acceptSummonerButton.setEnabled(false);
+            }
+        });
+
+        summonerIcon = (ImageView) findViewById(R.id.summoner_icon);
+        summonerLevel = (TextView) findViewById(R.id.summoner_level);
+        summonerLevelLabel = (TextView) findViewById(R.id.lvl_label);
+        summonerLevelLabel.setVisibility(View.INVISIBLE);
+        summonerIcon.setVisibility(View.INVISIBLE);
 
         radioGroup = (RadioGroup) findViewById(R.id.region_group);
-        radioGroup.setVisibility(View.INVISIBLE);
+
+        Log.i(TAG, "SET ON CHECK");
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -84,6 +114,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 }
             }
         });
+        regForm = (LinearLayout) findViewById(R.id.email_login_form);
+        regForm.setVisibility(View.GONE);
+
     }
 
     private void checkLogin(){
@@ -115,6 +148,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             case R.id.sign_in_button:
                 signIn();
                 break;
+            case R.id.button_search_new: getSummonerDetails();
+                acceptSummonerButton.setEnabled(true);break;
+            case R.id.button_accept_summoner: handleSummonerName(); break;
         }
     }
 
@@ -205,8 +241,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     }
 
     private void updateForReg(String msg){
-        summonerName.setVisibility(View.VISIBLE);
-        findViewById(R.id.region_group).setVisibility(View.VISIBLE);
+        regForm.setVisibility(View.VISIBLE);
+        googleSignInButton.setVisibility(View.INVISIBLE);
+        googleSignInButton.setEnabled(false);
         mStatusTextView.setText(msg);
         registrationRequired = true;
     }
@@ -236,6 +273,31 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         });
     }
 
+    private void getSummonerDetails(){
+        LFGServicesImpl lfgServices = new LFGServicesImpl();
+        Call<Summoner> summonerCall = lfgServices.getSummoner(summonerName.getText().toString(), server);
+        summonerCall.enqueue(new Callback<Summoner>() {
+            @Override
+            public void onResponse(Call<Summoner> call, Response<Summoner> response) {
+                if(response.isSuccessful()){
+                    Summoner summoner = response.body();
+                    if(summoner.getId() == -1){
+                        updateUI(false, "NO SUMMONER FOUND");
+                    }else{
+                        Picasso.with(getBaseContext()).load("http://avatar.leagueoflegends.com/"+ server.getValue() +"/"+ summoner.getName() +".png").into(summonerIcon);
+                        summonerLevel.setText("" + summoner.getSummonerLevel());
+                        summonerLevelLabel.setVisibility(View.VISIBLE);
+                        summonerIcon.setVisibility(View.VISIBLE);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Summoner> call, Throwable t) {
+            }
+        });
+    }
+
     private void handleRegistration(Integer summonerId){
         Log.i(TAG,"REG SUMMONER:  " + summonerId);
 
@@ -252,6 +314,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         updateUI(true, loginResponse.getUser().getGivenName() + "\n "+ loginResponse.getUser().getSummoner().getName()  + "\n "+ loginResponse.getUser().getSummoner().getId() );
                         registrationRequired = false;
                         Log.i(TAG,"SUCCESSFUL REG " + loginResponse.toString());
+                        SaveSharedPreference.setTokenId(getBaseContext(), idToken);
                         updateUISuccessfulLogin(loginResponse);
                         break;
                     case REGISTRATION_REQUIRED:

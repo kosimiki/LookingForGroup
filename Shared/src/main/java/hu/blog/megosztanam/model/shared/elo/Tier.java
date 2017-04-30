@@ -10,6 +10,7 @@ public enum Tier {
     PLATINUM("PLATINUM"),
     DIAMOND("DIAMOND"),
     CHALLENGER("CHALLENGER"),
+    UNRANKED("UNRANKED"),
     NORMAL("NORMAL");
 
     private final String value;
