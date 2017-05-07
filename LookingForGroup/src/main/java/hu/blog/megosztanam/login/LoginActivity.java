@@ -18,6 +18,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.squareup.picasso.Picasso;
 import hu.blog.megosztanam.MainMenuActivity;
 import hu.blog.megosztanam.model.parcelable.ParcelableLoginResponse;
@@ -59,7 +60,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        checkLogin();
+//        checkLogin();
 
         server = Server.EUNE;
         registrationRequired = false;
@@ -67,6 +68,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mStatusTextView = (TextView) findViewById(R.id.status);
         summonerName = (EditText) findViewById(R.id.summonerName);
 
+        Log.i(TAG, "FireBase: " + FirebaseInstanceId.getInstance().getToken());
 
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -320,7 +322,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     case REGISTRATION_REQUIRED:
                         updateForReg(loginResponse.getUser().getGivenName() + " has no summoner registered");
                         break;
-                    case FAILED:
+                case FAILED:
                         updateUI(false, loginResponse.getUser().getGivenName());
                         break;
                 }

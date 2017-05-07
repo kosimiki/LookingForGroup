@@ -2,7 +2,6 @@ package hu.blog.megosztanam.sql;
 
 import hu.blog.megosztanam.model.shared.OpenPosition;
 import hu.blog.megosztanam.model.shared.Post;
-import hu.blog.megosztanam.model.shared.summoner.Server;
 import hu.blog.megosztanam.sql.mapper.RoleRowMapper;
 import hu.blog.megosztanam.sql.mapper.SearchForMemberPostRowMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +51,7 @@ public class PostDao {
         Boolean isRanked = post.getGameType().isRanked();
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("summoner_id", post.getOwner().getId())
-                .addValue("server",      post.getServer().getValue())
+                .addValue("server",      post.getServer().getValue()) //todo save issue
                 .addValue("user_id",     post.getUserId())
                 .addValue("map",         post.getGameType().getMap().getValue())
                 .addValue("ranked",      post.getGameType().isRanked())
