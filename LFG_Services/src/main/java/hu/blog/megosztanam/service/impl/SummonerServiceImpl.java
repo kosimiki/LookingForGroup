@@ -86,7 +86,6 @@ public class SummonerServiceImpl implements ISummonerService {
         gameStatistics.setTwistedRank(unRanked);
         gameStatistics.setFlexRank(unRanked);
         gameStatistics.setSoloRank(unRanked);
-
         String url = HTTPS + Servers.getServerV2(server) + SUMMONER_LEAGUE_V2 + summonerId + ENTRY + apiKey;
         LOGGER.info("Calling GET on: " + url);
         String json = restHelper.getForObject(url, String.class);
@@ -101,6 +100,7 @@ public class SummonerServiceImpl implements ISummonerService {
                 Division division = Division.I;
                 if(entries.length()==1){
                     division = Division.valueOf(entries.getJSONObject(0).getString("division"));
+                    gameStatistics.setSummonerName(entries.getJSONObject(0).getString("playerOrTeamName"));
                 }
                 Rank rank = new Rank();
                 rank.setDivision(division);
