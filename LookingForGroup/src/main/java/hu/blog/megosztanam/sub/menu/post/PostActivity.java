@@ -189,7 +189,9 @@ public class PostActivity extends AppCompatActivity implements
                     post.setPostId(0);
                     post.setUserId(userDetails.getUser().getUserId());
                     post.setOwner(userDetails.getUser().getSummoner());
+                    post.setServer(userDetails.getUser().getServer());
 
+                    Log.i(PostActivity.class.getName(), "Created post: " +  post.toString());
                     savePost(post);
                     navigateBack();
 

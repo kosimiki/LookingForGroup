@@ -10,4 +10,5 @@ public interface IUserService {
 
     LoginResponse doLogin(String idTokenString);
     LoginResponse register(String idTokenString, Integer summonerId, Server server);
+    void updateMessagingToken(Integer userId, String token);
 }

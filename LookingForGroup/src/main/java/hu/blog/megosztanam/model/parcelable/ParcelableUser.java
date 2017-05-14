@@ -4,11 +4,13 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import hu.blog.megosztanam.model.shared.Summoner;
 import hu.blog.megosztanam.model.shared.User;
+import hu.blog.megosztanam.model.shared.summoner.Server;
 
 /**
  * Created by Miklós on 2017. 04. 22..
  */
 public class ParcelableUser extends User implements Parcelable {
+
     @Override
     public int describeContents() {
         return 0;
@@ -24,6 +26,8 @@ public class ParcelableUser extends User implements Parcelable {
         dest.writeValue(this.authenticated);
         dest.writeParcelable(new ParcelableSummoner(this.summoner), flags);
         dest.writeString(this.idToken);
+        dest.writeInt(this.server == null ? -1 : this.server.ordinal());
+        dest.writeString(this.messageToken);
     }
 
     public ParcelableUser(User user){
@@ -35,6 +39,7 @@ public class ParcelableUser extends User implements Parcelable {
         this.authenticated = user.getAuthenticated();
         this.summoner = user.getSummoner();
         this.idToken = user.getIdToken();
+        this.server = user.getServer();
     }
     public ParcelableUser() {
     }
@@ -48,6 +53,9 @@ public class ParcelableUser extends User implements Parcelable {
         this.authenticated = (Boolean) in.readValue(Boolean.class.getClassLoader());
         this.summoner = in.readParcelable(Summoner.class.getClassLoader());
         this.idToken = in.readString();
+        int tmpServer = in.readInt();
+        this.server = tmpServer == -1 ? null : Server.values()[tmpServer];
+        this.messageToken = in.readString();
     }
 
     public static final Creator<ParcelableUser> CREATOR = new Creator<ParcelableUser>() {

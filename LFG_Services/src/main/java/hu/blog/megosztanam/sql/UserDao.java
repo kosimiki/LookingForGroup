@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSourceUtils;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
@@ -32,9 +33,8 @@ public class UserDao {
 
     private static final String SUMMONER_ID =
             "SELECT user_id, summoner_id, region FROM users WHERE email_address = :email_address";
-    private static final String INSERT_USER =
-            "INSERT INTO users (email_address, summoner_id, region)" +
-                    "VALUES (:email_address, :summoner_id, :region)";
+
+    private static final String SAVE_TOKEN = "UPDATE users SET firebase_message_token = :token WHERE user_id = :userId";
 
     public boolean isRegisteredUser(String email){
         return template.queryForObject(EXISTING_USER, new MapSqlParameterSource("email_address", email), Boolean.class);
@@ -42,6 +42,13 @@ public class UserDao {
 
     public UserDetails getSummonerId(String email){
         return template.queryForObject(SUMMONER_ID, new MapSqlParameterSource("email_address", email), new DetailsRowMapper());
+    }
+
+    public int saveMessaginToken(Integer userId, String token){
+        SqlParameterSource parameterSource = new MapSqlParameterSource()
+                .addValue("token", token)
+                .addValue("userId", userId);
+        return template.update(SAVE_TOKEN, parameterSource);
     }
 
     public int saveUser(String email, Integer summonerId, Server server){

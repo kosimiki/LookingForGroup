@@ -5,7 +5,9 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="hu.blog.megosztanam.login.LoginActivity">
+              android:background="@color/colorPrimary"
+
+              tools:context="hu.blog.megosztanam.login.LoginActivity">
 
     <!-- Login progress -->
     <TextView
@@ -69,10 +71,14 @@
                 android:layout_height="wrap_content">
             <Button
                     android:text="Search summoner"
+                    style="@style/Widget.AppCompat.Button.Colored"
+
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" android:id="@+id/button_search_new" android:layout_weight="1"/>
             <Button
                     android:text="Accept"
+                    style="@style/Widget.AppCompat.Button.Colored"
+
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" android:id="@+id/button_accept_summoner" android:layout_weight="1"/>
         </LinearLayout>

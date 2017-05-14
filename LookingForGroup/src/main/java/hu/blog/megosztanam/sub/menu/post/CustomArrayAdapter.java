@@ -39,9 +39,9 @@ public class CustomArrayAdapter extends ArrayAdapter<Post> {
         TextView postType = (TextView) convertView.findViewById(R.id.post_type);
         postType.setText(post.getPostType().getValue());
         if(position % 2 == 0){
-            convertView.setBackgroundColor(Color.parseColor("#AF3342A1"));
+            convertView.setBackgroundColor( getContext().getResources().getColor(R.color.post_color_light));
         }else {
-            convertView.setBackgroundColor(Color.parseColor("#BF3342A1"));
+            convertView.setBackgroundColor( getContext().getResources().getColor(R.color.post_color_dark));
         }
 
         holder.summonerName = (TextView) convertView.findViewById(R.id.owner_summoner_name);

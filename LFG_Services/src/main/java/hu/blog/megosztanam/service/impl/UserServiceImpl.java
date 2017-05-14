@@ -75,6 +75,11 @@ public class UserServiceImpl implements IUserService {
         return registrationResponse;
     }
 
+    @Override
+    public void updateMessagingToken(Integer userId, String token) {
+        userDao.saveMessaginToken(userId, token);
+    }
+
     private User authenticateWithRest(String id){
         RestTemplate restTemplate = new RestTemplate();
         User user = new User();

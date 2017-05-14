@@ -17,6 +17,15 @@ public class User {
     protected Summoner summoner;
     protected String idToken;
     protected Server server;
+    protected String messageToken;
+
+    public String getMessageToken() {
+        return messageToken;
+    }
+
+    public void setMessageToken(String messageToken) {
+        this.messageToken = messageToken;
+    }
 
     public Server getServer() {
         return server;
@@ -101,6 +110,7 @@ public class User {
                 ", authenticated=" + authenticated +
                 ", summoner=" + summoner +
                 ", idToken='" + idToken + '\'' +
+                ", server ='" + server.getValue() + '\'' +
                 '}';
     }
 }

@@ -58,6 +58,14 @@ public class SummonerRest {
         return response;
     }
 
+    @RequestMapping(value = "/users/{userId}", method = RequestMethod.PUT)
+    public void updateMessagingToken(
+            @PathVariable("userId") @Min(0) Integer userId,
+            @RequestBody @NotNull String messagingToken){
+        log.info("Updating user: " + userId);
+        userService.updateMessagingToken(userId,messagingToken);
+    }
+
     @RequestMapping(value = "/{server}/registration/{summonerId}", method = RequestMethod.POST)
     public LoginResponse doRegistration(@RequestBody String idToken,
                                         @PathVariable @NotNull @Min(1) Integer summonerId,

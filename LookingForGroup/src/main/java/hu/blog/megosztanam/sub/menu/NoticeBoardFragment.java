@@ -1,6 +1,8 @@
 package hu.blog.megosztanam.sub.menu;
 
 import android.app.Fragment;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,6 +13,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import com.example.lookingforgroup.R;
 import hu.blog.megosztanam.login.LoginActivity;
+import hu.blog.megosztanam.messaging.MessagingService;
 import hu.blog.megosztanam.model.parcelable.ParcelableLoginResponse;
 import hu.blog.megosztanam.model.shared.Post;
 import hu.blog.megosztanam.rest.LFGServicesImpl;
@@ -30,10 +33,20 @@ public class NoticeBoardFragment extends Fragment {
 
     private ViewGroup rootView;
     private ParcelableLoginResponse userDetails;
+    private BroadcastReceiver receiver;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+            receiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    String s = intent.getStringExtra(MessagingService.MESSAGE);
+                    // do something here.
+                }
+            };
+
         Button newPostButton = (Button) getActivity().findViewById(R.id.new_post);
         userDetails = getArguments().getParcelable(LoginActivity.USER_DETAILS_EXTRA);
         newPostButton.setOnClickListener(new View.OnClickListener() {
