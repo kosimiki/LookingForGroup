@@ -28,8 +28,8 @@ public interface ILFGServicesHelper {
     Call<LoginResponse> doRegistration(@Body String idToken,
                                        @Path("summonerId") Integer summonerId,
                                        @Path("server") Server server);
-    @GET("/post")
-    Call<List<Post>> getSearchForMemberPosts();
+    @GET("{server}/posts")
+    Call<List<Post>> getSearchForMemberPosts(@Path("server") Server server);
 
     @POST("/post")
     Call<Integer> saveLookingForMemberPost(@Body Post post);

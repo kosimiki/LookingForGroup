@@ -16,6 +16,10 @@ import com.squareup.picasso.Picasso;
 import hu.blog.megosztanam.login.LoginActivity;
 import hu.blog.megosztanam.login.SaveSharedPreference;
 import hu.blog.megosztanam.model.shared.LoginResponse;
+import org.w3c.dom.Text;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 /**
  * Created by Miklós on 2017. 04. 19..
@@ -41,8 +45,9 @@ public class UserProfileFragment extends Fragment {
         TextView summonerName = (TextView) rootView.findViewById(R.id.summoner_name);
         summonerName.setText(userDetails.getUser().getSummoner().getName());
 
-        TextView summonerLevel = (TextView) rootView.findViewById(R.id.summoner_level);
+        TextView summonerLevel = (TextView) rootView.findViewById(R.id.profile_lvl);
         summonerLevel.setText(userDetails.getUser().getSummoner().getSummonerLevel().toString());
+        ImageView summonerIcon = (ImageView) rootView.findViewById(R.id.profile_summoner_icon);
         Button logoutButton = (Button) rootView.findViewById(R.id.logou_button);
         logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -52,6 +57,13 @@ public class UserProfileFragment extends Fragment {
                 getActivity().startActivity(redirect);
             }
         });
+        TextView summonerServer = (TextView) rootView.findViewById(R.id.server);
+        summonerServer.setText(userDetails.getUser().getServer().getValue());
+        try {
+            Picasso.with(getActivity().getBaseContext()).load("http://avatar.leagueoflegends.com/"+ userDetails.getUser().getServer().getValue() +"/"+ URLEncoder.encode(userDetails.getUser().getSummoner().getName(), "utf-8") +".png").into(summonerIcon);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         return rootView;
     }
 }

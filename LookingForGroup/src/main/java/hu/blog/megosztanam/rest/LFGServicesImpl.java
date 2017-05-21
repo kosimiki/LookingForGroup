@@ -50,8 +50,8 @@ public class LFGServicesImpl {
         return servicesHelper.doRegistration(idToken, summonerId, server);
     }
 
-    public Call<List<Post>> getSearchForMemberPosts() {
-        return servicesHelper.getSearchForMemberPosts();
+    public Call<List<Post>> getSearchForMemberPosts(Server server) {
+        return servicesHelper.getSearchForMemberPosts(server);
     }
 
     public Call<Integer> savePost(Post post){

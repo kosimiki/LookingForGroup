@@ -2,6 +2,7 @@ package hu.blog.megosztanam.sql;
 
 import hu.blog.megosztanam.model.shared.OpenPosition;
 import hu.blog.megosztanam.model.shared.Post;
+import hu.blog.megosztanam.model.shared.summoner.Server;
 import hu.blog.megosztanam.sql.mapper.RoleRowMapper;
 import hu.blog.megosztanam.sql.mapper.SearchForMemberPostRowMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +45,7 @@ public class PostDao {
             "SELECT role FROM open_position WHERE looking_for_member_id = :looking_for_member_id";
 
     private static final String SELECT_LFM_POST =
-            "SELECT id, server, summoner_id,   map,  ranked,  min_tier,  max_tier,  min_div,  max_div,  description, created_at, user_id, persistent, post_type FROM looking_for_member";
+            "SELECT id, server, summoner_id,   map,  ranked,  min_tier,  max_tier,  min_div,  max_div,  description, created_at, user_id, persistent, post_type FROM looking_for_member WHERE server = :server";
 
 
     public Integer savePost(Post post){
@@ -70,8 +71,8 @@ public class PostDao {
         return postId;
     }
 
-    public List<Post> getSearchForMemberPosts(){
-        List<Post> posts = simpleTemplate.query(SELECT_LFM_POST, rowMapper);
+    public List<Post> getSearchForMemberPosts(Server server){
+        List<Post> posts = template.query(SELECT_LFM_POST, new MapSqlParameterSource("server",server.getValue()),rowMapper);
         posts.forEach( post -> {
             post.setOpenPositions(template.query(SELECT_OPEN_ROLES, new MapSqlParameterSource("looking_for_member_id", post.getPostId()), new RoleRowMapper()));
         });

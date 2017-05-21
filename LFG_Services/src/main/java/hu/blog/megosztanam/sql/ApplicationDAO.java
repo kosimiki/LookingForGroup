@@ -5,6 +5,7 @@ import hu.blog.megosztanam.model.shared.post.PostApplyResponse;
 import hu.blog.megosztanam.sql.extractor.ApplicationExtractor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSourceUtils;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -37,15 +38,14 @@ public class ApplicationDAO {
         this.template = new NamedParameterJdbcTemplate(simpleTemplate);
     }
 
-    public int saveApplication(Integer userId, Integer postId, List<Role> roles){
+    public Boolean saveApplication(Integer userId, Integer postId, List<Role> roles){
         List<Application> applications = new ArrayList<>();
         roles.forEach(role -> applications.add(new Application(userId, postId, role.getValue())));
-
-        return this.template.batchUpdate(INSERT, SqlParameterSourceUtils.createBatch(applications.toArray())).length;
+        return this.template.batchUpdate(INSERT, SqlParameterSourceUtils.createBatch(applications.toArray())).length>0;
     }
 
     public List<PostApplyResponse> getApplications(Integer userId){
-        return this.template.query(QUERY, extractor);
+        return this.template.query(QUERY, new MapSqlParameterSource("userId", userId), extractor);
     }
 
 

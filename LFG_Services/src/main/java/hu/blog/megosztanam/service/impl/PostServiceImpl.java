@@ -3,6 +3,7 @@ package hu.blog.megosztanam.service.impl;
 import hu.blog.megosztanam.model.shared.Post;
 import hu.blog.megosztanam.model.shared.post.PostApplyRequest;
 import hu.blog.megosztanam.model.shared.post.PostApplyResponse;
+import hu.blog.megosztanam.model.shared.summoner.Server;
 import hu.blog.megosztanam.service.IPostService;
 import hu.blog.megosztanam.sql.ApplicationDAO;
 import hu.blog.megosztanam.sql.PostDao;
@@ -29,17 +30,17 @@ public class PostServiceImpl implements IPostService {
     }
 
     @Override
-    public List<Post> getSearchForMemberPosts() {
-        return postDao.getSearchForMemberPosts();
+    public List<Post> getSearchForMemberPosts(Server server) {
+        return postDao.getSearchForMemberPosts(server);
     }
 
     @Override
-    public Integer applyForPost(PostApplyRequest request) {
-        return null;
+    public Boolean applyForPost(PostApplyRequest request) {
+        return applicationDAO.saveApplication(request.getUserId(), request.getPostId(), request.getRoles());
     }
 
     @Override
     public List<PostApplyResponse> getPostAppliesForUser(Integer userId) {
-        return null;
+        return applicationDAO.getApplications(userId);
     }
 }

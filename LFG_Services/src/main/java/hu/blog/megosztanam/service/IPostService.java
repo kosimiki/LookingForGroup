@@ -3,6 +3,7 @@ package hu.blog.megosztanam.service;
 import hu.blog.megosztanam.model.shared.Post;
 import hu.blog.megosztanam.model.shared.post.PostApplyRequest;
 import hu.blog.megosztanam.model.shared.post.PostApplyResponse;
+import hu.blog.megosztanam.model.shared.summoner.Server;
 
 import java.util.List;
 
@@ -12,8 +13,8 @@ import java.util.List;
 public interface IPostService {
 
     Integer saveLookingForMoreNotice(Post post);
-    List<Post> getSearchForMemberPosts();
-    Integer applyForPost(PostApplyRequest request);
+    List<Post> getSearchForMemberPosts(Server server);
+    Boolean applyForPost(PostApplyRequest request);
     List<PostApplyResponse> getPostAppliesForUser(Integer userId);
 
 }

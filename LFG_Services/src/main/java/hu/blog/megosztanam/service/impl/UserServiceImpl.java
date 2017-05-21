@@ -65,6 +65,7 @@ public class UserServiceImpl implements IUserService {
         if(user.getAuthenticated()){
             user.setUserId(userDao.saveUser(user.getEmail(), summonerId ,server));
             user.setSummoner(summonerService.getSummoner(summonerId, server));
+            user.setServer(server);
             registrationResponse.setUser(user);
             registrationResponse.setLoginStatus(LoginStatus.SUCCESSFUL);
             LOGGER.info("SUCCESS REG");

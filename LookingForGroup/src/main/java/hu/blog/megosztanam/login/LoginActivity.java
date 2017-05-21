@@ -30,6 +30,10 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.Locale;
+
 /**
  * A login screen that offers login via email/password.
  */
@@ -43,7 +47,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private GoogleApiClient mGoogleApiClient;
     private TextView mStatusTextView;
 
-    private EditText summonerName;
+    private SearchView summonerName;
     private boolean registrationRequired;
     private String idToken;
     private GoogleSignInAccount acct;
@@ -54,6 +58,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private SignInButton googleSignInButton;
     private ImageView summonerIcon;
     private TextView summonerLevel;
+    private TextView foundSummonerName;
     private TextView summonerLevelLabel;
     private LinearLayout regForm;
 
@@ -62,11 +67,28 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         super.onCreate(savedInstanceState);
 //        checkLogin();
 
-        server = Server.EUNE;
+        server = Server.EUW;
         registrationRequired = false;
         setContentView(R.layout.activity_login);
+        foundSummonerName = (TextView) findViewById(R.id.found_summoner_name);
         mStatusTextView = (TextView) findViewById(R.id.status);
-        summonerName = (EditText) findViewById(R.id.summonerName);
+        summonerName = (SearchView) findViewById(R.id.summonerName);
+        summonerName.setQueryHint("Summoner name");
+        summonerName.setBackgroundColor(R.color.colorPrimaryLight);
+        summonerName.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                                                @Override
+                                                public boolean onQueryTextSubmit(String s) {
+                                                    getSummonerDetails(s);
+
+                                                    return true;
+                                                }
+
+                                                @Override
+                                                public boolean onQueryTextChange(String s) {
+                                                    return false;
+                                                }
+                                            }
+        );
 
         Log.i(TAG, "FireBase: " + FirebaseInstanceId.getInstance().getToken());
 
@@ -100,8 +122,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         summonerIcon = (ImageView) findViewById(R.id.summoner_icon);
         summonerLevel = (TextView) findViewById(R.id.summoner_level);
-        summonerLevelLabel = (TextView) findViewById(R.id.lvl_label);
-        summonerLevelLabel.setVisibility(View.INVISIBLE);
         summonerIcon.setVisibility(View.INVISIBLE);
 
         radioGroup = (RadioGroup) findViewById(R.id.region_group);
@@ -110,9 +130,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                switch (checkedId){
-                    case R.id.radio_button_eune: server = Server.EUNE; break;
-                    case R.id.radio_button_euw: server = Server.EUW; break;
+                switch (checkedId) {
+                    case R.id.radio_button_eune:
+                        server = Server.EUNE;
+                        break;
+                    case R.id.radio_button_euw:
+                        server = Server.EUW;
+                        break;
                 }
             }
         });
@@ -121,11 +145,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     }
 
-    private void checkLogin(){
-       String token = SaveSharedPreference.getIdToken(this.getBaseContext());
-       if(token != null && !token.isEmpty()){
-           doBackEndLogin(token);
-       }
+    private void checkLogin() {
+        String token = SaveSharedPreference.getIdToken(this.getBaseContext());
+        if (token != null && !token.isEmpty()) {
+            doBackEndLogin(token);
+        }
     }
 
     @Override
@@ -139,10 +163,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {}
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+    }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> cursorLoader) {}
+    public void onLoaderReset(Loader<Cursor> cursorLoader) {
+    }
 
     @Override
     public void onClick(View v) {
@@ -150,16 +176,19 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             case R.id.sign_in_button:
                 signIn();
                 break;
-            case R.id.button_search_new: getSummonerDetails();
-                acceptSummonerButton.setEnabled(true);break;
-            case R.id.button_accept_summoner: handleSummonerName(); break;
+            case R.id.button_search_new:
+                getSummonerDetails(summonerName.getQuery().toString());
+                break;
+            case R.id.button_accept_summoner:
+                handleSummonerName(summonerName.getQuery().toString());
+                break;
         }
     }
 
     private void signIn() {
-        if(registrationRequired){
-            handleSummonerName();
-        }else{
+        if (registrationRequired) {
+            handleSummonerName(summonerName.getQuery().toString());
+        } else {
             Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
             startActivityForResult(signInIntent, RC_SIGN_IN);
         }
@@ -175,9 +204,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }
     }
 
-    private void doBackEndLogin(String token){
+    private void doBackEndLogin(String token) {
         idToken = token;
-        Log.i(TAG,"THIS IS NEW THREAD ");
+        Log.i(TAG, "THIS IS NEW THREAD ");
         Log.i(TAG, "GOT TOKEN: " + idToken);
         LFGServicesImpl lfgServices = new LFGServicesImpl();
         Call<LoginResponse> loginResponse = lfgServices.doLogin(idToken);
@@ -186,8 +215,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
                 LoginResponse loginResponse = response.body();
                 Log.i(TAG, "AFTER LOGIN: " + loginResponse.getLoginStatus());
-                switch (loginResponse.getLoginStatus()){
-                    case SUCCESSFUL: updateUI(true, loginResponse.getUser().getGivenName() + "\n "+ loginResponse.getUser().getSummoner().getName() );
+                switch (loginResponse.getLoginStatus()) {
+                    case SUCCESSFUL:
+                        updateUI(loginResponse.getUser().getGivenName() + "\n " + loginResponse.getUser().getSummoner().getName());
                         registrationRequired = false;
                         SaveSharedPreference.setTokenId(getBaseContext(), idToken);
                         updateUISuccessfulLogin(loginResponse);
@@ -196,10 +226,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         updateForReg(loginResponse.getUser().getGivenName() + " has no summoner registered");
                         break;
                     case FAILED:
-                        updateUI(false, loginResponse.getUser().getGivenName());
+                        updateUI(loginResponse.getUser().getGivenName());
                         break;
                 }
             }
+
             @Override
             public void onFailure(Call<LoginResponse> call, Throwable t) {
 
@@ -208,20 +239,24 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     }
 
-    private void updateUISuccessfulLogin(LoginResponse response){
+    private void updateUISuccessfulLogin(LoginResponse response) {
         mStatusTextView.setText(response.getUser().getGivenName() + " " + response.getUser().getSummoner().getName());
         findViewById(R.id.sign_in_button).setVisibility(View.GONE);
         summonerName.setVisibility(View.GONE);
-        Log.i(TAG,"START NEW ACTIVITY");
+        Log.i(TAG, "START NEW ACTIVITY");
         startMainMenu(response);
     }
 
-    private void startMainMenu(LoginResponse response){
+    private void startMainMenu(LoginResponse response) {
         Intent intent = new Intent(this, MainMenuActivity.class);
+        Log.i(TAG, response.toString());
         ParcelableLoginResponse parcelableLoginResponse = new ParcelableLoginResponse(response);
+        Log.i(TAG, parcelableLoginResponse.toString());
+
         intent.putExtra(USER_DETAILS_EXTRA, parcelableLoginResponse);
         startActivity(intent);
     }
+
     private void handleSignInResult(GoogleSignInResult result) {
         Log.d(TAG, "handleSignInResult:" + result.isSuccess());
         if (result.isSuccess()) {
@@ -229,20 +264,36 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             idToken = acct.getIdToken();
             doBackEndLogin(acct.getIdToken());
         } else {
-            updateUI(false,result.getStatus().toString() );
-        }
-    }
-    private void updateUI(boolean signedIn, String msg) {
-        if (signedIn) {
-            mStatusTextView.setText(msg);
-            findViewById(R.id.sign_in_button).setVisibility(View.GONE);
-        } else {
-            mStatusTextView.setText(msg);
-            findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
+            updateUI(result.getStatus().toString());
         }
     }
 
-    private void updateForReg(String msg){
+    private void updateUI(Boolean accept, String msg, Summoner summoner) {
+        if (accept) {
+            foundSummonerName.setText(summoner.getName());
+            summonerLevel.setText(String.format(Locale.ENGLISH, "LVL: %d", summoner.getSummonerLevel()));
+        } else {
+            acceptSummonerButton.setEnabled(accept);
+            googleSignInButton.setVisibility(View.GONE);
+        }
+        mStatusTextView.setText(msg);
+        setDetailViewsVisibility(accept);
+
+    }
+
+    private void setDetailViewsVisibility(boolean isVisible) {
+        int visibility = isVisible ? View.VISIBLE : View.INVISIBLE;
+        foundSummonerName.setVisibility(visibility);
+        summonerLevel.setVisibility(visibility);
+        summonerIcon.setVisibility(visibility);
+    }
+
+    private void updateUI(String msg) {
+        updateUI(false, msg, null);
+    }
+
+
+    private void updateForReg(String msg) {
         regForm.setVisibility(View.VISIBLE);
         googleSignInButton.setVisibility(View.INVISIBLE);
         googleSignInButton.setEnabled(false);
@@ -251,57 +302,72 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     }
 
     @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {}
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+    }
 
-    private void handleSummonerName(){
+    private void handleSummonerName(String name) {
         LFGServicesImpl lfgServices = new LFGServicesImpl();
-        Call<Summoner> summonerCall = lfgServices.getSummoner(summonerName.getText().toString(), server);
+        Call<Summoner> summonerCall = lfgServices.getSummoner(name, server);
         summonerCall.enqueue(new Callback<Summoner>() {
             @Override
             public void onResponse(Call<Summoner> call, Response<Summoner> response) {
-                if(response.isSuccessful()){
+                if (response.isSuccessful()) {
                     Summoner summoner = response.body();
-                    if(summoner.getId() == -1){
-                        updateUI(false, "NO SUMMONER FOUND");
-                    }else{
+                    if (summoner.getId() == -1) {
+                        updateUI("NO SUMMONER FOUND");
+                    } else {
                         handleRegistration(summoner.getId());
                     }
+                } else {
+                    updateUI("NO SUMMONER FOUND");
                 }
             }
 
             @Override
             public void onFailure(Call<Summoner> call, Throwable t) {
+                updateUI("NO SUMMONER FOUND");
             }
         });
     }
 
-    private void getSummonerDetails(){
+
+    private void getSummonerDetails(String name) {
         LFGServicesImpl lfgServices = new LFGServicesImpl();
-        Call<Summoner> summonerCall = lfgServices.getSummoner(summonerName.getText().toString(), server);
+        Call<Summoner> summonerCall = lfgServices.getSummoner(name, server);
         summonerCall.enqueue(new Callback<Summoner>() {
             @Override
             public void onResponse(Call<Summoner> call, Response<Summoner> response) {
-                if(response.isSuccessful()){
+                if (response.isSuccessful()) {
                     Summoner summoner = response.body();
-                    if(summoner.getId() == -1){
-                        updateUI(false, "NO SUMMONER FOUND");
-                    }else{
-                        Picasso.with(getBaseContext()).load("http://avatar.leagueoflegends.com/"+ server.getValue() +"/"+ summoner.getName() +".png").into(summonerIcon);
-                        summonerLevel.setText("" + summoner.getSummonerLevel());
-                        summonerLevelLabel.setVisibility(View.VISIBLE);
-                        summonerIcon.setVisibility(View.VISIBLE);
+                    if (summoner.getId() == -1) {
+                        updateUI("NO SUMMONER FOUND");
+
+                    } else {
+                        try {
+                            Picasso.with(getBaseContext()).load("http://avatar.leagueoflegends.com/" + server.getValue() + "/" + URLEncoder.encode(summoner.getName(), "utf-8") + ".png").into(summonerIcon);
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        }
+
+                        updateUI(true, "Summoner found!", summoner);
+
                     }
+                } else {
+                    Log.i(TAG, "GET SUMMONER DETAILS not successful:" + response.body());
+                    updateUI("NO SUMMONER FOUND");
                 }
             }
 
             @Override
             public void onFailure(Call<Summoner> call, Throwable t) {
+                Log.i(TAG, "GET SUMMONER DETAILS FAILED:" + t.getMessage());
+                updateUI("NO SUMMONER FOUND");
             }
         });
     }
 
-    private void handleRegistration(Integer summonerId){
-        Log.i(TAG,"REG SUMMONER:  " + summonerId);
+    private void handleRegistration(Integer summonerId) {
+        Log.i(TAG, "REG SUMMONER:  " + summonerId);
 
         LFGServicesImpl lfgServices = new LFGServicesImpl();
         Call<LoginResponse> loginResponse = lfgServices.doRegistration(idToken, summonerId, server);
@@ -311,24 +377,26 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 Log.i(TAG, response.message());
                 Log.i(TAG, response.body().toString());
                 LoginResponse loginResponse = response.body();
-                switch (loginResponse.getLoginStatus()){
+                switch (loginResponse.getLoginStatus()) {
                     case SUCCESSFUL:
-                        updateUI(true, loginResponse.getUser().getGivenName() + "\n "+ loginResponse.getUser().getSummoner().getName()  + "\n "+ loginResponse.getUser().getSummoner().getId() );
+                        updateUI(loginResponse.getUser().getGivenName() + "\n " + loginResponse.getUser().getSummoner().getName() + "\n " + loginResponse.getUser().getSummoner().getId());
                         registrationRequired = false;
-                        Log.i(TAG,"SUCCESSFUL REG " + loginResponse.toString());
+                        Log.i(TAG, "SUCCESSFUL REG " + loginResponse.toString());
                         SaveSharedPreference.setTokenId(getBaseContext(), idToken);
                         updateUISuccessfulLogin(loginResponse);
                         break;
                     case REGISTRATION_REQUIRED:
                         updateForReg(loginResponse.getUser().getGivenName() + " has no summoner registered");
                         break;
-                case FAILED:
-                        updateUI(false, loginResponse.getUser().getGivenName());
+                    case FAILED:
+                        updateUI(loginResponse.getUser().getGivenName());
                         break;
                 }
             }
+
             @Override
             public void onFailure(Call<LoginResponse> call, Throwable t) {
+                updateUI("NO SUMMONER FOUND");
 
             }
         });

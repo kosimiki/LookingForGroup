@@ -110,7 +110,7 @@ public class User {
                 ", authenticated=" + authenticated +
                 ", summoner=" + summoner +
                 ", idToken='" + idToken + '\'' +
-                ", server ='" + server.getValue() + '\'' +
+                ", server ='" + (server == null? null :server.getValue()) + '\'' +
                 '}';
     }
 }

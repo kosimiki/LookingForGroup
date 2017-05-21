@@ -19,52 +19,49 @@
             android:layout_height="wrap_content"
             android:textAlignment="center" android:padding="5dp"
             android:layout_marginBottom="30dp"/>
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" app:srcCompat="@mipmap/role_bot"
+                android:id="@+id/summoner_icon" android:layout_weight="1" android:paddingRight="5dp"/>
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:id="@+id/found_summoner_name" android:layout_weight="3"
+                android:textAlignment="viewStart" android:textSize="24sp" android:paddingTop="10dp" android:layout_gravity="end"
+                android:paddingRight="3dp"/>
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:id="@+id/summoner_level" android:layout_weight="1"
+                android:textSize="24sp" android:textAlignment="textEnd" android:layout_gravity="start"
+                android:paddingTop="10dp"/>
+    </LinearLayout>
     <LinearLayout android:id="@+id/email_login_form" android:layout_width="match_parent"
                   android:layout_height="wrap_content" android:orientation="vertical">
 
-        <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textPersonName"
-                android:ems="10"
-                android:id="@+id/summonerName"
-                android:maxLines="1"
-                android:textAlignment="center" android:hint="@string/summoner_name"/>
         <RadioGroup
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" android:id="@+id/region_group"
-                android:checkedButton="@+id/radio_button_euw">
+                android:orientation='horizontal'
+                android:layout_gravity="center_horizontal"
+                android:gravity="center_horizontal"
+                android:checkedButton="@+id/radio_button_euw" android:layout_marginTop="5dp">
             <RadioButton
                     android:text="EUW"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" android:id="@+id/radio_button_euw" android:layout_weight="1"
-            />
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:id="@+id/radio_button_euw"
+                    android:layout_marginRight="15dp"/>
             <RadioButton
                     android:text="EUNE"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content" android:id="@+id/radio_button_eune"/>
         </RadioGroup>
-
-        <LinearLayout
-                android:orientation="horizontal"
+        <SearchView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-            <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" app:srcCompat="@mipmap/role_bot"
-                    android:id="@+id/summoner_icon" android:layout_weight="1"/>
-            <TextView
-                    android:text="@string/lvl"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:id="@+id/lvl_label" android:layout_weight="1"
-                    android:textAlignment="textEnd" android:textSize="24sp" android:paddingTop="10dp" android:layout_gravity="end"
-                    android:paddingRight="3dp"/>
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:id="@+id/summoner_level" android:layout_weight="1"
-                    android:textSize="24sp" android:textAlignment="viewStart" android:layout_gravity="start"
-                    android:paddingTop="10dp"/>
-        </LinearLayout>
+                android:layout_height="match_parent" android:id="@+id/summonerName" android:layout_marginTop="10dp"/>
+
         <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"

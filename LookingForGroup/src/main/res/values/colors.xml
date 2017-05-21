@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#366cec</color>
-    <color name="colorPrimaryDark">#3e54e6</color>
+    <color name="colorPrimary">#3c70ea</color>
+    <color name="colorPrimaryLight">#5b85e7</color>
+    <color name="colorPrimaryDark">#3a51e6</color>
     <color name="colorAccent">#056851</color>
     <color name="reload_button_color">#4c79ed</color>
     <color name="post_color">#3f6ee7</color>

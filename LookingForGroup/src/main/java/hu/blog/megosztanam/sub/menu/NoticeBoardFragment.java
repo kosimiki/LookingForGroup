@@ -49,6 +49,7 @@ public class NoticeBoardFragment extends Fragment {
 
         Button newPostButton = (Button) getActivity().findViewById(R.id.new_post);
         userDetails = getArguments().getParcelable(LoginActivity.USER_DETAILS_EXTRA);
+        Log.i(this.getTag(), "User from intent: "  + userDetails.toString());
         newPostButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -58,6 +59,7 @@ public class NoticeBoardFragment extends Fragment {
                 getActivity().startActivity(redirect);
             }
         });
+        loadPosts();
     }
 
     @Override
@@ -67,13 +69,12 @@ public class NoticeBoardFragment extends Fragment {
 
         rootView = (ViewGroup) inflater.inflate(
                 R.layout.fragment_slide_screen, container, false);
-        loadPosts();
         return rootView;
     }
 
     private void loadPosts(){
         LFGServicesImpl lfgServices = new LFGServicesImpl();
-        Call<List<Post>> loginResponse = lfgServices.getSearchForMemberPosts();
+        Call<List<Post>> loginResponse = lfgServices.getSearchForMemberPosts(userDetails.getUser().getServer());
         loginResponse.enqueue(new Callback<List<Post>>() {
             @Override
             public void onResponse(Call<List<Post>> call, Response<List<Post>> response) {
