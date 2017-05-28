@@ -33,7 +33,7 @@ import java.util.List;
 public class SummonerServiceImpl implements ISummonerService {
     private static final String SUMMONER_DETAILS_BY_NAME_V3 = ".api.riotgames.com/lol/summoner/v3/summoners/by-name/";
     private static final String SUMMONER_DETAILS_BY_ID_V3 = ".api.riotgames.com/lol/summoner/v3/summoners/";
-    private static final String SUMMONER_LEAGUE_V2  = ".api.riotgames.com/api/lol/EUNE/v2.5/league/by-summoner/";
+    private static final String SUMMONER_LEAGUE_V2  = ".api.riotgames.com/api/lol/SERVER/v2.5/league/by-summoner/";
     private static final String ENTRY = "/entry";
     private static final String HTTPS = "https://";
     private static final Logger LOGGER = LoggerFactory.getLogger(SummonerServiceImpl.class);
@@ -87,7 +87,8 @@ public class SummonerServiceImpl implements ISummonerService {
         gameStatistics.setTwistedRank(unRanked);
         gameStatistics.setFlexRank(unRanked);
         gameStatistics.setSoloRank(unRanked);
-        String url = HTTPS + Servers.getServerV2(server) + SUMMONER_LEAGUE_V2 + summonerId + ENTRY + apiKey;
+        String serverName = Servers.getServerV2(server);
+        String url = HTTPS + serverName + SUMMONER_LEAGUE_V2.replace("SERVER", serverName) + summonerId + ENTRY + apiKey;
         LOGGER.info("Calling GET on: " + url);
         String json = restHelper.getForObject(url, String.class);
         if(json != null){

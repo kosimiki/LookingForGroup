@@ -22,6 +22,7 @@ public class CustomArrayAdapter extends ArrayAdapter<Post> {
     private Drawable howlingAbyssMap;
     private Drawable anyRole;
     private Drawable twistedTreelineMap;
+
     //this custom adapter receives an ArrayList of Post objects.
     //Post is my class that represents the data for a single row and could be anything.
     public CustomArrayAdapter(Context context, int textViewResourceId, ArrayList<Post> postList) {

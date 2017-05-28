@@ -42,4 +42,8 @@
     <string name="howling_abyss_map_name">Howling Abyss</string>
     <string name="twisted_treeline_map_name">Twisted Treeline</string>
     <string name="special_map_name">Special</string>
+    <string name="pick_your_role">Select your roles</string>
+
+    <string name="ok">Apply</string>
+    <string name="cancel">Cancel</string>
 </resources>
