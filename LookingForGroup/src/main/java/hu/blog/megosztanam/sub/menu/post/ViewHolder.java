@@ -1,5 +1,6 @@
 package hu.blog.megosztanam.sub.menu.post;
 
+import android.widget.ImageView;
 import android.widget.TextView;
 
 /**
@@ -10,6 +11,7 @@ class ViewHolder {
     TextView summonerLevel;
     TextView map;
     TextView ranked;
+    ImageView mapIcon;
 
     TextView minimumRank;
     TextView maximumRank;

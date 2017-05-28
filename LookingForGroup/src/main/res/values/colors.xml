@@ -10,4 +10,13 @@
     <color name="post_color_dark">#2654ca</color>
 
 
+    <color name="howling_abyss_color">#3aa3f6</color>
+    <color name="summoners_rift_color_dark">#798f91</color>
+    <color name="summoners_rift_color_light">#e5cea0</color>
+    <color name="twisted_treeline_color">#b692ce</color>
+
+
+
+
+
 </resources>

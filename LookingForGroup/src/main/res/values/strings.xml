@@ -37,4 +37,9 @@
     <string name="next">Next</string>
     <string name="new_post">New post</string>
     <string name="prev">Previous</string>
+
+    <string name="summoners_rift_map_name">Summoners Rift</string>
+    <string name="howling_abyss_map_name">Howling Abyss</string>
+    <string name="twisted_treeline_map_name">Twisted Treeline</string>
+    <string name="special_map_name">Special</string>
 </resources>

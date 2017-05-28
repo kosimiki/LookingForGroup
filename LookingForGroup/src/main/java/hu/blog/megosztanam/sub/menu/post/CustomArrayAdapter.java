@@ -1,7 +1,7 @@
 package hu.blog.megosztanam.sub.menu.post;
 
 import android.content.Context;
-import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.support.v13.view.ViewCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,40 +18,49 @@ import java.util.List;
 
 public class CustomArrayAdapter extends ArrayAdapter<Post> {
     private ArrayList<Post> list;
+    private Drawable summonersRiftMap;
+    private Drawable howlingAbyssMap;
+    private Drawable anyRole;
+    private Drawable twistedTreelineMap;
     //this custom adapter receives an ArrayList of Post objects.
     //Post is my class that represents the data for a single row and could be anything.
     public CustomArrayAdapter(Context context, int textViewResourceId, ArrayList<Post> postList) {
         //populate the local list with data.
         super(context, textViewResourceId, postList);
+         summonersRiftMap = context.getResources().getDrawable(R.drawable.summoners_rift_map_small);
+         howlingAbyssMap  =context.getResources().getDrawable(R.drawable.howling_abyss_map_small);
+         twistedTreelineMap = context.getResources().getDrawable(R.drawable.twisted_treeline_map_small);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            anyRole = getContext().getApplicationContext().getDrawable(R.drawable.role_any);
+        } else {
+            anyRole = getContext().getResources().getDrawable(R.drawable.role_any);
+        }
+
         this.list = new ArrayList<>();
         this.list.addAll(postList);
     }
-
     public View getView(final int position, View convertView, ViewGroup parent) {
         Log.i(this.getClass().getName(), "getView runs");
         ViewHolder holder = new ViewHolder();
         LayoutInflater inflator = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         convertView = inflator.inflate(R.layout.looking_for_member_row, null);
-
         Post post = list.get(position);
         //setting the views into the ViewHolder.
         Log.i(this.getClass().getName(), "before sets end");
-        TextView postType = (TextView) convertView.findViewById(R.id.post_type);
-        postType.setText(post.getPostType().getValue());
-//        if(position % 2 == 0){
-//            convertView.setBackgroundColor( getContext().getResources().getColor(R.color.post_color_light));
-//        }else {
-//            convertView.setBackgroundColor( getContext().getResources().getColor(R.color.post_color_dark));
-//        }
+//        TextView postType = (TextView) convertView.findViewById(R.id.post_type);
+//        postType.setText(post.getPostType().getValue());
+
 
         holder.summonerName = (TextView) convertView.findViewById(R.id.owner_summoner_name);
         holder.summonerName.setText(post.getOwner().getName());
         holder.summonerLevel = (TextView) convertView.findViewById(R.id.summoner_level_in_row);
         holder.summonerLevel.setText(post.getOwner().getSummonerLevel().toString());
         holder.map = (TextView) convertView.findViewById(R.id.map_name);
-        holder.map.setText(post.getGameType().getMap().getValue());
+        setMapName(post.getGameType().getMap(), holder.map);
         holder.ranked = (TextView) convertView.findViewById(R.id.ranked);
-        holder.ranked.setText(post.getGameType().isRanked() ? "Ranked" : "Normal");
+        holder.ranked.setText(post.getGameType().isRanked() ? "RANKED" : "NORMAL");
+        holder.mapIcon = (ImageView) convertView.findViewById(R.id.map_icon);
+        setMapImage(post.getGameType().getMap(),holder.mapIcon);
         Log.i(this.getClass().getName(), "after strings");
         TableRow positionsParentRow = (TableRow) convertView.findViewById(R.id.positions_row);
         TextView openPositionCount = (TextView) convertView.findViewById(R.id.open_position_count);
@@ -84,7 +93,24 @@ public class CustomArrayAdapter extends ArrayAdapter<Post> {
         Log.i(this.getClass().getName(), "getView end");
         return convertView;
     }
+    private void setMapName(GameMap gameMap, TextView map){
+        switch (gameMap){
+                case TWISTED_TREE_LINE: map.setText(R.string.twisted_treeline_map_name);break;
+                case SUMMONERS_RIFT:    map.setText(R.string.summoners_rift_map_name);break;
+                case HOWLING_FJORD:     map.setText(R.string.howling_abyss_map_name);break;
+                default:     map.setText(R.string.special_map_name);break;
+        }
+    }
 
+    void setMapImage(GameMap map, ImageView icon){
+        icon.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        switch (map){
+            case TWISTED_TREE_LINE: icon.setImageDrawable(twistedTreelineMap); break;
+            case SUMMONERS_RIFT:    icon.setImageDrawable(summonersRiftMap);break;
+            case HOWLING_FJORD:     icon.setImageDrawable(howlingAbyssMap);break;
+            default:    icon.setImageDrawable(twistedTreelineMap);break;
+        }
+    }
     void setOpenPositions(GameMap map, List<Role> roles, TableRow parent){
         if(map.equals(GameMap.SUMMONERS_RIFT)){
             for(Role role: roles){
@@ -99,13 +125,12 @@ public class CustomArrayAdapter extends ArrayAdapter<Post> {
         }else{
             List<ImageView> roleIcons = getImageViews(parent);
             for(int i = 0; i<roleIcons.size(); i++){
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                    roleIcons.get(i).setImageDrawable(getContext().getApplicationContext().getDrawable(R.drawable.role_any));
-                } else {
-                    roleIcons.get(i).setImageDrawable(getContext().getResources().getDrawable(R.drawable.role_any));
-                }
+                roleIcons.get(i).setImageDrawable(anyRole);
                 if(i<roles.size()){
                     ViewCompat.setAlpha(roleIcons.get(i),1);
+                }
+                if(map.equals(GameMap.TWISTED_TREE_LINE) && i>2){
+                    ViewCompat.setAlpha(roleIcons.get(i),0);
                 }
             }
 
