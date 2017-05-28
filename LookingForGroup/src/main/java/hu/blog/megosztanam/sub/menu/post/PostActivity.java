@@ -69,33 +69,22 @@ public class PostActivity extends AppCompatActivity implements
     private StepPagerStrip mStepPagerStrip;
 
     public void onCreate(Bundle savedInstanceState) {
-        Log.i(this.getClass().getName(), "OnCreateStarted");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Log.i(this.getClass().getName(), "getParcelableExtra");
 
         userDetails = getIntent().getParcelableExtra(LoginActivity.USER_DETAILS_EXTRA);
         Log.i(this.getClass().getName(), "User: " + userDetails.toString());
 
 
-        Log.i(this.getClass().getName(), "BeforeWizardModel");
         mWizardModel = new PostWizardModel(this);
-//        Log.i(this.getClass().getName(), "AfterWizardModel");
-//        Toolbar toolbar = (Toolbar) findViewById(R.id.action_bar);
-//        Log.i(this.getClass().getName(), ") findViewById(R.id.action_bar)");
-//        setSupportActionBar(toolbar);
-        Log.i(this.getClass().getName(), "setSupportActionBar");
         if (savedInstanceState != null) {
             mWizardModel.load(savedInstanceState.getBundle("model"));
         }
-        Log.i(this.getClass().getName(), "savedInstanceState");
 
         mWizardModel.registerListener(this);
-        Log.i(this.getClass().getName(), "registerListener");
 
         mPagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
-        Log.i(this.getClass().getName(), "getSupportFragmentManager");
 
         mPager = (ViewPager) findViewById(R.id.pager);
         mPager.setAdapter(mPagerAdapter);
@@ -111,7 +100,6 @@ public class PostActivity extends AppCompatActivity implements
                         }
                     }
                 });
-        Log.i(this.getClass().getName(), "setOnPageSelectedListener");
         mNextButton = (Button) findViewById(R.id.next_button);
         mPrevButton = (Button) findViewById(R.id.prev_button);
 
@@ -129,7 +117,6 @@ public class PostActivity extends AppCompatActivity implements
                 updateBottomBar();
             }
         });
-        Log.i(this.getClass().getName(), "setOnPageChangeListener");
 
 
         mNextButton.setOnClickListener(new View.OnClickListener() {

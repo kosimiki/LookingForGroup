@@ -74,7 +74,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mStatusTextView = (TextView) findViewById(R.id.status);
         summonerName = (SearchView) findViewById(R.id.summonerName);
         summonerName.setQueryHint("Summoner name");
-        summonerName.setBackgroundColor(R.color.colorPrimaryLight);
         summonerName.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                                                 @Override
                                                 public boolean onQueryTextSubmit(String s) {
@@ -273,9 +272,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             foundSummonerName.setText(summoner.getName());
             summonerLevel.setText(String.format(Locale.ENGLISH, "LVL: %d", summoner.getSummonerLevel()));
         } else {
-            acceptSummonerButton.setEnabled(accept);
             googleSignInButton.setVisibility(View.GONE);
         }
+        acceptSummonerButton.setEnabled(accept);
         mStatusTextView.setText(msg);
         setDetailViewsVisibility(accept);
 

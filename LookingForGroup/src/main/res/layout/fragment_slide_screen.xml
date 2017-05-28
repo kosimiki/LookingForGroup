@@ -6,10 +6,9 @@
             android:layout_height="match_parent" >
 
     <LinearLayout
-            android:background="@color/colorPrimary"
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent" android:background="@color/post_color_light">
         <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
@@ -38,13 +37,14 @@
 
             <ListView android:id="@+id/looking_for_members_list_view"
                       style="?android:textAppearanceMedium"
-                      android:padding="0dp"
+                      android:padding="5dp"
                       android:fillViewport="true"
                       android:lineSpacingMultiplier="1.2"
                       android:layout_width="match_parent"
                       android:layout_height="match_parent"
                       android:layout_alignParentTop="true" android:layout_alignParentLeft="true"
-                      android:layout_alignParentStart="true" android:background="@color/colorPrimary"/>
+                      android:layout_alignParentStart="true" android:paddingLeft="0dp" android:paddingRight="0dp"
+                      android:layout_marginLeft="0dp" android:layout_marginRight="0dp"/>
         </RelativeLayout>
     </LinearLayout>
 </LinearLayout>
