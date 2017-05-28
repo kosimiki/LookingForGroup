@@ -24,11 +24,12 @@ public class ApplicationDAO {
 
     private static final String INSERT = "INSERT INTO applications (user_id, post_id, role, date_of_application) values (:userId, :postId, :role, NOW())";
 
-    private static final String QUERY = "SELECT u.summoner_id, u.user_id, u.region, a.post_id, a.role, a.date_of_application\n" +
+    private static final String QUERY = "SELECT u.summoner_id, u.user_id, u.region, a.post_id, a.role, a.date_of_application, l.*\n" +
             "FROM applications a\n" +
             "JOIN looking_for_member l ON a.post_id = l.id \n" +
             "JOIN users u ON a.user_id = u.user_id\n" +
-            "WHERE l.user_id = :userId";
+            "WHERE l.user_id = :userId " +
+            "ORDER BY a.date_of_application DESC";
 
     @Autowired
     private ApplicationExtractor extractor;

@@ -1,8 +1,10 @@
 package hu.blog.megosztanam.model.shared.post;
 
+import hu.blog.megosztanam.model.shared.Post;
 import hu.blog.megosztanam.model.shared.Role;
 import hu.blog.megosztanam.model.shared.elo.Rank;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -11,13 +13,21 @@ import java.util.List;
 public class PostApplyResponse {
 
     private Integer userId;
-    private Integer postId;
+    private Post post;
     private String summonerName;
     private Integer summonerLevel;
     private Rank soloRank;
     private Rank flexRank;
     private List<Role> roles;
+    private Date createdAt;
 
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
 
     public Integer getUserId() {
         return userId;
@@ -27,12 +37,12 @@ public class PostApplyResponse {
         this.userId = userId;
     }
 
-    public Integer getPostId() {
-        return postId;
+    public Post getPost() {
+        return post;
     }
 
-    public void setPostId(Integer postId) {
-        this.postId = postId;
+    public void setPost(Post post) {
+        this.post = post;
     }
 
     public String getSummonerName() {

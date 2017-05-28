@@ -123,6 +123,21 @@ public class Post {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Post post = (Post) o;
+
+        return postId.equals(post.postId);
+    }
+
+    @Override
+    public int hashCode() {
+        return postId.hashCode();
+    }
+
+    @Override
     public String toString() {
         return "Post{" +
                 "userId=" + userId +

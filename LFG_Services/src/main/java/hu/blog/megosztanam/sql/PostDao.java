@@ -45,14 +45,15 @@ public class PostDao {
             "SELECT role FROM open_position WHERE looking_for_member_id = :looking_for_member_id";
 
     private static final String SELECT_LFM_POST =
-            "SELECT id, server, summoner_id,   map,  ranked,  min_tier,  max_tier,  min_div,  max_div,  description, created_at, user_id, persistent, post_type FROM looking_for_member WHERE server = :server";
+            "SELECT id, server, summoner_id,   map,  ranked,  min_tier,  max_tier,  min_div,  max_div,  description, created_at, user_id, persistent, post_type " +
+                    " FROM looking_for_member WHERE server = :server ORDER BY created_at DESC";
 
 
     public Integer savePost(Post post){
         Boolean isRanked = post.getGameType().isRanked();
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("summoner_id", post.getOwner().getId())
-                .addValue("server",      post.getServer().getValue()) //todo save issue
+                .addValue("server",      post.getServer().getValue())
                 .addValue("user_id",     post.getUserId())
                 .addValue("map",         post.getGameType().getMap().getValue())
                 .addValue("ranked",      post.getGameType().isRanked())

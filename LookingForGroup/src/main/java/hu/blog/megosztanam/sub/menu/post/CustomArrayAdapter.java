@@ -13,8 +13,10 @@ import hu.blog.megosztanam.model.shared.GameMap;
 import hu.blog.megosztanam.model.shared.Post;
 import hu.blog.megosztanam.model.shared.Role;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class CustomArrayAdapter extends ArrayAdapter<Post> {
     private ArrayList<Post> list;
@@ -51,11 +53,12 @@ public class CustomArrayAdapter extends ArrayAdapter<Post> {
 //        TextView postType = (TextView) convertView.findViewById(R.id.post_type);
 //        postType.setText(post.getPostType().getValue());
 
-
+        TextView postDate = (TextView) convertView.findViewById(R.id.post_date);
+        postDate.setText(DateFormat.getDateTimeInstance().format(post.getCreatedAt()));
         holder.summonerName = (TextView) convertView.findViewById(R.id.owner_summoner_name);
         holder.summonerName.setText(post.getOwner().getName());
         holder.summonerLevel = (TextView) convertView.findViewById(R.id.summoner_level_in_row);
-        holder.summonerLevel.setText(post.getOwner().getSummonerLevel().toString());
+        holder.summonerLevel.setText(String.format(Locale.ENGLISH,"%d",post.getOwner().getSummonerLevel()));
         holder.map = (TextView) convertView.findViewById(R.id.map_name);
         setMapName(post.getGameType().getMap(), holder.map);
         holder.ranked = (TextView) convertView.findViewById(R.id.ranked);

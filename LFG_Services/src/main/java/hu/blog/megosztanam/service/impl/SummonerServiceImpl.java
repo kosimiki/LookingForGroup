@@ -1,6 +1,5 @@
 package hu.blog.megosztanam.service.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import hu.blog.megosztanam.model.shared.Summoner;
 import hu.blog.megosztanam.model.shared.SummonerGameStatistics;
 import hu.blog.megosztanam.model.shared.elo.Division;
@@ -17,13 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Miklós on 2016. 11. 27..
