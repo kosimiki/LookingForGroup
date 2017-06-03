@@ -1,11 +1,10 @@
 package hu.blog.megosztanam.rest;
 
 
-
-import hu.blog.megosztanam.model.shared.LoginResponse;
-import hu.blog.megosztanam.model.shared.Post;
-import hu.blog.megosztanam.model.shared.Summoner;
-import hu.blog.megosztanam.model.shared.SummonerGameStatistics;
+import hu.blog.megosztanam.model.shared.*;
+import hu.blog.megosztanam.model.shared.elo.Division;
+import hu.blog.megosztanam.model.shared.elo.Rank;
+import hu.blog.megosztanam.model.shared.elo.Tier;
 import hu.blog.megosztanam.model.shared.post.PostApplyRequest;
 import hu.blog.megosztanam.model.shared.post.PostApplyResponse;
 import hu.blog.megosztanam.model.shared.summoner.Server;
@@ -24,37 +23,43 @@ import java.util.List;
 
 /**
  * Created by kosimiki on 2016. 11. 26..
- *
  */
 @RestController
 public class SummonerRest {
 
-    @Autowired private ISummonerService summonerService;
-    @Autowired private IPostService postService;
-    @Autowired private IUserService userService;
+    @Autowired
+    private ISummonerService summonerService;
+    @Autowired
+    private IPostService postService;
+    @Autowired
+    private IUserService userService;
 
     private static final Logger log = LoggerFactory.getLogger(SummonerRest.class);
 
     @RequestMapping(value = "/{server}/summoners/{name}", method = RequestMethod.GET)
-    public Summoner getSummoner(@PathVariable String name, @PathVariable Server server){
+    public Summoner getSummoner(@PathVariable String name, @PathVariable Server server) {
         return summonerService.getSummoner(name, server);
     }
 
     @RequestMapping(value = "/post", method = RequestMethod.POST)
     public Integer saveLookingForMemberPost(
-            @RequestBody @NotNull Post post){
+            @RequestBody @NotNull Post post) {
         log.info("summoner from rest: " + post.toString());
         return postService.saveLookingForMoreNotice(post);
     }
 
     @RequestMapping(value = "{server}/posts", method = RequestMethod.GET)
-    public List<Post> getLookingForMemberPost(@PathVariable Server server){
+    public List<Post> getLookingForMemberPost(@PathVariable Server server,
+                                              @RequestParam("userId") Integer userId,
+                                              @RequestParam(name = "map", required = false) GameMap map,
+                                              @RequestParam(name = "ranked",required = false) Boolean isRanked
+    ) {
         log.info("GET POSTS CALLED on server " + server.getValue());
-        return postService.getSearchForMemberPosts(server);
+        return postService.getSearchForMemberPosts(server, userId, map, isRanked);
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public LoginResponse doLogin(@RequestBody String idToken){
+    public LoginResponse doLogin(@RequestBody String idToken) {
         LoginResponse response = userService.doLogin(idToken);
         log.info(response.toString());
         return response;
@@ -63,32 +68,34 @@ public class SummonerRest {
     @RequestMapping(value = "/users/{userId}", method = RequestMethod.PUT)
     public void updateMessagingToken(
             @PathVariable("userId") @Min(0) Integer userId,
-            @RequestBody @NotNull String messagingToken){
+            @RequestBody @NotNull String messagingToken) {
         log.info("Updating user: " + userId);
-        userService.updateMessagingToken(userId,messagingToken);
+        userService.updateMessagingToken(userId, messagingToken);
     }
 
     @RequestMapping(value = "/{server}/registration/{summonerId}", method = RequestMethod.POST)
     public LoginResponse doRegistration(@RequestBody String idToken,
                                         @PathVariable @NotNull @Min(1) Integer summonerId,
-                                        @PathVariable Server server){
-        return userService.register(idToken,summonerId, server);
+                                        @PathVariable Server server) {
+        return userService.register(idToken, summonerId, server);
     }
+
     @RequestMapping(value = "/{server}/league/{summonerId}", method = RequestMethod.GET)
     public SummonerGameStatistics getStats(@PathVariable @NotNull @Min(1) Integer summonerId,
-                                           @PathVariable Server server){
+                                           @PathVariable Server server) {
         return summonerService.getStatistics(summonerId, server);
     }
 
     @RequestMapping(value = "/posts/apply", method = RequestMethod.POST)
     public Boolean applyForPost(
-            @RequestBody @NotNull PostApplyRequest request){
+            @RequestBody @NotNull PostApplyRequest request) {
         return postService.applyForPost(request);
     }
 
     @RequestMapping(value = "/users/{userId}/applications", method = RequestMethod.GET)
     public List<PostApplyResponse> applyForPost(
-            @PathVariable @Min(0) Integer userId){
+            @PathVariable @Min(0) Integer userId) {
+        log.info("GET APPLICATIONS CALLED FOR: " + userId);
         return postService.getPostAppliesForUser(userId);
     }
 }

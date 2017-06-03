@@ -23,6 +23,24 @@ public class Post {
     protected Date createdAt;
     protected Boolean persistent;
     protected Server server;
+    protected Boolean isOwner;
+    protected Boolean canApply;
+
+    public Boolean getIsOwner() {
+        return isOwner;
+    }
+
+    public void setIsOwner(Boolean isOwner) {
+        this.isOwner = isOwner;
+    }
+
+    public Boolean getCanApply() {
+        return canApply;
+    }
+
+    public void setCanApply(Boolean canApply) {
+        this.canApply = canApply;
+    }
 
     public Server getServer() {
         return server;

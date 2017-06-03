@@ -87,13 +87,19 @@ public class ApplicationExtractor implements ResultSetExtractor<List<PostApplyRe
             Ids ids = (Ids) o;
 
             if (userId != ids.userId) return false;
-            return summonerId == ids.summonerId;
+            if (summonerId != ids.summonerId) return false;
+            if (!post.equals(ids.post)) return false;
+            if (server != ids.server) return false;
+            return applicationDate.equals(ids.applicationDate);
         }
 
         @Override
         public int hashCode() {
             int result = userId;
+            result = 31 * result + post.hashCode();
             result = 31 * result + summonerId;
+            result = 31 * result + server.hashCode();
+            result = 31 * result + applicationDate.hashCode();
             return result;
         }
     }

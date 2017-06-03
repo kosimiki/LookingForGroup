@@ -1,7 +1,10 @@
 package hu.blog.megosztanam.sql;
 
+import hu.blog.megosztanam.model.shared.GameMap;
 import hu.blog.megosztanam.model.shared.OpenPosition;
 import hu.blog.megosztanam.model.shared.Post;
+import hu.blog.megosztanam.model.shared.elo.Division;
+import hu.blog.megosztanam.model.shared.elo.Tier;
 import hu.blog.megosztanam.model.shared.summoner.Server;
 import hu.blog.megosztanam.sql.mapper.RoleRowMapper;
 import hu.blog.megosztanam.sql.mapper.SearchForMemberPostRowMapper;
@@ -45,8 +48,13 @@ public class PostDao {
             "SELECT role FROM open_position WHERE looking_for_member_id = :looking_for_member_id";
 
     private static final String SELECT_LFM_POST =
-            "SELECT id, server, summoner_id,   map,  ranked,  min_tier,  max_tier,  min_div,  max_div,  description, created_at, user_id, persistent, post_type " +
-                    " FROM looking_for_member WHERE server = :server ORDER BY created_at DESC";
+            "SELECT l.*, :queryUser as query_user, IF(a.user_id is null, 0, 1) as applied " +
+            " FROM looking_for_member l" +
+            " LEFT JOIN lfg.applications a on l.id = a.post_id && a.user_id = :queryUser" +
+            " WHERE l.server = :server " +
+                    "AND (:map is null or map = :map) " +
+                    "AND (:isRanked is null or ranked = :isRanked) " +
+            " ORDER BY created_at DESC";
 
 
     public Integer savePost(Post post){
@@ -72,8 +80,13 @@ public class PostDao {
         return postId;
     }
 
-    public List<Post> getSearchForMemberPosts(Server server){
-        List<Post> posts = template.query(SELECT_LFM_POST, new MapSqlParameterSource("server",server.getValue()),rowMapper);
+    public List<Post> getSearchForMemberPosts(Server server, Integer userId, GameMap map, Boolean isRanked){
+        SqlParameterSource parameterSource = new MapSqlParameterSource("server",server.getValue())
+                .addValue("queryUser", userId)
+                .addValue("map", map==null?null:map.getValue())
+                .addValue("isRanked", isRanked);
+
+        List<Post> posts = template.query(SELECT_LFM_POST,parameterSource ,rowMapper);
         posts.forEach( post -> {
             post.setOpenPositions(template.query(SELECT_OPEN_ROLES, new MapSqlParameterSource("looking_for_member_id", post.getPostId()), new RoleRowMapper()));
         });

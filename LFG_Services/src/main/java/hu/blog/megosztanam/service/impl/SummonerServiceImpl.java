@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 
 /**
@@ -83,7 +84,12 @@ public class SummonerServiceImpl implements ISummonerService {
         String serverName = Servers.getServerV2(server);
         String url = HTTPS + serverName + SUMMONER_LEAGUE_V2.replace("SERVER", serverName) + summonerId + ENTRY + apiKey;
         LOGGER.info("Calling GET on: " + url);
-        String json = restHelper.getForObject(url, String.class);
+        String json = null;
+        try{
+            json = restHelper.getForObject(url, String.class);
+        }catch (HttpClientErrorException exception){
+            LOGGER.info("Not found ?  " + exception);
+        }
         if(json != null){
             JSONObject jsonObject = new JSONObject(json);
             JSONArray types = jsonObject.getJSONArray(summonerId.toString());
