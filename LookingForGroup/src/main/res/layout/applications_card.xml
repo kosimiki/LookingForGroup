@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        card_view:cardCornerRadius="4dp"
+        card_view:cardElevation="10dp"
+        android:id="@+id/row_item_layout" android:layout_margin="10dp"
+>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                  android:orientation="vertical"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:id="@+id/item_layout">
+
+
+        <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            <ImageView
+                    android:layout_width="wrap_content"
+                    card_view:srcCompat="@drawable/twisted_treeline_map_small"
+                    android:id="@+id/map_icon" android:scaleType="centerCrop" android:layout_height="65dp"
+                    android:layout_alignParentTop="true" android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true" android:adjustViewBounds="false"
+                    android:cropToPadding="false"/>
+            <TableLayout
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="0dp"
+
+                    android:layout_alignLeft="@id/map_icon"
+                    android:layout_alignEnd="@id/map_icon"
+                    android:layout_alignTop="@id/map_icon"
+                    android:layout_alignRight="@id/map_icon"
+                    android:layout_alignStart="@id/map_icon"
+                    android:layout_alignBottom="@id/map_icon" android:layout_alignParentTop="false"
+                    android:layout_height="wrap_content">
+
+                <TableRow android:layout_width="match_parent" android:layout_height="match_parent">
+                    <TextView
+                            android:layout_width="0dp"
+                            android:layout_margin="2dp"
+                            android:layout_weight=".2" android:layout_height="30dp" android:textAlignment="viewEnd"
+                            android:id="@+id/placeholder"/>
+                </TableRow>
+                <TableRow android:layout_width="match_parent" android:id="@+id/map_row"
+                          android:layout_height="match_parent"
+                          android:padding="5dp"
+                          android:layout_margin="0dp" android:background="#6affffff">
+                    <TextView
+                            android:layout_width="0dp"
+                            android:text="@string/map_name"
+                            android:id="@+id/map_name" android:layout_margin="2dp"
+                            android:layout_weight=".5" android:fontFamily="sans-serif" android:textStyle="normal|bold"
+                            android:textSize="14sp"/>
+                    <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent" android:id="@+id/ranked"
+                            android:layout_weight=".3" android:textStyle="normal|bold" android:textAlignment="center"/>
+
+                </TableRow>
+            </TableLayout>
+        </RelativeLayout>
+        <TableLayout android:id="@+id/looking_for_members_table"
+                     android:layout_width="match_parent"
+                     android:layout_height="wrap_content"
+                     android:stretchColumns="*">
+
+            <TableRow android:layout_width="match_parent" android:id="@+id/owner_row"
+                      android:layout_height="match_parent"
+                      android:padding="5dp"
+            >
+                <TextView
+                        android:text="@string/name"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/owner_label" android:layout_margin="2dp"
+                        android:layout_weight=".2" android:textStyle="normal|bold"/>
+                <TextView
+                        android:layout_width="0dp"
+                        android:text="@string/summoner_name"
+                        android:id="@+id/summoner_name" android:layout_margin="2dp"
+                        android:layout_weight=".6"/>
+                <TextView
+                        android:text="@string/lvl"
+                        android:layout_weight="0.05"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:textStyle="normal|bold"/>
+                <TextView
+                        android:layout_weight="0.15"
+                        android:layout_width="0dp"
+                        android:id="@+id/summoner_level"
+                        android:layout_height="match_parent"
+                        android:textStyle="normal|bold|italic"/>
+            </TableRow>
+
+            <TableRow android:layout_width="match_parent" android:id="@+id/positions_row"
+                      android:layout_height="match_parent"
+                      android:layout_margin="0dp" android:padding="5dp"
+                      android:fadeScrollbars="false">
+                <TextView
+                        android:layout_weight="3"
+                        android:text="@string/positions"
+                        android:layout_width="0dp"
+                        android:layout_height="30dp"
+                        android:id="@+id/open_position_label"
+                        android:textStyle="normal|bold" android:paddingTop="5dp"
+                        android:textAlignment="textStart"
+                        android:layout_gravity="start"
+                />
+                <ImageView
+                        android:layout_weight="1"
+                        android:layout_height="30dp" android:src="@drawable/role_top"
+                        android:id="@+id/top_role_view"
+                        android:alpha="0.3" android:layout_width="0dp" android:contentDescription="@string/role_top"/>
+                <ImageView
+                        android:layout_weight="1"
+                        android:layout_height="30dp" android:src="@drawable/role_jungler"
+                        android:id="@+id/jugnler_role_view"
+                        android:alpha=".3" android:layout_width="0dp" android:adjustViewBounds="false"/>
+                <ImageView
+                        android:layout_weight="1"
+                        android:layout_height="30dp" android:src="@drawable/role_mid"
+                        android:id="@+id/mid_role_view"
+                        android:alpha="0.3" android:layout_width="0dp"/>
+                <ImageView
+                        android:layout_weight="1"
+                        android:layout_height="30dp" android:src="@drawable/role_support"
+                        android:id="@+id/support_role_view"
+                        android:alpha="0.3" android:layout_width="0dp"/>
+                <ImageView
+                        android:layout_weight="1"
+                        android:layout_height="30dp" android:src="@drawable/role_bot"
+                        android:id="@+id/bot_role_view"
+                        android:layout_width="0dp"
+                        android:alpha="0.3"/>
+
+            </TableRow>
+            <TableRow android:layout_width="0dp" android:id="@+id/rank_row"
+                      android:layout_height="match_parent"
+                      android:padding="5dp"
+                      android:layout_margin="0dp">
+                <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/flex_rank" android:layout_margin="2dp"
+                        android:layout_weight="1"/>
+                <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/solo_rank" android:layout_margin="2dp"
+                        android:layout_weight="1"/>
+            </TableRow>
+
+        </TableLayout>
+        <LinearLayout android:id="@+id/description_layout"
+                      android:orientation="vertical"
+                      android:layout_height="wrap_content"
+                      android:layout_width="match_parent"
+                      android:padding="5dp"
+                      android:layout_margin="5dp">
+
+            <TextView
+                    android:text="2017.03.23 20:14"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:id="@+id/date_view" android:textAlignment="textEnd"
+                    android:textStyle="normal|italic" android:fontFamily="sans-serif" android:typeface="sans"
+                    android:textSize="10sp" android:textAllCaps="false"/>
+        </LinearLayout>
+    </LinearLayout>
+</android.support.v7.widget.CardView>

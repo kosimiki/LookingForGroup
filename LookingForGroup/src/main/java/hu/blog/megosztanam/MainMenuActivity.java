@@ -49,6 +49,8 @@ public class MainMenuActivity extends Activity {
         noticeBoardFragment = new NoticeBoardFragment();
         noticeBoardFragment.setArguments(getIntent().getExtras());
         applicationsFragment = new ApplicationsFragment();
+        applicationsFragment.setArguments(getIntent().getExtras());
+
     }
 
     @Override

@@ -16,6 +16,10 @@
     </string>
 
     <string name="signed_out" >Signed out</string>
+    <string name="ranked" >RANKED</string>
+    <string name="normal" >NORMAL</string>
+    <string name="name">Name</string>
+    <string name="positions">Positions</string>
     <string name="failed">failed</string>
     <string name="lorem_ipsum">lorem_ipsum dolorem</string>
     <string name="no_username">No username</string>
