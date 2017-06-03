@@ -1,5 +1,6 @@
 package hu.blog.megosztanam.rest;
 
+import hu.blog.megosztanam.model.shared.GameMap;
 import hu.blog.megosztanam.model.shared.LoginResponse;
 import hu.blog.megosztanam.model.shared.Post;
 import hu.blog.megosztanam.model.shared.Summoner;
@@ -11,6 +12,7 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 import java.util.List;
 
@@ -32,7 +34,11 @@ public interface ILFGServicesHelper {
                                        @Path("server") Server server);
 
     @GET("{server}/posts")
-    Call<List<Post>> getSearchForMemberPosts(@Path("server") Server server);
+    Call<List<Post>> getSearchForMemberPosts(@Path("server") Server server,
+                                             @Query("userId") Integer userId,
+                                             @Query("map") GameMap map,
+                                             @Query("isRanked") Boolean isRanked
+    );
 
     @POST("/post")
     Call<Integer> saveLookingForMemberPost(@Body Post post);

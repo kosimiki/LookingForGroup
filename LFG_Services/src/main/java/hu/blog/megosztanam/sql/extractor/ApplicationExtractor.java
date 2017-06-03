@@ -10,6 +10,7 @@ import hu.blog.megosztanam.model.shared.post.PostApplyRequest;
 import hu.blog.megosztanam.model.shared.post.PostApplyResponse;
 import hu.blog.megosztanam.model.shared.summoner.Server;
 import hu.blog.megosztanam.service.ISummonerService;
+import hu.blog.megosztanam.sql.mapper.PostRowMapper;
 import hu.blog.megosztanam.sql.mapper.SearchForMemberPostRowMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -35,7 +36,7 @@ public class ApplicationExtractor implements ResultSetExtractor<List<PostApplyRe
     SummonerCache summonerCache;
 
     @Autowired
-    SearchForMemberPostRowMapper postRowMapper;
+    PostRowMapper postRowMapper;
 
     @Override
     public List<PostApplyResponse> extractData(ResultSet rs) throws SQLException, DataAccessException {

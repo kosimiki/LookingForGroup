@@ -2,28 +2,48 @@
 <!-- fragment_screen_slide_page.xml -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools" android:id="@+id/content"
-            android:layout_width="match_parent"
+              android:layout_width="match_parent"
             android:layout_height="match_parent" >
 
     <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" android:background="@color/post_color_light">
+            android:layout_height="match_parent">
         <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-            <Button
-                    android:text="@string/new_post"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    style="@style/Widget.AppCompat.Button.Colored"
-                    android:id="@+id/new_post" android:layout_weight="1"/>
+                android:layout_height="wrap_content" android:layout_marginBottom="5dp" android:layout_marginEnd="5dp"
+                android:layout_marginStart="5dp">
+            <Spinner
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:id="@+id/map_selector" android:layout_weight="1"/>
+            <CheckBox
+                    android:text="@string/normal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:id="@+id/normal_checkbox" android:layout_weight="0"
+                    android:elevation="1dp"/>
+            <CheckBox
+                    android:text="@string/ranked"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:id="@+id/ranked_checkbox" android:layout_weight="0"/>
         </LinearLayout>
         <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
+            <android.support.design.widget.FloatingActionButton
+                    android:src="@drawable/ic_add"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:id="@+id/create_new_post_floating"
+                    android:layout_centerHorizontal="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginEnd="10dp"/>
             <Button
                     android:text="New posts"
                     android:layout_width="wrap_content"
@@ -42,10 +62,11 @@
                       android:dividerHeight="10.0sp"
                       android:layout_width="match_parent"
                       android:layout_height="match_parent"
-                      android:layout_alignParentTop="true" android:layout_alignParentLeft="true"
-                      android:layout_alignParentStart="true" android:paddingLeft="0dp" android:paddingRight="0dp"
-                      android:layout_marginLeft="0dp" android:layout_marginRight="0dp" android:layout_margin="0dp"
-                      android:padding="5dp"/>
+                      android:paddingLeft="0dp" android:paddingRight="0dp"
+                      android:padding="5dp" android:layout_alignParentTop="true"
+                      android:layout_toRightOf="@+id/load_new_posts" android:layout_toEndOf="@+id/load_new_posts">
+
+            </ListView>
         </RelativeLayout>
     </LinearLayout>
 </LinearLayout>

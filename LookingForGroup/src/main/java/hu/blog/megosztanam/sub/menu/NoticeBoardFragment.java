@@ -7,24 +7,22 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.ListView;
-import android.widget.Toast;
+import android.widget.*;
 import com.example.lookingforgroup.R;
 import hu.blog.megosztanam.login.LoginActivity;
 import hu.blog.megosztanam.messaging.MessagingService;
 import hu.blog.megosztanam.model.parcelable.ParcelableLoginResponse;
+import hu.blog.megosztanam.model.shared.GameMap;
 import hu.blog.megosztanam.model.shared.Post;
 import hu.blog.megosztanam.model.shared.Role;
 import hu.blog.megosztanam.rest.LFGServicesImpl;
-import hu.blog.megosztanam.sub.menu.post.ApplicationConfirmDialog;
-import hu.blog.megosztanam.sub.menu.post.CustomArrayAdapter;
-import hu.blog.megosztanam.sub.menu.post.PostActivity;
+import hu.blog.megosztanam.sub.menu.post.*;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -40,10 +38,18 @@ public class NoticeBoardFragment extends Fragment {
     private ViewGroup rootView;
     private ParcelableLoginResponse userDetails;
     private BroadcastReceiver receiver;
+    private PostFilter postFilter;
+    private ExpandableListView filterView;
+    private static final String filter_all_maps = "All maps";
+    private static final String filter_summoners_rift = "Summoners Rift";
+    private static final String filter_howling_abyss = "Howling Abyss";
+    private static final String filter_twisted_treeline = "Twisted Treeline";
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        postFilter = new PostFilter();
 
         receiver = new BroadcastReceiver() {
             @Override
@@ -53,7 +59,7 @@ public class NoticeBoardFragment extends Fragment {
             }
         };
 
-        Button newPostButton = (Button) getActivity().findViewById(R.id.new_post);
+        FloatingActionButton newPostButton = (FloatingActionButton) getActivity().findViewById(R.id.create_new_post_floating);
         userDetails = getArguments().getParcelable(LoginActivity.USER_DETAILS_EXTRA);
         Log.i(this.getTag(), "User from intent: " + userDetails.toString());
         newPostButton.setOnClickListener(new View.OnClickListener() {
@@ -66,7 +72,9 @@ public class NoticeBoardFragment extends Fragment {
             }
         });
         loadPosts();
+        loadFilter();
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -78,9 +86,74 @@ public class NoticeBoardFragment extends Fragment {
         return rootView;
     }
 
+    private void loadFilter(){
+        CheckBox rankedCheckbox = (CheckBox)rootView.findViewById(R.id.ranked_checkbox);
+        rankedCheckbox.setChecked(postFilter.showRanked);
+        rankedCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                postFilter.showRanked = b;
+                loadPosts();
+            }
+        });
+
+        CheckBox normalCheckbox = (CheckBox)rootView.findViewById(R.id.normal_checkbox);
+        normalCheckbox.setChecked(postFilter.showNormal);
+        normalCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                postFilter.showNormal = b;
+                loadPosts();
+            }
+        });
+        List<String> strings = new ArrayList<>();
+         strings.add(filter_all_maps);
+         strings.add(filter_summoners_rift);
+         strings.add(filter_howling_abyss);
+         strings.add(filter_twisted_treeline);
+        Spinner spinner = (Spinner) rootView.findViewById(R.id.map_selector);
+        final ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity().getBaseContext(), android.R.layout.simple_spinner_item);
+        adapter.addAll(strings);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                String selected = (String) adapterView.getItemAtPosition(i);
+                switch (selected){
+                    case filter_all_maps:
+                        postFilter.showAllMaps = selected.equals("All maps"); break;
+                    case filter_summoners_rift:
+                        postFilter.showAllMaps = false;
+                        postFilter.map = GameMap.SUMMONERS_RIFT;
+                        break;
+                    case filter_howling_abyss:
+                        postFilter.showAllMaps = false;
+                        postFilter.map = GameMap.HOWLING_FJORD;
+                        break;
+                    case filter_twisted_treeline:
+                        postFilter.showAllMaps = false;
+                        postFilter.map = GameMap.TWISTED_TREE_LINE;
+                        break;
+                }
+                loadPosts();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                postFilter.showAllMaps = true;
+                loadPosts();
+            }
+        });
+    }
+
     private void loadPosts() {
         LFGServicesImpl lfgServices = new LFGServicesImpl();
-        Call<List<Post>> loginResponse = lfgServices.getSearchForMemberPosts(userDetails.getUser().getServer());
+        Call<List<Post>> loginResponse = lfgServices.getSearchForMemberPosts(
+                userDetails.getUser().getServer(),
+                userDetails.getUser().getUserId(),
+                postFilter.showAllMaps?null:postFilter.map,
+                postFilter.showRanked&&postFilter.showNormal?null:postFilter.showRanked);
         loginResponse.enqueue(new Callback<List<Post>>() {
             @Override
             public void onResponse(Call<List<Post>> call, Response<List<Post>> response) {

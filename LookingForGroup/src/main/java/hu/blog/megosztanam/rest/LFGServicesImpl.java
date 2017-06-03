@@ -1,6 +1,7 @@
 package hu.blog.megosztanam.rest;
 
 import com.google.gson.*;
+import hu.blog.megosztanam.model.shared.GameMap;
 import hu.blog.megosztanam.model.shared.LoginResponse;
 import hu.blog.megosztanam.model.shared.Post;
 import hu.blog.megosztanam.model.shared.Summoner;
@@ -56,8 +57,8 @@ public class LFGServicesImpl{
         return servicesHelper.doRegistration(idToken, summonerId, server);
     }
 
-    public Call<List<Post>> getSearchForMemberPosts(Server server) {
-        return servicesHelper.getSearchForMemberPosts(server);
+    public Call<List<Post>> getSearchForMemberPosts(Server server, Integer userId, GameMap map, Boolean isRanked) {
+        return servicesHelper.getSearchForMemberPosts(server, userId, map, isRanked);
     }
 
     public Call<Integer> savePost(Post post){

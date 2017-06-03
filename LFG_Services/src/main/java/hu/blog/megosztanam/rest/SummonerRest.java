@@ -52,7 +52,7 @@ public class SummonerRest {
     public List<Post> getLookingForMemberPost(@PathVariable Server server,
                                               @RequestParam("userId") Integer userId,
                                               @RequestParam(name = "map", required = false) GameMap map,
-                                              @RequestParam(name = "ranked",required = false) Boolean isRanked
+                                              @RequestParam(name = "isRanked",required = false) Boolean isRanked
     ) {
         log.info("GET POSTS CALLED on server " + server.getValue());
         return postService.getSearchForMemberPosts(server, userId, map, isRanked);
