@@ -6,6 +6,7 @@ import hu.blog.megosztanam.model.shared.Post;
 import hu.blog.megosztanam.model.shared.elo.Division;
 import hu.blog.megosztanam.model.shared.elo.Tier;
 import hu.blog.megosztanam.model.shared.summoner.Server;
+import hu.blog.megosztanam.sql.mapper.PostRowMapper;
 import hu.blog.megosztanam.sql.mapper.RoleRowMapper;
 import hu.blog.megosztanam.sql.mapper.SearchForMemberPostRowMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,8 @@ public class PostDao {
 
     @Autowired
     private SearchForMemberPostRowMapper rowMapper;
+    @Autowired
+    private PostRowMapper simplePostMapper;
     private NamedParameterJdbcTemplate template;
     private SimpleJdbcInsert insert;
     private JdbcTemplate simpleTemplate;
@@ -55,7 +58,11 @@ public class PostDao {
             " WHERE l.server = :server " +
                     "AND (:map is null or map = :map) " +
                     "AND (:isRanked is null or ranked = :isRanked) " +
+            " GROUP BY l.id, l.summoner_id, l.map, l.ranked, l.min_tier, l.max_tier, l.min_div, l.max_div, l.description, l.created_at, :queryUser, IF(a.user_id is null, 0, 1) " +
             " ORDER BY created_at DESC";
+
+    private static final String SELECT_LFM_POST_BY_ID =
+            "SELECT * FROM looking_for_member WHERE id = :postId ";
 
     private static final String DELETE_POST =
             "DELETE FROM looking_for_member where id = :postId";
@@ -108,6 +115,12 @@ public class PostDao {
                 .addValue("postId", postId)
                 .addValue("userId", userId);
         return template.update(DELETE_POST, parameterSource)>0 && template.update(DELETE_POSITIONS, parameterSource)>0 && template.update(DELETE_APPLICATION, parameterSource)>0;
+    }
+
+    public Post getPostById(Integer postId){
+        Post post =template.queryForObject(SELECT_LFM_POST_BY_ID, new MapSqlParameterSource("postId", postId), simplePostMapper);
+        post.setOpenPositions(template.query(SELECT_OPEN_ROLES, new MapSqlParameterSource("looking_for_member_id", post.getPostId()), new RoleRowMapper()));
+        return post;
     }
 }
 

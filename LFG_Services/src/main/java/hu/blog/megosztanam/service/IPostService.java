@@ -25,4 +25,6 @@ public interface IPostService {
 
     List<PostApplyResponse> getPostAppliesForUser(Integer userId);
 
+    Post getPostById(Integer postId);
+
 }

@@ -19,11 +19,13 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.squareup.picasso.Picasso;
 import hu.blog.megosztanam.MainMenuActivity;
 import hu.blog.megosztanam.model.parcelable.ParcelableLoginResponse;
 import hu.blog.megosztanam.model.shared.LoginResponse;
 import hu.blog.megosztanam.model.shared.Summoner;
+import hu.blog.megosztanam.model.shared.messaging.Messaging;
 import hu.blog.megosztanam.model.shared.summoner.Server;
 import hu.blog.megosztanam.rest.LFGServicesImpl;
 import retrofit2.Call;
@@ -66,6 +68,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 //        checkLogin();
+        FirebaseMessaging.getInstance().subscribeToTopic(Messaging.NEW_POSTS_TOPIC);
 
         server = Server.EUW;
         registrationRequired = false;
@@ -90,7 +93,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         );
 
         Log.i(TAG, "FireBase: " + FirebaseInstanceId.getInstance().getToken());
-
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(CLIENT_ID)

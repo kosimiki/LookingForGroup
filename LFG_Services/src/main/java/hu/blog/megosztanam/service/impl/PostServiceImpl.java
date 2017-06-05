@@ -7,6 +7,8 @@ import hu.blog.megosztanam.model.shared.elo.Tier;
 import hu.blog.megosztanam.model.shared.post.PostApplyRequest;
 import hu.blog.megosztanam.model.shared.post.PostApplyResponse;
 import hu.blog.megosztanam.model.shared.summoner.Server;
+import hu.blog.megosztanam.service.ICloudMessaging;
+import hu.blog.megosztanam.service.IMessagingService;
 import hu.blog.megosztanam.service.IPostService;
 import hu.blog.megosztanam.sql.ApplicationDAO;
 import hu.blog.megosztanam.sql.PostDao;
@@ -27,8 +29,12 @@ public class PostServiceImpl implements IPostService {
     @Autowired
     private ApplicationDAO applicationDAO;
 
+    @Autowired
+    IMessagingService messaging;
+
     @Override
     public Integer saveLookingForMoreNotice(Post post) {
+        messaging.newPostBroadcastMessage(post);
         return postDao.savePost(post);
     }
 
@@ -50,5 +56,10 @@ public class PostServiceImpl implements IPostService {
     @Override
     public List<PostApplyResponse> getPostAppliesForUser(Integer userId) {
         return applicationDAO.getApplications(userId);
+    }
+
+    @Override
+    public Post getPostById(Integer postId) {
+        return postDao.getPostById(postId);
     }
 }

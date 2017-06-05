@@ -2,6 +2,7 @@ package hu.blog.megosztanam.rest;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import java.util.Arrays;
@@ -10,6 +11,7 @@ import java.util.Arrays;
  * Created by kosimiki on 2016. 11. 26..
  */
 @Configuration
+@EnableFeignClients(basePackages = "hu.blog.megosztanam")
 @SpringBootApplication(scanBasePackages = "hu.blog.megosztanam")
 public class LFGApplication {
     public static void main(String[] args) {
