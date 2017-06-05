@@ -23,6 +23,11 @@ public class ParcelableGameType extends GameType implements Parcelable {
     public ParcelableGameType() {
     }
 
+    public ParcelableGameType(GameType gameType) {
+        this.setRanked(gameType.isRanked());
+        this.setMap(gameType.getMap());
+    }
+
     protected ParcelableGameType(Parcel in) {
         int tmpMap = in.readInt();
         this.setMap(tmpMap == -1 ? null : GameMap.values()[tmpMap]);

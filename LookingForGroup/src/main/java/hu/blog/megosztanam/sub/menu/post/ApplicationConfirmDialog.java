@@ -7,10 +7,12 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
+import android.widget.Toast;
 import com.example.lookingforgroup.R;
 import hu.blog.megosztanam.model.shared.Role;
 import hu.blog.megosztanam.model.shared.post.PostApplyRequest;
 import hu.blog.megosztanam.rest.LFGServicesImpl;
+import hu.blog.megosztanam.sub.menu.NoticeBoardFragment;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -25,9 +27,15 @@ public class ApplicationConfirmDialog {
 
     private List<String> selectedRoles;
     private List<String> selectableRoles;
+    private Activity activity;
+    private NoticeBoardFragment noticeBoardFragment;
 
+    public ApplicationConfirmDialog(NoticeBoardFragment fragment){
+        this.noticeBoardFragment = fragment;
 
-    public Dialog createDialog(ArrayList<Role> roles,final int userId,final int postId, Activity activity) {
+    }
+
+    public Dialog createDialog(ArrayList<Role> roles, final int userId, final int postId, Activity activity) {
         selectedRoles = new ArrayList<>();
         selectableRoles = new ArrayList<>();
         for (Role role: roles){
@@ -35,6 +43,7 @@ public class ApplicationConfirmDialog {
                 selectableRoles.add(role.getValue());
             }
         }
+        this.activity = activity;
         Log.i("ApplicationConfirm", "createDialog");
 
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
@@ -84,6 +93,10 @@ public class ApplicationConfirmDialog {
             @Override
             public void onResponse(Call<Boolean> call, Response<Boolean> response) {
                 Log.i(PostActivity.class.getName(), "Response: " + response.isSuccessful());
+                noticeBoardFragment.loadPosts();
+                Toast toast = Toast.makeText(activity, "Applied for post.", Toast.LENGTH_SHORT );
+                toast.show();
+
             }
 
             @Override

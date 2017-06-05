@@ -47,7 +47,10 @@
     <string name="twisted_treeline_map_name">Twisted Treeline</string>
     <string name="special_map_name">Special</string>
     <string name="pick_your_role">Select your roles</string>
+    <string name="delete_post">Do you really want to delete this post?</string>
 
     <string name="ok">Apply</string>
     <string name="cancel">Cancel</string>
+    <string name="already_applied">You already applied to this post</string>
+    <string name="date">2017.03.23 20:14</string>
 </resources>

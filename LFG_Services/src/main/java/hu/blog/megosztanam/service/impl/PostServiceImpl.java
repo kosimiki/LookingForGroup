@@ -33,6 +33,11 @@ public class PostServiceImpl implements IPostService {
     }
 
     @Override
+    public Boolean deletePost(Integer userId, Integer postId) {
+        return postDao.deletePost(postId, userId);
+    }
+
+    @Override
     public List<Post> getSearchForMemberPosts(Server server, Integer userId, GameMap map, Boolean isRanked) {
         return postDao.getSearchForMemberPosts(server, userId, map, isRanked);
     }

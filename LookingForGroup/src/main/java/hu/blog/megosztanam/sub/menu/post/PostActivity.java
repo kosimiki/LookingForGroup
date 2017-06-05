@@ -68,6 +68,8 @@ public class PostActivity extends AppCompatActivity implements
     private List<Page> mCurrentPageSequence;
     private StepPagerStrip mStepPagerStrip;
 
+    public static final String NEW_POST_EXTRA = PostActivity.class.getName() + ".new_post_extra";
+
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -210,6 +212,7 @@ public class PostActivity extends AppCompatActivity implements
         Intent intent = new Intent(this, MainMenuActivity.class);
         ParcelableLoginResponse parcelableLoginResponse = new ParcelableLoginResponse(userDetails);
         intent.putExtra(LoginActivity.USER_DETAILS_EXTRA, parcelableLoginResponse);
+        intent.putExtra(PostActivity.NEW_POST_EXTRA, true);
         startActivity(intent);
     }
 

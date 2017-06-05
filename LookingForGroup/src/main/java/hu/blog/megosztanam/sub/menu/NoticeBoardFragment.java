@@ -44,6 +44,9 @@ public class NoticeBoardFragment extends Fragment {
     private static final String filter_summoners_rift = "Summoners Rift";
     private static final String filter_howling_abyss = "Howling Abyss";
     private static final String filter_twisted_treeline = "Twisted Treeline";
+    private CustomArrayAdapter dataAdapter;
+
+
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -71,6 +74,7 @@ public class NoticeBoardFragment extends Fragment {
                 getActivity().startActivity(redirect);
             }
         });
+
         loadPosts();
         loadFilter();
     }
@@ -147,20 +151,25 @@ public class NoticeBoardFragment extends Fragment {
         });
     }
 
-    private void loadPosts() {
+    public void loadPosts() {
+        final DeleteConfirmDialog deleteConfirmDialog = new DeleteConfirmDialog(this);
+        final ApplicationConfirmDialog applicationConfirmDialog = new ApplicationConfirmDialog(this);
+
         LFGServicesImpl lfgServices = new LFGServicesImpl();
         Call<List<Post>> loginResponse = lfgServices.getSearchForMemberPosts(
                 userDetails.getUser().getServer(),
                 userDetails.getUser().getUserId(),
                 postFilter.showAllMaps?null:postFilter.map,
                 postFilter.showRanked&&postFilter.showNormal?null:postFilter.showRanked);
+
         loginResponse.enqueue(new Callback<List<Post>>() {
             @Override
             public void onResponse(Call<List<Post>> call, Response<List<Post>> response) {
                 if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
                     final List<Post> posts = response.body();
                     ListView list = (ListView) rootView.findViewById(R.id.looking_for_members_list_view);
-                    CustomArrayAdapter dataAdapter = new CustomArrayAdapter(rootView.getContext(), R.id.summoner_name, new ArrayList<>(response.body()));
+                    dataAdapter = new CustomArrayAdapter(rootView.getContext(), R.id.summoner_name, new ArrayList<>(response.body()));
+
                     list.setAdapter(dataAdapter);
                     list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
@@ -168,10 +177,16 @@ public class NoticeBoardFragment extends Fragment {
                             Log.i("ITEM_CLICK", "onItemClick started");
 
                             Post post = posts.get(i);
-                            Log.i("ITEM_CLICK", "clicked post: " + post.toString());
-                            ApplicationConfirmDialog confirmDialog = new ApplicationConfirmDialog();
-                            confirmDialog.createDialog(new ArrayList<>(post.getOpenPositions()), userDetails.getUser().getUserId(), post.getPostId(), getActivity()).show();
-                            Log.i("ITEM_CLICK", "AFTER SHOW");
+                            if(post.getIsOwner()){
+                                Log.i("ITEM_CLICK DELETE", "clicked post: " + post.toString());
+
+                                deleteConfirmDialog.createDialog(getActivity(), userDetails.getUser().getUserId(), post).show();
+                            }else if(post.getCanApply()){
+                                Log.i("ITEM_CLICK", "clicked post: " + post.toString());
+                                applicationConfirmDialog.createDialog(new ArrayList<>(post.getOpenPositions()), userDetails.getUser().getUserId(), post.getPostId(), getActivity()).show();
+                                Log.i("ITEM_CLICK", "AFTER SHOW");
+                            }
+
 
                         }
                     });
@@ -190,6 +205,30 @@ public class NoticeBoardFragment extends Fragment {
 
     }
 
+    public void deletePost(Integer userId,final Post post) {
+        LFGServicesImpl lfgServices = new LFGServicesImpl();
+        Call<Boolean> response = lfgServices.deletePost(userId, post.getPostId());
+        response.enqueue(new Callback<Boolean>() {
+            @Override
+            public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+                Log.i(PostActivity.class.getName(), "Response: " + response.isSuccessful());
+                Toast toast = Toast.makeText(getActivity(), "deleted: " + post.getPostId(), Toast.LENGTH_SHORT);
+                toast.show();
+//                dataAdapter.remove(post);
+                loadPosts();
+            }
+
+            @Override
+            public void onFailure(Call<Boolean> call, Throwable t) {
+                Log.i(PostActivity.class.getName(), "Failure: " + t.toString());
+            }
+        });
+
+    }
+
+    public void addPost(){
+
+    }
 
 
 }

@@ -61,7 +61,7 @@ public class ApplicationsFragment extends Fragment {
         return rootView;
     }
 
-    private void loadPosts() {
+    public void loadPosts() {
         LFGServicesImpl lfgServices = new LFGServicesImpl();
         Call<List<PostApplyResponse>> loginResponse = lfgServices.getApplications(userDetails.getUser().getUserId());
         loginResponse.enqueue(new Callback<List<PostApplyResponse>>() {

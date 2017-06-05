@@ -11,10 +11,6 @@ import hu.blog.megosztanam.model.shared.summoner.Server;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import retrofit2.http.Body;
-import retrofit2.http.GET;
-import retrofit2.http.POST;
-import retrofit2.http.Path;
 
 import java.lang.reflect.Type;
 import java.util.Date;
@@ -24,7 +20,7 @@ import java.util.List;
  * Created by Miklós on 2016. 12. 10..
  */
 
-public class LFGServicesImpl{
+public class LFGServicesImpl implements ILFGServicesHelper{
 
     private static final String BASE_URL = "http://192.168.0.6:8080/";
     private ILFGServicesHelper servicesHelper;
@@ -61,8 +57,13 @@ public class LFGServicesImpl{
         return servicesHelper.getSearchForMemberPosts(server, userId, map, isRanked);
     }
 
+    @Override
+    public Call<Boolean> deletePost(Integer userId, Integer postId) {
+        return servicesHelper.deletePost(userId, postId);
+    }
+
     public Call<Integer> savePost(Post post){
-        return servicesHelper.saveLookingForMemberPost(post);
+        return servicesHelper.savePost(post);
     }
 
 

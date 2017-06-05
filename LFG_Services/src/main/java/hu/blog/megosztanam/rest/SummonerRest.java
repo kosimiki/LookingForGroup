@@ -58,6 +58,11 @@ public class SummonerRest {
         return postService.getSearchForMemberPosts(server, userId, map, isRanked);
     }
 
+    @RequestMapping(value = "{userId}/posts/{postId}", method = RequestMethod.DELETE)
+    public Boolean deletePost(@PathVariable("userId") Integer userId, @PathVariable("postId") Integer postId){
+        return postService.deletePost(userId, postId);
+    }
+
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public LoginResponse doLogin(@RequestBody String idToken) {
         LoginResponse response = userService.doLogin(idToken);

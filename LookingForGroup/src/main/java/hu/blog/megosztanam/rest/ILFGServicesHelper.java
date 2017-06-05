@@ -8,11 +8,7 @@ import hu.blog.megosztanam.model.shared.post.PostApplyRequest;
 import hu.blog.megosztanam.model.shared.post.PostApplyResponse;
 import hu.blog.megosztanam.model.shared.summoner.Server;
 import retrofit2.Call;
-import retrofit2.http.Body;
-import retrofit2.http.GET;
-import retrofit2.http.POST;
-import retrofit2.http.Path;
-import retrofit2.http.Query;
+import retrofit2.http.*;
 
 import java.util.List;
 
@@ -40,8 +36,11 @@ public interface ILFGServicesHelper {
                                              @Query("isRanked") Boolean isRanked
     );
 
+    @DELETE("{userId}/posts/{postId}")
+    Call<Boolean> deletePost(@Path("userId") Integer userId, @Path("postId") Integer postId);
+
     @POST("/post")
-    Call<Integer> saveLookingForMemberPost(@Body Post post);
+    Call<Integer> savePost(@Body Post post);
 
 
     @POST("/posts/apply")

@@ -42,6 +42,22 @@ public class CustomArrayAdapter extends ArrayAdapter<Post> {
         this.list = new ArrayList<>();
         this.list.addAll(postList);
     }
+
+    @Override
+    public void remove(Post object) {
+        Log.i(this.getClass().getName(), "Post to remove: " + object.toString());
+        this.list.remove(object);
+        for(Post post: list){
+            Log.i(this.getClass().getName(), "Remaining post: " + post.toString());
+        }
+        this.notifyDataSetChanged();
+    }
+
+    @Override
+    public int getCount() {
+        return this.list.size();
+    }
+
     public View getView(final int position, View convertView, ViewGroup parent) {
         Log.i(this.getClass().getName(), "getView runs");
         ViewHolder holder = new ViewHolder();
@@ -52,7 +68,12 @@ public class CustomArrayAdapter extends ArrayAdapter<Post> {
         Log.i(this.getClass().getName(), "before sets end");
 //        TextView postType = (TextView) convertView.findViewById(R.id.post_type);
 //        postType.setText(post.getPostType().getValue());
-
+        if(!post.getCanApply() && !post.getIsOwner()){
+            LinearLayout linearLayout = (LinearLayout) convertView.findViewById(R.id.item_layout);
+            linearLayout.setAlpha(0.5f);
+            TextView alreadyApplied = (TextView) convertView.findViewById(R.id.already_applied);
+            alreadyApplied.setVisibility(View.VISIBLE);
+        }
         TextView postDate = (TextView) convertView.findViewById(R.id.post_date);
         postDate.setText(DateFormat.getDateTimeInstance().format(post.getCreatedAt()));
         holder.summonerName = (TextView) convertView.findViewById(R.id.owner_summoner_name);

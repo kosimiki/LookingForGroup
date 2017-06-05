@@ -48,7 +48,7 @@ public class SearchForMemberPostRowMapper implements RowMapper<Post> {
         post.setPostType(PostType.valueOf(rs.getString("post_type")));
 
         Boolean isOwner = post.getUserId() == rs.getInt("query_user");
-        Boolean alreadyApplied = !rs.getBoolean("applied");
+        Boolean alreadyApplied = rs.getBoolean("applied");
         post.setIsOwner(isOwner);
         post.setCanApply(!isOwner && !alreadyApplied);
         return post;

@@ -38,7 +38,6 @@ public class MainMenuActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_screen_slide);
-
         // Instantiate a ViewPager and a PagerAdapter.
         Log.i("ASD", "Reaches this");
         mPager = (ViewPager) findViewById(R.id.pager);
@@ -77,8 +76,8 @@ public class MainMenuActivity extends Activity {
         @Override
         public Fragment getItem(int position) {
             switch (position){
-                case 0:  return userProfileFragment;
-                case 1:  return noticeBoardFragment;
+                case 1:  return userProfileFragment;
+                case 0:  return noticeBoardFragment;
                 case 2:  return applicationsFragment;
                 default: return userProfileFragment;
             }
