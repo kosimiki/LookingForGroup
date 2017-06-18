@@ -73,7 +73,7 @@ public class SummonerRest {
     @RequestMapping(value = "/users/{userId}", method = RequestMethod.PUT)
     public void updateMessagingToken(
             @PathVariable("userId") @Min(0) Integer userId,
-            @RequestBody @NotNull String messagingToken) {
+            @RequestParam("firebaseId") @NotNull  String messagingToken) {
         log.info("Updating user: " + userId);
         userService.updateMessagingToken(userId, messagingToken);
     }

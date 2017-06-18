@@ -78,7 +78,7 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public void updateMessagingToken(Integer userId, String token) {
-        userDao.saveMessaginToken(userId, token);
+        userDao.saveMessagingToken(userId, token);
     }
 
     private User authenticateWithRest(String id){

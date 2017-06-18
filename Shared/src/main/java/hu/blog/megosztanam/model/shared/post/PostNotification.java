@@ -23,4 +23,12 @@ public class PostNotification {
     public void setNotification(Notification notification) {
         this.notification = notification;
     }
+
+    @Override
+    public String toString() {
+        return "PostNotification{" +
+                "to='" + to + '\'' +
+                ", notification=" + notification +
+                '}';
+    }
 }

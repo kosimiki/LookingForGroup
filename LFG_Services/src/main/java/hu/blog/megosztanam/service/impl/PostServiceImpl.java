@@ -50,6 +50,7 @@ public class PostServiceImpl implements IPostService {
 
     @Override
     public Boolean applyForPost(PostApplyRequest request) {
+        messaging.newApplicationMessage(request);
         return applicationDAO.saveApplication(request.getUserId(), request.getPostId(), request.getRoles());
     }
 

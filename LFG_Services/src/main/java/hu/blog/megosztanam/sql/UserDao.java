@@ -1,6 +1,7 @@
 package hu.blog.megosztanam.sql;
 
 import hu.blog.megosztanam.model.UserDetails;
+import hu.blog.megosztanam.model.shared.User;
 import hu.blog.megosztanam.model.shared.summoner.Server;
 import hu.blog.megosztanam.sql.mapper.DetailsRowMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +35,10 @@ public class UserDao {
     private static final String SUMMONER_ID =
             "SELECT user_id, summoner_id, region FROM users WHERE email_address = :email_address";
 
-    private static final String SAVE_TOKEN = "UPDATE users SET firebase_message_token = :token WHERE user_id = :userId";
+    private static final String QUERY_SUMMONER =
+            "SELECT user_id, summoner_id, region FROM users WHERE user_id = :userId";
+
+    private static final String SAVE_TOKEN = "UPDATE users SET firebase_id = :token WHERE user_id = :userId";
 
     public boolean isRegisteredUser(String email){
         return template.queryForObject(EXISTING_USER, new MapSqlParameterSource("email_address", email), Boolean.class);
@@ -44,7 +48,15 @@ public class UserDao {
         return template.queryForObject(SUMMONER_ID, new MapSqlParameterSource("email_address", email), new DetailsRowMapper());
     }
 
-    public int saveMessaginToken(Integer userId, String token){
+    public UserDetails getSummoner(Integer userId){
+        return template.queryForObject(QUERY_SUMMONER, new MapSqlParameterSource("userId", userId), new DetailsRowMapper());
+    }
+
+    public String getFirebaseId(Integer userId){
+        return template.queryForObject("SELECT firebase_id FROM users WHERE user_id = :userId", new MapSqlParameterSource("userId", userId), String.class);
+    }
+
+    public int saveMessagingToken(Integer userId, String token){
         SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("token", token)
                 .addValue("userId", userId);

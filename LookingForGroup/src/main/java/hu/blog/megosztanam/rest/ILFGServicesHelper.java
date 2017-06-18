@@ -48,4 +48,7 @@ public interface ILFGServicesHelper {
 
     @GET("/users/{userId}/applications")
     Call<List<PostApplyResponse>> getApplications(@Path("userId") Integer userId);
+
+    @PUT("/users/{userId}")
+    Call<Void> updateFirebaseId(@Path("userId") Integer userId, @Query("firebaseId") String firebaseId);
 }

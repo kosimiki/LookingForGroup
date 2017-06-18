@@ -71,6 +71,10 @@ public class PostDao {
     private static final String DELETE_APPLICATION =
             "DELETE FROM applications where post_id = :postId AND user_id = :userId";
 
+    public Integer getOwnerId(Integer postId){
+        return template.queryForObject("SELECT user_id FROM looking_for_member WHERE id = :postId", new MapSqlParameterSource("postId", postId), Integer.class);
+    }
+
 
 
     public Integer savePost(Post post){

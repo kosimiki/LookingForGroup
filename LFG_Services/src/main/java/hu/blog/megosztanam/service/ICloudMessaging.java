@@ -18,7 +18,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 public interface ICloudMessaging {
 
     @RequestMapping(value = "", method = POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    String broadcastNewPost(@RequestHeader("Authorization") String serverKey,
-                            @RequestBody PostNotification request
+    String sendMessage(@RequestHeader("Authorization") String serverKey,
+                       @RequestBody PostNotification request
     );
 }

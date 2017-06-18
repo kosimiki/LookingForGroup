@@ -74,4 +74,9 @@ public class LFGServicesImpl implements ILFGServicesHelper{
     public Call<List<PostApplyResponse>> getApplications(Integer userId){
         return servicesHelper.getApplications(userId);
     }
+
+    @Override
+    public Call<Void> updateFirebaseId(Integer userId, String firebaseId) {
+        return servicesHelper.updateFirebaseId(userId, firebaseId);
+    }
 }

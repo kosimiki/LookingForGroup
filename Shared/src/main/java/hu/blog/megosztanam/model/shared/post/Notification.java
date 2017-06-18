@@ -32,4 +32,13 @@ public class Notification {
     public void setIcon(String icon) {
         this.icon = icon;
     }
+
+    @Override
+    public String toString() {
+        return "Notification{" +
+                "body='" + body + '\'' +
+                ", title='" + title + '\'' +
+                ", icon='" + icon + '\'' +
+                '}';
+    }
 }

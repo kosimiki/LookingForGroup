@@ -69,7 +69,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         super.onCreate(savedInstanceState);
 //        checkLogin();
         FirebaseMessaging.getInstance().subscribeToTopic(Messaging.NEW_POSTS_TOPIC);
-
         server = Server.EUW;
         registrationRequired = false;
         setContentView(R.layout.activity_login);
@@ -220,7 +219,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     case SUCCESSFUL:
                         updateUI(loginResponse.getUser().getGivenName() + "\n " + loginResponse.getUser().getSummoner().getName());
                         registrationRequired = false;
+
                         SaveSharedPreference.setTokenId(getBaseContext(), idToken);
+
                         updateUISuccessfulLogin(loginResponse);
                         break;
                     case REGISTRATION_REQUIRED:
@@ -383,6 +384,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         updateUI(loginResponse.getUser().getGivenName() + "\n " + loginResponse.getUser().getSummoner().getName() + "\n " + loginResponse.getUser().getSummoner().getId());
                         registrationRequired = false;
                         Log.i(TAG, "SUCCESSFUL REG " + loginResponse.toString());
+                        String firebaseToken = FirebaseInstanceId.getInstance().getToken();
+                        updateFirebaseId(loginResponse.getUser().getUserId(),firebaseToken);
+                        SaveSharedPreference.setFirebaseId(getBaseContext(), firebaseToken);
                         SaveSharedPreference.setTokenId(getBaseContext(), idToken);
                         updateUISuccessfulLogin(loginResponse);
                         break;
@@ -398,6 +402,22 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             @Override
             public void onFailure(Call<LoginResponse> call, Throwable t) {
                 updateUI("NO SUMMONER FOUND");
+
+            }
+        });
+    }
+
+    private void updateFirebaseId(Integer userId, String firebaseId) {
+        LFGServicesImpl lfgServices = new LFGServicesImpl();
+        Call<Void> loginResponse = lfgServices.updateFirebaseId(userId, firebaseId);
+        loginResponse.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
 
             }
         });
