@@ -1,35 +1,24 @@
 package hu.blog.megosztanam.sub.menu;
 
-import android.app.Fragment;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
+
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.ListView;
 import com.example.lookingforgroup.R;
 import hu.blog.megosztanam.login.LoginActivity;
-import hu.blog.megosztanam.messaging.MessagingService;
 import hu.blog.megosztanam.model.parcelable.ParcelableLoginResponse;
-import hu.blog.megosztanam.model.shared.Post;
 import hu.blog.megosztanam.model.shared.post.PostApplyResponse;
 import hu.blog.megosztanam.rest.LFGServicesImpl;
 import hu.blog.megosztanam.sub.menu.application.ApplicationAdapter;
-import hu.blog.megosztanam.sub.menu.post.ApplicationConfirmDialog;
-import hu.blog.megosztanam.sub.menu.post.CustomArrayAdapter;
-import hu.blog.megosztanam.sub.menu.post.PostActivity;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -44,10 +33,6 @@ public class ApplicationsFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        userDetails = getArguments().getParcelable(LoginActivity.USER_DETAILS_EXTRA);
-        recyclerView = (RecyclerView)rootView.findViewById(R.id.applications_list);
-        LinearLayoutManager llm = new LinearLayoutManager(getActivity().getBaseContext());
-        recyclerView.setLayoutManager(llm);
         loadPosts();
     }
 
@@ -57,7 +42,10 @@ public class ApplicationsFragment extends Fragment {
         ViewGroup rootView = (ViewGroup) inflater.inflate(
                 R.layout.applications_sub_menu, container, false);
         this.rootView = rootView;
-
+        userDetails = getArguments().getParcelable(LoginActivity.USER_DETAILS_EXTRA);
+        recyclerView = (RecyclerView)rootView.findViewById(R.id.applications_list);
+        LinearLayoutManager llm = new LinearLayoutManager(getActivity().getBaseContext());
+        recyclerView.setLayoutManager(llm);
         return rootView;
     }
 

@@ -5,14 +5,9 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.util.Log;
-import android.widget.Toast;
 import com.example.lookingforgroup.R;
 import hu.blog.megosztanam.model.shared.Post;
-import hu.blog.megosztanam.rest.LFGServicesImpl;
 import hu.blog.megosztanam.sub.menu.NoticeBoardFragment;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * Created by Miklós on 2017. 06. 04..

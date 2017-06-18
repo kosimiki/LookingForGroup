@@ -1,48 +1,34 @@
 package hu.blog.megosztanam;
 
 
-import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.os.Bundle;
-import android.support.v13.app.FragmentPagerAdapter;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import com.example.lookingforgroup.R;
 import hu.blog.megosztanam.sub.menu.ApplicationsFragment;
 import hu.blog.megosztanam.sub.menu.NoticeBoardFragment;
 import hu.blog.megosztanam.sub.menu.UserProfileFragment;
 
-public class MainMenuActivity extends Activity {
-    /**
-     * The number of pages (wizard steps) to show in this demo.
-     */
-    private static final int NUM_PAGES = 3;
+import java.util.ArrayList;
+import java.util.List;
 
-    /**
-     * The pager widget, which handles animation and allows swiping horizontally to access previous
-     * and next wizard steps.
-     */
-    private ViewPager mPager;
-
+public class MainMenuActivity extends AppCompatActivity {
     private UserProfileFragment userProfileFragment;
     private NoticeBoardFragment noticeBoardFragment;
     private ApplicationsFragment applicationsFragment;
 
-    /**
-     * The pager adapter, which provides the pages to the view pager widget.
-     */
-    private FragmentPagerAdapter mPagerAdapter;
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_screen_slide);
-        // Instantiate a ViewPager and a PagerAdapter.
-        Log.i("ASD", "Reaches this");
-        mPager = (ViewPager) findViewById(R.id.pager);
-        mPagerAdapter = new ScreenSlidePagerAdapter(getFragmentManager());
-        mPager.setAdapter(mPagerAdapter);
+
         userProfileFragment = new UserProfileFragment();
         userProfileFragment.setArguments(getIntent().getExtras());
         noticeBoardFragment = new NoticeBoardFragment();
@@ -50,42 +36,80 @@ public class MainMenuActivity extends Activity {
         applicationsFragment = new ApplicationsFragment();
         applicationsFragment.setArguments(getIntent().getExtras());
 
-    }
+        setContentView(R.layout.main_menu_layout);
 
-    @Override
-    public void onBackPressed() {
-        if (mPager.getCurrentItem() == 0) {
-            // If the user is currently looking at the first step, allow the system to handle the
-            // Back button. This calls finish() on this activity and pops the back stack.
-            super.onBackPressed();
-        } else {
-            // Otherwise, select the previous step.
-            mPager.setCurrentItem(mPager.getCurrentItem() - 1);
+        viewPager = (ViewPager) findViewById(R.id.viewpager);
+        setupViewPager(viewPager);
+        viewPager.setOffscreenPageLimit(2);
+
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+//                updatePosts(position);
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                updatePosts(position);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
+        tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(viewPager);
+
+
+    }
+    private void updatePosts(Integer position){
+        if(position == 1 && noticeBoardFragment.canLoad()){
+            noticeBoardFragment.loadPosts();
         }
     }
 
-    /**
-     * A simple pager adapter that represents 5 ScreenSlidePageFragment objects, in
-     * sequence.
-     */
-    private class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
-        public ScreenSlidePagerAdapter(FragmentManager fm) {
-            super(fm);
+    private void setupViewPager(ViewPager viewPager) {
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        adapter.addFragment(userProfileFragment, "User Profile");
+        adapter.addFragment(noticeBoardFragment, "Notice Board");
+        adapter.addFragment(applicationsFragment, "Applicants");
+        viewPager.setAdapter(adapter);
+    }
+
+    class ViewPagerAdapter extends FragmentPagerAdapter {
+        private final List<Fragment> mFragmentList = new ArrayList<>();
+        private final List<String> mFragmentTitleList = new ArrayList<>();
+
+        public ViewPagerAdapter(FragmentManager manager) {
+            super(manager);
         }
 
         @Override
         public Fragment getItem(int position) {
-            switch (position){
-                case 1:  return userProfileFragment;
-                case 0:  return noticeBoardFragment;
-                case 2:  return applicationsFragment;
-                default: return userProfileFragment;
-            }
+
+            return mFragmentList.get(position);
         }
 
         @Override
         public int getCount() {
-            return NUM_PAGES;
+            return mFragmentList.size();
         }
+
+        public void addFragment(Fragment fragment, String title) {
+            mFragmentList.add(fragment);
+            mFragmentTitleList.add(title);
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return mFragmentTitleList.get(position);
+        }
+
+    }
+
+    @Override
+    public void onBackPressed() {
     }
 }

@@ -1,14 +1,11 @@
 package hu.blog.megosztanam.sub.menu;
 
-import android.app.AlertDialog;
-import android.app.Fragment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.widget.Toolbar;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +17,6 @@ import hu.blog.megosztanam.messaging.MessagingService;
 import hu.blog.megosztanam.model.parcelable.ParcelableLoginResponse;
 import hu.blog.megosztanam.model.shared.GameMap;
 import hu.blog.megosztanam.model.shared.Post;
-import hu.blog.megosztanam.model.shared.Role;
 import hu.blog.megosztanam.rest.LFGServicesImpl;
 import hu.blog.megosztanam.sub.menu.post.*;
 import retrofit2.Call;
@@ -45,6 +41,9 @@ public class NoticeBoardFragment extends Fragment {
     private static final String filter_howling_abyss = "Howling Abyss";
     private static final String filter_twisted_treeline = "Twisted Treeline";
     private CustomArrayAdapter dataAdapter;
+    private Boolean firstLoadDone = false;
+    private Boolean isLoading = false;
+    private Boolean shouldReload = false;
 
 
 
@@ -64,7 +63,10 @@ public class NoticeBoardFragment extends Fragment {
 
         FloatingActionButton newPostButton = (FloatingActionButton) getActivity().findViewById(R.id.create_new_post_floating);
         userDetails = getArguments().getParcelable(LoginActivity.USER_DETAILS_EXTRA);
-        Log.i(this.getTag(), "User from intent: " + userDetails.toString());
+        shouldReload = getArguments().getBoolean(PostActivity.NEW_POST_EXTRA);
+
+        Log.i(this.getClass().getName(), "User from intent: " + userDetails.toString());
+        Log.i(this.getClass().getName(), "should reload from intent: " + shouldReload);
         newPostButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -151,7 +153,14 @@ public class NoticeBoardFragment extends Fragment {
         });
     }
 
+    public boolean canLoad(){
+        return firstLoadDone && !isLoading && shouldReload;
+    }
+
     public void loadPosts() {
+        isLoading = true;
+        Log.i(this.getClass().getName(), "loading posts " );
+
         final DeleteConfirmDialog deleteConfirmDialog = new DeleteConfirmDialog(this);
         final ApplicationConfirmDialog applicationConfirmDialog = new ApplicationConfirmDialog(this);
 
@@ -165,6 +174,9 @@ public class NoticeBoardFragment extends Fragment {
         loginResponse.enqueue(new Callback<List<Post>>() {
             @Override
             public void onResponse(Call<List<Post>> call, Response<List<Post>> response) {
+                isLoading = false;
+                firstLoadDone=true;
+                shouldReload = false;
                 if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
                     final List<Post> posts = response.body();
                     ListView list = (ListView) rootView.findViewById(R.id.looking_for_members_list_view);
@@ -199,6 +211,9 @@ public class NoticeBoardFragment extends Fragment {
 
             @Override
             public void onFailure(Call<List<Post>> call, Throwable t) {
+                isLoading = false;
+                firstLoadDone=true;
+                shouldReload = false;
                 Log.i(this.getClass().getName(), "Failure: " + t.toString());
             }
         });

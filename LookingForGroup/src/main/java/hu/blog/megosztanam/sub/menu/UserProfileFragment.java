@@ -1,9 +1,9 @@
 package hu.blog.megosztanam.sub.menu;
 
 
-import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +16,6 @@ import com.squareup.picasso.Picasso;
 import hu.blog.megosztanam.login.LoginActivity;
 import hu.blog.megosztanam.login.SaveSharedPreference;
 import hu.blog.megosztanam.model.shared.LoginResponse;
-import org.w3c.dom.Text;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;

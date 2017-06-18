@@ -3,7 +3,6 @@ package hu.blog.megosztanam.sub.menu.post;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.v13.view.ViewCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,11 +44,7 @@ public class CustomArrayAdapter extends ArrayAdapter<Post> {
 
     @Override
     public void remove(Post object) {
-        Log.i(this.getClass().getName(), "Post to remove: " + object.toString());
         this.list.remove(object);
-        for(Post post: list){
-            Log.i(this.getClass().getName(), "Remaining post: " + post.toString());
-        }
         this.notifyDataSetChanged();
     }
 
@@ -59,13 +54,11 @@ public class CustomArrayAdapter extends ArrayAdapter<Post> {
     }
 
     public View getView(final int position, View convertView, ViewGroup parent) {
-        Log.i(this.getClass().getName(), "getView runs");
         ViewHolder holder = new ViewHolder();
         LayoutInflater inflator = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         convertView = inflator.inflate(R.layout.looking_for_member_row, null);
         Post post = list.get(position);
         //setting the views into the ViewHolder.
-        Log.i(this.getClass().getName(), "before sets end");
 //        TextView postType = (TextView) convertView.findViewById(R.id.post_type);
 //        postType.setText(post.getPostType().getValue());
         if(!post.getCanApply() && !post.getIsOwner()){
@@ -86,12 +79,10 @@ public class CustomArrayAdapter extends ArrayAdapter<Post> {
         holder.ranked.setText(post.getGameType().isRanked() ? "RANKED" : "NORMAL");
         holder.mapIcon = (ImageView) convertView.findViewById(R.id.map_icon);
         setMapImage(post.getGameType().getMap(),holder.mapIcon);
-        Log.i(this.getClass().getName(), "after strings");
         TableRow positionsParentRow = (TableRow) convertView.findViewById(R.id.positions_row);
         TextView openPositionCount = (TextView) convertView.findViewById(R.id.open_position_count);
         openPositionCount.setText(String.valueOf(list.get(position).getOpenPositions().size()));
         setOpenPositions(post.getGameType().getMap(), list.get(position).getOpenPositions(), positionsParentRow);
-        Log.i(this.getClass().getName(), "after  positions");
 
         holder.minimumRank = (TextView) convertView.findViewById(R.id.min_required_rank);
         holder.maximumRank = (TextView) convertView.findViewById(R.id.max_required_rank);
@@ -103,7 +94,6 @@ public class CustomArrayAdapter extends ArrayAdapter<Post> {
             ((ViewGroup) convertView.findViewById(R.id.looking_for_members_table)).removeView(rankRow);
         }
 
-        Log.i(this.getClass().getName(), "after ranks");
         if (post.getDescription() != null && !post.getDescription().isEmpty()) {
             holder.description = (TextView) convertView.findViewById(R.id.description);
             holder.description.setText(post.getDescription());
@@ -111,11 +101,9 @@ public class CustomArrayAdapter extends ArrayAdapter<Post> {
             LinearLayout descriptionView = (LinearLayout) convertView.findViewById(R.id.description_layout);
             ((ViewGroup) convertView).removeView(descriptionView);
         }
-        Log.i(this.getClass().getName(), "after description");
 
 
         convertView.setTag(position);
-        Log.i(this.getClass().getName(), "getView end");
         return convertView;
     }
     private void setMapName(GameMap gameMap, TextView map){
