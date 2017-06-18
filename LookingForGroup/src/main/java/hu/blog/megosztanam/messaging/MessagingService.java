@@ -18,6 +18,9 @@ public class MessagingService extends FirebaseMessagingService {
 
     static final public String MESSAGE = "hu.blog.megosztanam.messaging.MessagingService.MESSAGE";
 
+    static final public String MESSAGE_TYPE_IS_POST = "hu.blog.megosztanam.messaging.MessagingService.MESSAGE_TYPE_IS_POST";
+
+
     private LocalBroadcastManager broadcastManager;
 
     @Override
@@ -29,9 +32,16 @@ public class MessagingService extends FirebaseMessagingService {
 
     public void sendResult(String message) {
         Intent intent = new Intent(RESULT);
-        if(message != null)
+        if(message != null && !message.isEmpty()){
             intent.putExtra(MESSAGE, message);
-        broadcastManager.sendBroadcast(intent);
+            if(message.contains("looking for teammates")){
+                intent.putExtra(MESSAGE_TYPE_IS_POST, true);
+            }else{
+                intent.putExtra(MESSAGE_TYPE_IS_POST, false);
+            }
+            broadcastManager.sendBroadcast(intent);
+        }
+
     }
 
 
@@ -46,13 +56,14 @@ public class MessagingService extends FirebaseMessagingService {
 
         // Check if message contains a data payload.
         if (remoteMessage.getData().size() > 0) {
-            Log.d(TAG, "Message data payload: " + remoteMessage.getData());
+            Log.d(TAG, "Message data payload: " + remoteMessage.getData().toString());
 
         }
 
         // Check if message contains a notification payload.
         if (remoteMessage.getNotification() != null) {
             Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
+            sendResult(remoteMessage.getNotification().getBody());
         }
 
         // Also if you intend on generating your own notifications as a result of a received FCM

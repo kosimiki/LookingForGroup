@@ -1,8 +1,13 @@
 package hu.blog.megosztanam.sub.menu;
 
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -11,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.example.lookingforgroup.R;
 import hu.blog.megosztanam.login.LoginActivity;
+import hu.blog.megosztanam.messaging.MessagingService;
 import hu.blog.megosztanam.model.parcelable.ParcelableLoginResponse;
 import hu.blog.megosztanam.model.shared.post.PostApplyResponse;
 import hu.blog.megosztanam.rest.LFGServicesImpl;
@@ -29,11 +35,32 @@ public class ApplicationsFragment extends Fragment {
     private ViewGroup rootView;
     private ParcelableLoginResponse userDetails;
     private RecyclerView recyclerView;
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Get extra data included in the Intent
+            String message = intent.getStringExtra(MessagingService.MESSAGE);
+            Boolean isPost = intent.getBooleanExtra(MessagingService.MESSAGE_TYPE_IS_POST, true);
+            if(!isPost){
+                loadPosts();
+            }
+            Log.i(ApplicationsFragment.class.getName(), "Got message: " + message);
+        }
+    };
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         loadPosts();
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver,
+                new IntentFilter(MessagingService.RESULT));
+    }
+
+    @Override
+    public void onDestroy() {
+        // Unregister since the activity is about to be closed.
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mMessageReceiver);
+        super.onDestroy();
     }
 
     @Override

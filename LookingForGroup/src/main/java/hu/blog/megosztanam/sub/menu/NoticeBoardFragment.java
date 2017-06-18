@@ -3,9 +3,11 @@ package hu.blog.megosztanam.sub.menu;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,6 +46,18 @@ public class NoticeBoardFragment extends Fragment {
     private Boolean firstLoadDone = false;
     private Boolean isLoading = false;
     private Boolean shouldReload = false;
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Get extra data included in the Intent
+            String message = intent.getStringExtra(MessagingService.MESSAGE);
+            Boolean isPost = intent.getBooleanExtra(MessagingService.MESSAGE_TYPE_IS_POST, false);
+            if(isPost){
+                loadPosts();
+            }
+            Log.i(NoticeBoardFragment.class.getName(), "Got message: " + message);
+        }
+    };
 
 
 
@@ -79,7 +93,19 @@ public class NoticeBoardFragment extends Fragment {
 
         loadPosts();
         loadFilter();
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver,
+                new IntentFilter(MessagingService.RESULT));
     }
+
+    @Override
+    public void onDestroy() {
+        // Unregister since the activity is about to be closed.
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mMessageReceiver);
+        super.onDestroy();
+    }
+
+    // Our handler for received Intents. This will be called whenever an Intent
+// with an action named "custom-event-name" is broadcasted.
 
 
     @Override
