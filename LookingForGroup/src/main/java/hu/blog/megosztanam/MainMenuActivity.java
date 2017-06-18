@@ -51,6 +51,7 @@ public class MainMenuActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
+                reloadApplications(position);
                 updatePosts(position);
             }
 
@@ -68,6 +69,13 @@ public class MainMenuActivity extends AppCompatActivity {
     private void updatePosts(Integer position){
         if(position == 1 && noticeBoardFragment.canLoad()){
             noticeBoardFragment.loadPosts();
+        }
+    }
+
+    private void reloadApplications(Integer position){
+        if(position == 2 && noticeBoardFragment.getShouldReloadApplications()){
+            noticeBoardFragment.setShouldReloadApplications(false);
+            applicationsFragment.loadPosts();
         }
     }
 

@@ -46,6 +46,7 @@ public class NoticeBoardFragment extends Fragment {
     private Boolean firstLoadDone = false;
     private Boolean isLoading = false;
     private Boolean shouldReload = false;
+    private Boolean shouldReloadApplications = false;
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -246,7 +247,16 @@ public class NoticeBoardFragment extends Fragment {
 
     }
 
-    public void deletePost(Integer userId,final Post post) {
+    public Boolean getShouldReloadApplications() {
+        return shouldReloadApplications;
+    }
+
+    public void setShouldReloadApplications(Boolean shouldReloadApplications) {
+        this.shouldReloadApplications = shouldReloadApplications;
+    }
+
+    public void deletePost(Integer userId, final Post post) {
+        shouldReloadApplications = true;
         LFGServicesImpl lfgServices = new LFGServicesImpl();
         Call<Boolean> response = lfgServices.deletePost(userId, post.getPostId());
         response.enqueue(new Callback<Boolean>() {
