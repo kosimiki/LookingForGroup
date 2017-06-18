@@ -58,7 +58,22 @@ public class MessagingServiceImpl implements IMessagingService {
         PostNotification postNotification = new PostNotification();
         Notification notification = new Notification();
         notification.setTitle("New posts available");
-        notification.setBody("Summoner " + post.getOwner().getName() + " looking for teammates on " + post.getGameType().getMap().getValue() + ". " + post.getDescription());
+        notification.setBody(Messaging.NEW_POST + post.getOwner().getName()
+                + " is looking for teammates on "
+                + post.getGameType().getMap().getValue()
+                + ". " + post.getDescription());
+        postNotification.setNotification(notification);
+
+        postNotification.setTo("/topics/" + Messaging.NEW_POSTS_TOPIC);
+        cloudMessaging.sendMessage("key=" + key, postNotification);
+    }
+
+    @Override
+    public void postDeleted() {
+        PostNotification postNotification = new PostNotification();
+        Notification notification = new Notification();
+        notification.setTitle("Post deleted");
+        notification.setBody(Messaging.POST_DELETED);
         postNotification.setNotification(notification);
 
         postNotification.setTo("/topics/" + Messaging.NEW_POSTS_TOPIC);

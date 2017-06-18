@@ -5,6 +5,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+import hu.blog.megosztanam.model.shared.messaging.Messaging;
 
 
 /**
@@ -34,7 +35,7 @@ public class MessagingService extends FirebaseMessagingService {
         Intent intent = new Intent(RESULT);
         if(message != null && !message.isEmpty()){
             intent.putExtra(MESSAGE, message);
-            if(message.contains("looking for teammates")){
+            if(message.contains(Messaging.POST_DELETED) || message.contains(Messaging.NEW_POST)){
                 intent.putExtra(MESSAGE_TYPE_IS_POST, true);
             }else{
                 intent.putExtra(MESSAGE_TYPE_IS_POST, false);

@@ -40,6 +40,7 @@ public class PostServiceImpl implements IPostService {
 
     @Override
     public Boolean deletePost(Integer userId, Integer postId) {
+        messaging.postDeleted();
         return postDao.deletePost(postId, userId);
     }
 
