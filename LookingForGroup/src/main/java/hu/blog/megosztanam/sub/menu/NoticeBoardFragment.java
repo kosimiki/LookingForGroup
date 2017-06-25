@@ -8,8 +8,11 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
@@ -20,6 +23,7 @@ import hu.blog.megosztanam.model.parcelable.ParcelableLoginResponse;
 import hu.blog.megosztanam.model.shared.GameMap;
 import hu.blog.megosztanam.model.shared.Post;
 import hu.blog.megosztanam.rest.LFGServicesImpl;
+import hu.blog.megosztanam.sub.menu.application.ApplicationAdapter;
 import hu.blog.megosztanam.sub.menu.post.*;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -42,10 +46,10 @@ public class NoticeBoardFragment extends Fragment {
     private static final String filter_summoners_rift = "Summoners Rift";
     private static final String filter_howling_abyss = "Howling Abyss";
     private static final String filter_twisted_treeline = "Twisted Treeline";
-    private CustomArrayAdapter dataAdapter;
     private Boolean firstLoadDone = false;
     private Boolean isLoading = false;
     private Boolean shouldReload = false;
+    private RecyclerView recyclerView;
     private Boolean shouldReloadApplications = false;
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
@@ -116,6 +120,9 @@ public class NoticeBoardFragment extends Fragment {
 
         rootView = (ViewGroup) inflater.inflate(
                 R.layout.fragment_slide_screen, container, false);
+        recyclerView = (RecyclerView)rootView.findViewById(R.id.looking_for_members_list_view);
+        LinearLayoutManager llm = new LinearLayoutManager(getActivity().getBaseContext());
+        recyclerView.setLayoutManager(llm);
         return rootView;
     }
 
@@ -206,16 +213,17 @@ public class NoticeBoardFragment extends Fragment {
                 shouldReload = false;
                 if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
                     final List<Post> posts = response.body();
-                    ListView list = (ListView) rootView.findViewById(R.id.looking_for_members_list_view);
-                    dataAdapter = new CustomArrayAdapter(rootView.getContext(), R.id.summoner_name, new ArrayList<>(response.body()));
+//                    ListView list = (ListView) rootView.findViewById(R.id.looking_for_members_list_view);
+//                    dataAdapter = new CustomArrayAdapter(rootView.getContext(), R.id.summoner_name, new ArrayList<>(response.body()));
 
-                    list.setAdapter(dataAdapter);
-                    list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    PostAdapter adapter = new PostAdapter(response.body(), getActivity().getBaseContext());
+                    recyclerView.setAdapter(adapter);
+
+                    recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getContext(), recyclerView ,new RecyclerItemClickListener.OnItemClickListener() {
+                        @Override public void onItemClick(View view, int position) {
                             Log.i("ITEM_CLICK", "onItemClick started");
 
-                            Post post = posts.get(i);
+                            Post post = posts.get(position);
                             if(post.getIsOwner()){
                                 Log.i("ITEM_CLICK DELETE", "clicked post: " + post.toString());
 
@@ -225,10 +233,13 @@ public class NoticeBoardFragment extends Fragment {
                                 applicationConfirmDialog.createDialog(new ArrayList<>(post.getOpenPositions()), userDetails.getUser().getUserId(), post.getPostId(), getActivity()).show();
                                 Log.i("ITEM_CLICK", "AFTER SHOW");
                             }
-
-
                         }
-                    });
+
+                        @Override public void onLongItemClick(View view, int position) {
+                            // do whatever
+                        }
+                    }));
+
                 } else {
                     Log.i(this.getClass().getName(), "Is successful" + response.isSuccessful());
                 }
