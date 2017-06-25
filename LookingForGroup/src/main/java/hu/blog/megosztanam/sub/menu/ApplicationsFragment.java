@@ -32,6 +32,7 @@ import java.util.List;
  */
 public class ApplicationsFragment extends Fragment {
 
+    private List<PostApplyResponse> applications;
     private ViewGroup rootView;
     private ParcelableLoginResponse userDetails;
     private RecyclerView recyclerView;
@@ -74,6 +75,12 @@ public class ApplicationsFragment extends Fragment {
         LinearLayoutManager llm = new LinearLayoutManager(getActivity().getBaseContext());
         recyclerView.setLayoutManager(llm);
         return rootView;
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        loadPosts();
     }
 
     public void loadPosts() {

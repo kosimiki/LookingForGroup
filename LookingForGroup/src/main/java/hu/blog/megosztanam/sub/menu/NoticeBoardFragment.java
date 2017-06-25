@@ -247,6 +247,12 @@ public class NoticeBoardFragment extends Fragment {
 
     }
 
+    @Override
+    public void onResume(){
+        super.onResume();
+        loadPosts();
+    }
+
     public Boolean getShouldReloadApplications() {
         return shouldReloadApplications;
     }

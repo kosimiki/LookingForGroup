@@ -51,8 +51,7 @@ public class MainMenuActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
-                reloadApplications(position);
-                updatePosts(position);
+
             }
 
             @Override
