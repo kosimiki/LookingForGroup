@@ -89,7 +89,7 @@ public class MessagingServiceImpl implements IMessagingService {
         log.info("user id " + postApplyRequest.getUserId());
         log.info("post id " + postApplyRequest.getPostId());
         UserDetails details = userDao.getSummoner(postApplyRequest.getUserId());
-        Summoner summoner = service.getSummoner(details.getSummonerId(), details.getServer());
+        Summoner summoner = service.getById(details.getSummonerId(), details.getServer());
         Post post = postDao.getPostById(postApplyRequest.getPostId());
         notification.setBody(summoner.getName()
                 + " (" + summoner.getSummonerLevel() + ")"

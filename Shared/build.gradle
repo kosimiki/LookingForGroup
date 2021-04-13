@@ -18,11 +18,6 @@ buildscript {
     }
 }
 
-jar {
-    baseName = 'lfg-shared-pojo'
-    version = '0.1.0'
-}
-
 
 repositories {
     mavenLocal()
@@ -31,4 +26,16 @@ repositories {
 
 dependencies {
     compile 'com.fasterxml.jackson.core:jackson-annotations:2.8.4'
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = 'hu.blog.megosztanam'
+            artifactId = 'lfg-shared-pojo'
+            version = '0.1'
+
+            from components.java
+        }
+    }
 }

@@ -9,16 +9,16 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Summoner {
 
-    protected Integer id;
+    protected String id;
     protected String name;
     protected Integer profileIconId;
     protected Integer summonerLevel;
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 

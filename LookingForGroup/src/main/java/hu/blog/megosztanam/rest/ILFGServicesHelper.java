@@ -26,7 +26,7 @@ public interface ILFGServicesHelper {
 
     @POST("/{server}/registration/{summonerId}")
     Call<LoginResponse> doRegistration(@Body String idToken,
-                                       @Path("summonerId") Integer summonerId,
+                                       @Path("summonerId") String summonerId,
                                        @Path("server") Server server);
 
     @GET("{server}/posts")

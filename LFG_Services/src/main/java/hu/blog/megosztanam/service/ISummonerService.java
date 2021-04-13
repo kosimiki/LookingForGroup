@@ -10,7 +10,7 @@ import hu.blog.megosztanam.model.shared.summoner.Server;
 public interface ISummonerService {
 
     Summoner getSummoner(String summonerName, Server server);
-    Summoner getSummoner(Integer summonerId, Server server);
-    SummonerGameStatistics getStatistics(Integer summonerId, Server server);
+    Summoner getById(String summonerId, Server server);
+    SummonerGameStatistics getStatistics(String summonerId, Server server);
 
 }

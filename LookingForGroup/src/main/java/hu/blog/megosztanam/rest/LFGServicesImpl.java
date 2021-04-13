@@ -22,7 +22,7 @@ import java.util.List;
 
 public class LFGServicesImpl implements ILFGServicesHelper{
 
-    private static final String BASE_URL = "https://thawing-journey-82619.herokuapp.com/";
+    private static final String BASE_URL = "http://10.0.2.2:8080/";
     private ILFGServicesHelper servicesHelper;
 
     public LFGServicesImpl() {
@@ -49,7 +49,7 @@ public class LFGServicesImpl implements ILFGServicesHelper{
         return servicesHelper.doLogin(idToken);
     }
 
-    public Call<LoginResponse> doRegistration(String idToken, Integer summonerId, Server server) {
+    public Call<LoginResponse> doRegistration(String idToken, String summonerId, Server server) {
         return servicesHelper.doRegistration(idToken, summonerId, server);
     }
 

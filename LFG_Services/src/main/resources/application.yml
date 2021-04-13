@@ -1,0 +1,22 @@
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/lfg
+    username: postgres
+    password: ${DATABASE_PASSWORD}
+    driverClassName: org.postgresql.Driver
+
+lol:
+  api:
+    key: ?api_key=RGAPI-e1f18854-0acd-48fe-b318-b793385afa42
+
+google:
+  cloud:
+    messaging:
+      server:
+        id: 212782821519
+        key: AAAAMYrYMI8:APA91bGvUE9avHSSk5OEnh1tRicqVk0QyT7jr3BaVoGojNJ9yyS3S-syTsHrYnK1QU27Zdd-lw_4a1-tsWmkRSdBtysYN1aET_zYKsHgMpAUdlutomTvrmgdmINaZAXghIypRUK90H6U
+
+  oauth:
+    client:
+      id: 212782821519-vi2k0kd4jnp5ikasas879h3hm22ivtdd.apps.googleusercontent.com

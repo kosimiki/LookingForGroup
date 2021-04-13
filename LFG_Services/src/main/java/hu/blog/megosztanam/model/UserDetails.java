@@ -6,7 +6,7 @@ import hu.blog.megosztanam.model.shared.summoner.Server;
  * Created by Miklós on 2017. 04. 20..
  */
 public class UserDetails {
-    private Integer summonerId;
+    private String summonerId;
     private Integer userId;
     private Server server;
 
@@ -18,11 +18,11 @@ public class UserDetails {
         this.server = server;
     }
 
-    public Integer getSummonerId() {
+    public String getSummonerId() {
         return summonerId;
     }
 
-    public void setSummonerId(Integer summonerId) {
+    public void setSummonerId(String summonerId) {
         this.summonerId = summonerId;
     }
 

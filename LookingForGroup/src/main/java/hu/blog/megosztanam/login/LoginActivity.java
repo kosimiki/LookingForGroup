@@ -44,7 +44,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     private static final String TAG = "LoginActivity";
     public static final String USER_DETAILS_EXTRA = "hu.blog.megosztanam.user.extra";
-    private static final String CLIENT_ID = "212782821519-icf9ol2h2pqi847ba88q49ccui5aqva7.apps.googleusercontent.com";
+    private static final String CLIENT_ID = "212782821519-vi2k0kd4jnp5ikasas879h3hm22ivtdd.apps.googleusercontent.com";
     private static final int RC_SIGN_IN = 9001;
     private GoogleApiClient mGoogleApiClient;
     private TextView mStatusTextView;
@@ -67,7 +67,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        checkLogin();
         FirebaseMessaging.getInstance().subscribeToTopic(Messaging.NEW_POSTS_TOPIC);
         server = Server.EUW;
         registrationRequired = false;
@@ -235,6 +234,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
             @Override
             public void onFailure(Call<LoginResponse> call, Throwable t) {
+                Log.w(t.getMessage(), t);
 
             }
         });
@@ -315,7 +315,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             public void onResponse(Call<Summoner> call, Response<Summoner> response) {
                 if (response.isSuccessful()) {
                     Summoner summoner = response.body();
-                    if (summoner.getId() == -1) {
+                    if (summoner.getId() == null) {
                         updateUI("NO SUMMONER FOUND");
                     } else {
                         handleRegistration(summoner.getId());
@@ -341,7 +341,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             public void onResponse(Call<Summoner> call, Response<Summoner> response) {
                 if (response.isSuccessful()) {
                     Summoner summoner = response.body();
-                    if (summoner.getId() == -1) {
+                    if (summoner.getId() == null) {
                         updateUI("NO SUMMONER FOUND");
 
                     } else {
@@ -368,7 +368,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         });
     }
 
-    private void handleRegistration(Integer summonerId) {
+    private void handleRegistration(String summonerId) {
         Log.i(TAG, "REG SUMMONER:  " + summonerId);
 
         LFGServicesImpl lfgServices = new LFGServicesImpl();
@@ -409,6 +409,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     private void updateFirebaseId(Integer userId, String firebaseId) {
         LFGServicesImpl lfgServices = new LFGServicesImpl();
+        Log.i(TAG, "Logging in...");
         Call<Void> loginResponse = lfgServices.updateFirebaseId(userId, firebaseId);
         loginResponse.enqueue(new Callback<Void>() {
             @Override
@@ -418,6 +419,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
+                Log.i(TAG, "Login failed", t);
 
             }
         });

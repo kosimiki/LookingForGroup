@@ -47,7 +47,7 @@ public class ApplicationExtractor implements ResultSetExtractor<List<PostApplyRe
             Ids ids = new Ids();
             ids.userId = rs.getInt("user_id");
             ids.post = postRowMapper.mapRow(rs,0);
-            ids.summonerId = rs.getInt("summoner_id");
+            ids.summonerId = rs.getString("summoner_id");
             ids.server = Server.valueOf(rs.getString("region"));
             ids.applicationDate = rs.getTimestamp("date_of_application");
             map.computeIfAbsent(ids, key-> new ArrayList<>());
@@ -76,7 +76,7 @@ public class ApplicationExtractor implements ResultSetExtractor<List<PostApplyRe
     private class Ids{
         int userId;
         Post post;
-        int summonerId;
+        String summonerId;
         Server server;
         Date applicationDate;
 
@@ -84,24 +84,17 @@ public class ApplicationExtractor implements ResultSetExtractor<List<PostApplyRe
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
-
             Ids ids = (Ids) o;
-
-            if (userId != ids.userId) return false;
-            if (summonerId != ids.summonerId) return false;
-            if (!post.equals(ids.post)) return false;
-            if (server != ids.server) return false;
-            return applicationDate.equals(ids.applicationDate);
+            return userId == ids.userId &&
+                    Objects.equals(post, ids.post) &&
+                    Objects.equals(summonerId, ids.summonerId) &&
+                    server == ids.server &&
+                    Objects.equals(applicationDate, ids.applicationDate);
         }
 
         @Override
         public int hashCode() {
-            int result = userId;
-            result = 31 * result + post.hashCode();
-            result = 31 * result + summonerId;
-            result = 31 * result + server.hashCode();
-            result = 31 * result + applicationDate.hashCode();
-            return result;
+            return Objects.hash(userId, post, summonerId, server, applicationDate);
         }
     }
 }

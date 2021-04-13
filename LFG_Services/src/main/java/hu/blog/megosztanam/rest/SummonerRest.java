@@ -80,13 +80,13 @@ public class SummonerRest {
 
     @RequestMapping(value = "/{server}/registration/{summonerId}", method = RequestMethod.POST)
     public LoginResponse doRegistration(@RequestBody String idToken,
-                                        @PathVariable @NotNull @Min(1) Integer summonerId,
+                                        @PathVariable @NotNull @Min(1) String summonerId,
                                         @PathVariable Server server) {
         return userService.register(idToken, summonerId, server);
     }
 
     @RequestMapping(value = "/{server}/league/{summonerId}", method = RequestMethod.GET)
-    public SummonerGameStatistics getStats(@PathVariable @NotNull @Min(1) Integer summonerId,
+    public SummonerGameStatistics getStats(@PathVariable @NotNull @Min(1) String summonerId,
                                            @PathVariable Server server) {
         return summonerService.getStatistics(summonerId, server);
     }

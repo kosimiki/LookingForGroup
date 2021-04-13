@@ -11,8 +11,8 @@ import hu.blog.megosztanam.sql.UserDao;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -23,12 +23,21 @@ public class UserServiceImpl implements IUserService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
 
-    @Autowired
-    private UserDao userDao;
+    private final UserDao userDao;
+    private final ISummonerService summonerService;
 
-    @Autowired
-    private ISummonerService summonerService;
+    public UserServiceImpl(UserDao userDao, ISummonerService summonerService) {
+        this.userDao = userDao;
+        this.summonerService = summonerService;
+    }
 
+
+    @Override
+    public UserDetails getSummonerOfUser(Integer userId) {
+        return userDao.getSummonerId(userId);
+    }
+
+    @Transactional
     @Override
     public LoginResponse doLogin(String idTokenString)  {
         LoginResponse loginResponse = new LoginResponse();
@@ -40,7 +49,7 @@ public class UserServiceImpl implements IUserService {
                 UserDetails userDetails = userDao.getSummonerId(user.getEmail());
                 user.setUserId(userDetails.getUserId());
                 user.setServer(userDetails.getServer());
-                user.setSummoner(summonerService.getSummoner(userDetails.getSummonerId(), userDetails.getServer()));
+                user.setSummoner(summonerService.getById(userDetails.getSummonerId(), userDetails.getServer()));
                 loginResponse.setLoginStatus(LoginStatus.SUCCESSFUL);
                 LOGGER.info(loginResponse.toString());
                 return loginResponse;
@@ -58,13 +67,14 @@ public class UserServiceImpl implements IUserService {
         }
     }
 
+    @Transactional
     @Override
-    public LoginResponse register(String idTokenString, Integer summonerId, Server server) {
+    public LoginResponse register(String idTokenString, String summonerId, Server server) {
         LoginResponse registrationResponse = new LoginResponse();
         User user = authenticateWithRest(idTokenString);
         if(user.getAuthenticated()){
             user.setUserId(userDao.saveUser(user.getEmail(), summonerId ,server));
-            user.setSummoner(summonerService.getSummoner(summonerId, server));
+            user.setSummoner(summonerService.getById(summonerId, server));
             user.setServer(server);
             registrationResponse.setUser(user);
             registrationResponse.setLoginStatus(LoginStatus.SUCCESSFUL);

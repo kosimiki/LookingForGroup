@@ -38,7 +38,7 @@ public class SummonerRankCache {
                 });
     }
 
-    public SummonerGameStatistics get(Integer summonerId, Server server){
+    public SummonerGameStatistics get(String summonerId, Server server){
         try {
             return cache.get(new SummonerId(summonerId, server));
         } catch (ExecutionException e) {

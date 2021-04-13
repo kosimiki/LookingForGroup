@@ -31,7 +31,7 @@ public class ParcelableSummoner extends Summoner implements Parcelable {
     }
 
     protected ParcelableSummoner(Parcel in) {
-        this.id = (Integer) in.readValue(Integer.class.getClassLoader());
+        this.id = (String) in.readValue(String.class.getClassLoader());
         this.name = in.readString();
         this.profileIconId = (Integer) in.readValue(Integer.class.getClassLoader());
         this.summonerLevel = (Integer) in.readValue(Integer.class.getClassLoader());

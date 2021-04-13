@@ -25,10 +25,9 @@ import org.springframework.web.client.RestClientException;
  */
 @Service
 public class SummonerServiceImpl implements ISummonerService {
-    private static final String SUMMONER_DETAILS_BY_NAME_V3 = ".api.riotgames.com/lol/summoner/v3/summoners/by-name/";
-    private static final String SUMMONER_DETAILS_BY_ID_V3 = ".api.riotgames.com/lol/summoner/v3/summoners/";
-    private static final String SUMMONER_LEAGUE_V2  = ".api.riotgames.com/api/lol/SERVER/v2.5/league/by-summoner/";
-    private static final String ENTRY = "/entry";
+    private static final String SUMMONER_DETAILS_BY_NAME_V3 = ".api.riotgames.com/lol/summoner/v4/summoners/by-name/";
+    private static final String SUMMONER_DETAILS_BY_ID_V3 = ".api.riotgames.com/lol/summoner/v4/summoners/";
+    private static final String SUMMONER_LEAGUE_V4  = ".api.riotgames.com/api/lol/league/v4/entries/by-summoner/";
     private static final String HTTPS = "https://";
     private static final Logger LOGGER = LoggerFactory.getLogger(SummonerServiceImpl.class);
 
@@ -44,7 +43,7 @@ public class SummonerServiceImpl implements ISummonerService {
     @Override
     public Summoner getSummoner(String summonerName, Server server) {
         Summoner summoner = new Summoner();
-        summoner.setId(-1);
+        summoner.setId(null);
         summoner.setName("NAME NOT FOUND");
         try {
             String url = HTTPS + Servers.getServerV3(server) + SUMMONER_DETAILS_BY_NAME_V3 + summonerName + apiKey;
@@ -57,9 +56,9 @@ public class SummonerServiceImpl implements ISummonerService {
     }
 
     @Override
-    public Summoner getSummoner(Integer summonerId, Server server) {
+    public Summoner getById(String summonerId, Server server) {
         Summoner summoner = new Summoner();
-        summoner.setId(-1);
+        summoner.setId(null);
         summoner.setName("NAME NOT FOUND");
         String url = HTTPS + Servers.getServerV3(server) + SUMMONER_DETAILS_BY_ID_V3 + summonerId + apiKey;
         LOGGER.info("Calling GET on: " + url);
@@ -72,8 +71,7 @@ public class SummonerServiceImpl implements ISummonerService {
     }
 
     @Override
-    public SummonerGameStatistics getStatistics(Integer summonerId, Server server) {
-
+    public SummonerGameStatistics getStatistics(String summonerId, Server server) {
         SummonerGameStatistics gameStatistics = new SummonerGameStatistics();
         Rank unRanked = new Rank();
         unRanked.setDivision(Division.I);
@@ -81,8 +79,8 @@ public class SummonerServiceImpl implements ISummonerService {
         gameStatistics.setTwistedRank(unRanked);
         gameStatistics.setFlexRank(unRanked);
         gameStatistics.setSoloRank(unRanked);
-        String serverName = Servers.getServerV2(server);
-        String url = HTTPS + serverName + SUMMONER_LEAGUE_V2.replace("SERVER", serverName) + summonerId + ENTRY + apiKey;
+        String serverName = Servers.getServerV3(server);
+        String url = HTTPS + serverName + SUMMONER_LEAGUE_V4  + summonerId  + apiKey;
         LOGGER.info("Calling GET on: " + url);
         String json = null;
         try{
@@ -106,15 +104,11 @@ public class SummonerServiceImpl implements ISummonerService {
                 Rank rank = new Rank();
                 rank.setDivision(division);
                 rank.setTier(tier);
-                if(queue != null && queue.contains("SOLO")){
+                if(queue != null && queue.contains("RANKED_SOLO_5x5")){
                     gameStatistics.setSoloRank(rank);
                 }
-                if(queue != null && queue.contains("FLEX")){
+                if(queue != null && queue.contains("RANKED_FLEX_SR")){
                     gameStatistics.setFlexRank(rank);
-                }
-
-                if(queue != null && queue.contains("3x3")){
-                    gameStatistics.setTwistedRank(rank);
                 }
             }
         }else{

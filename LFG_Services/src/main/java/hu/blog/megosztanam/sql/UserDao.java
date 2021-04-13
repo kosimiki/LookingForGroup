@@ -25,7 +25,7 @@ public class UserDao {
 
     @Autowired
     public UserDao(JdbcTemplate simpleTemplate){
-        this.insert = new SimpleJdbcInsert(simpleTemplate).withTableName("users").usingGeneratedKeyColumns("id");
+        this.insert = new SimpleJdbcInsert(simpleTemplate).withTableName("users").usingGeneratedKeyColumns("user_id");
         this.template = new NamedParameterJdbcTemplate(simpleTemplate);
     }
 
@@ -63,7 +63,7 @@ public class UserDao {
         return template.update(SAVE_TOKEN, parameterSource);
     }
 
-    public int saveUser(String email, Integer summonerId, Server server){
+    public int saveUser(String email, String summonerId, Server server){
         SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("email_address", email)
                 .addValue("summoner_id", summonerId)
@@ -72,4 +72,9 @@ public class UserDao {
     }
 
 
+    public UserDetails getSummonerId(Integer userId) {
+        return template.queryForObject("SELECT user_id, summoner_id, region FROM users WHERE user_id = :userId",
+                new MapSqlParameterSource("userId", userId), new DetailsRowMapper());
+
+    }
 }

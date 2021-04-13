@@ -6,22 +6,22 @@ import hu.blog.megosztanam.model.shared.summoner.Server;
  * Created by Miklós on 2017. 05. 14..
  */
 public class SummonerId {
-    private Integer id;
+    private String id;
     private Server server;
 
     public SummonerId() {
     }
 
-    public SummonerId(Integer id, Server server) {
+    public SummonerId(String id, Server server) {
         this.id = id;
         this.server = server;
     }
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 

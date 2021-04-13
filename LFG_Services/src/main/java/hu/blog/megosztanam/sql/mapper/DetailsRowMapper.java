@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Optional;
 
 
 /**
@@ -16,9 +17,12 @@ public class DetailsRowMapper implements RowMapper<UserDetails> {
     @Override
     public UserDetails mapRow(ResultSet rs, int rowNum) throws SQLException {
         UserDetails userDetails = new UserDetails();
-        userDetails.setSummonerId(rs.getInt("summoner_id"));
+        userDetails.setSummonerId(rs.getString("summoner_id"));
         userDetails.setUserId(rs.getInt("user_id"));
-        userDetails.setServer(Server.valueOf(rs.getString("region")));
+        Server server = Optional.ofNullable(rs.getString("region"))
+                .map(r-> Server.valueOf(r.replaceAll(" ", "")))
+                .orElseThrow(()-> new RuntimeException("lol server not found"));
+        userDetails.setServer(server);
         return userDetails;
     }
 }
