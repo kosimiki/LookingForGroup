@@ -28,32 +28,53 @@ import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import com.example.lookingforgroup.R;
+
 import com.tech.freak.wizardpager.model.AbstractWizardModel;
 import com.tech.freak.wizardpager.model.ModelCallbacks;
 import com.tech.freak.wizardpager.model.Page;
 import com.tech.freak.wizardpager.ui.PageFragmentCallbacks;
 import com.tech.freak.wizardpager.ui.ReviewFragment;
 import com.tech.freak.wizardpager.ui.StepPagerStrip;
-import hu.blog.megosztanam.MainMenuActivity;
-import hu.blog.megosztanam.login.LoginActivity;
-import hu.blog.megosztanam.model.parcelable.ParcelableLoginResponse;
-import hu.blog.megosztanam.model.shared.*;
-import hu.blog.megosztanam.model.shared.elo.Division;
-import hu.blog.megosztanam.model.shared.elo.Rank;
-import hu.blog.megosztanam.model.shared.elo.Tier;
-import hu.blog.megosztanam.rest.LFGServicesImpl;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static hu.blog.megosztanam.sub.menu.post.PostWizardModel.*;
+import hu.blog.megosztanam.MainApplication;
+import hu.blog.megosztanam.MainMenuActivity;
+import hu.blog.megosztanam.R;
+import hu.blog.megosztanam.login.LoginActivity;
+import hu.blog.megosztanam.model.parcelable.ParcelableLoginResponse;
+import hu.blog.megosztanam.model.shared.GameMap;
+import hu.blog.megosztanam.model.shared.GameType;
+import hu.blog.megosztanam.model.shared.Post;
+import hu.blog.megosztanam.model.shared.PostType;
+import hu.blog.megosztanam.model.shared.Role;
+import hu.blog.megosztanam.model.shared.elo.Division;
+import hu.blog.megosztanam.model.shared.elo.Rank;
+import hu.blog.megosztanam.model.shared.elo.Tier;
+import hu.blog.megosztanam.rest.ILFGService;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+import static hu.blog.megosztanam.sub.menu.post.PostWizardModel.COMMENT;
+import static hu.blog.megosztanam.sub.menu.post.PostWizardModel.GAME_TYPE;
+import static hu.blog.megosztanam.sub.menu.post.PostWizardModel.HOWLING_FJORD;
+import static hu.blog.megosztanam.sub.menu.post.PostWizardModel.MAP_KEY;
+import static hu.blog.megosztanam.sub.menu.post.PostWizardModel.MAX_DIV;
+import static hu.blog.megosztanam.sub.menu.post.PostWizardModel.MAX_TIER;
+import static hu.blog.megosztanam.sub.menu.post.PostWizardModel.MIN_DIV;
+import static hu.blog.megosztanam.sub.menu.post.PostWizardModel.MIN_TIER;
+import static hu.blog.megosztanam.sub.menu.post.PostWizardModel.OPEN_POSITIONS;
+import static hu.blog.megosztanam.sub.menu.post.PostWizardModel.RANKED;
+import static hu.blog.megosztanam.sub.menu.post.PostWizardModel.SUMMONERS_RIFT;
+import static hu.blog.megosztanam.sub.menu.post.PostWizardModel.TWISTED_TREELINE;
 
 public class PostActivity extends AppCompatActivity implements
         PageFragmentCallbacks, ReviewFragment.Callbacks, ModelCallbacks {
+
+    public static final String NEW_POST_EXTRA = PostActivity.class.getName() + ".new_post_extra";
+
     private ViewPager mPager;
     private MyPagerAdapter mPagerAdapter;
     private ParcelableLoginResponse userDetails;
@@ -68,11 +89,13 @@ public class PostActivity extends AppCompatActivity implements
     private List<Page> mCurrentPageSequence;
     private StepPagerStrip mStepPagerStrip;
 
-    public static final String NEW_POST_EXTRA = PostActivity.class.getName() + ".new_post_extra";
+    private ILFGService lfgService;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        MainApplication application = (MainApplication) getApplication();
+        lfgService = application.getAppContainer().getLfgService();
 
 
         userDetails = getIntent().getParcelableExtra(LoginActivity.USER_DETAILS_EXTRA);
@@ -367,8 +390,7 @@ public class PostActivity extends AppCompatActivity implements
     }
 
     private void savePost(Post post) {
-        LFGServicesImpl lfgServices = new LFGServicesImpl();
-        Call<Integer> loginResponse = lfgServices.savePost(post);
+        Call<Integer> loginResponse = lfgService.savePost(post);
         loginResponse.enqueue(new Callback<Integer>() {
             @Override
             public void onResponse(Call<Integer> call, Response<Integer> response) {

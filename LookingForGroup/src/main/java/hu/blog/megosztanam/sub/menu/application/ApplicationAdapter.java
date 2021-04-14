@@ -11,7 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import com.example.lookingforgroup.R;
+
+import hu.blog.megosztanam.R;
 import hu.blog.megosztanam.model.shared.GameMap;
 import hu.blog.megosztanam.model.shared.Role;
 import hu.blog.megosztanam.model.shared.post.PostApplyResponse;

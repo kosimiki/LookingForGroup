@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -14,12 +15,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import com.example.lookingforgroup.R;
+
+
+import hu.blog.megosztanam.MainMenuActivity;
+import hu.blog.megosztanam.R;
 import hu.blog.megosztanam.login.LoginActivity;
 import hu.blog.megosztanam.messaging.MessagingService;
 import hu.blog.megosztanam.model.parcelable.ParcelableLoginResponse;
 import hu.blog.megosztanam.model.shared.post.PostApplyResponse;
-import hu.blog.megosztanam.rest.LFGServicesImpl;
+import hu.blog.megosztanam.rest.ILFGService;
 import hu.blog.megosztanam.sub.menu.application.ApplicationAdapter;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -33,27 +37,29 @@ import java.util.List;
 public class ApplicationsFragment extends Fragment {
 
     private List<PostApplyResponse> applications;
-    private ViewGroup rootView;
     private ParcelableLoginResponse userDetails;
     private RecyclerView recyclerView;
-    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+    private ILFGService ilfgService;
+    private final BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            // Get extra data included in the Intent
             String message = intent.getStringExtra(MessagingService.MESSAGE);
-            Boolean isPost = intent.getBooleanExtra(MessagingService.MESSAGE_TYPE_IS_POST, true);
-            if(!isPost){
+            boolean isPost = intent.getBooleanExtra(MessagingService.MESSAGE_TYPE_IS_POST, true);
+            if (!isPost) {
                 loadPosts();
             }
             Log.i(ApplicationsFragment.class.getName(), "Got message: " + message);
         }
     };
 
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        MainMenuActivity activity = (MainMenuActivity) getActivity();
+        this.ilfgService = activity.getLfgService();
         loadPosts();
-        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver,
+        LocalBroadcastManager.getInstance(activity).registerReceiver(mMessageReceiver,
                 new IntentFilter(MessagingService.RESULT));
     }
 
@@ -69,23 +75,21 @@ public class ApplicationsFragment extends Fragment {
                              Bundle savedInstanceState) {
         ViewGroup rootView = (ViewGroup) inflater.inflate(
                 R.layout.applications_sub_menu, container, false);
-        this.rootView = rootView;
         userDetails = getArguments().getParcelable(LoginActivity.USER_DETAILS_EXTRA);
-        recyclerView = (RecyclerView)rootView.findViewById(R.id.applications_list);
+        recyclerView = (RecyclerView) rootView.findViewById(R.id.applications_list);
         LinearLayoutManager llm = new LinearLayoutManager(getActivity().getBaseContext());
         recyclerView.setLayoutManager(llm);
         return rootView;
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
         loadPosts();
     }
 
     public void loadPosts() {
-        LFGServicesImpl lfgServices = new LFGServicesImpl();
-        Call<List<PostApplyResponse>> loginResponse = lfgServices.getApplications(userDetails.getUser().getUserId());
+        Call<List<PostApplyResponse>> loginResponse = ilfgService.getApplications(userDetails.getUser().getUserId());
         loginResponse.enqueue(new Callback<List<PostApplyResponse>>() {
             @Override
             public void onResponse(Call<List<PostApplyResponse>> call, Response<List<PostApplyResponse>> response) {

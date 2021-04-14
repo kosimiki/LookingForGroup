@@ -16,7 +16,7 @@ import java.util.List;
  * Created by Miklós on 2016. 12. 10..
  */
 
-public interface ILFGServicesHelper {
+public interface ILFGService {
 
     @GET("/{server}/summoners/{name}")
     Call<Summoner> getSummoner(@Path("name") String name, @Path("server") Server server);

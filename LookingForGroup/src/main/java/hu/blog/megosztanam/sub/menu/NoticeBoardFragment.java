@@ -12,18 +12,18 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
-import com.example.lookingforgroup.R;
+
+import hu.blog.megosztanam.MainMenuActivity;
+import hu.blog.megosztanam.R;
 import hu.blog.megosztanam.login.LoginActivity;
 import hu.blog.megosztanam.messaging.MessagingService;
 import hu.blog.megosztanam.model.parcelable.ParcelableLoginResponse;
 import hu.blog.megosztanam.model.shared.GameMap;
 import hu.blog.megosztanam.model.shared.Post;
-import hu.blog.megosztanam.rest.LFGServicesImpl;
-import hu.blog.megosztanam.sub.menu.application.ApplicationAdapter;
+import hu.blog.megosztanam.rest.ILFGService;
 import hu.blog.megosztanam.sub.menu.post.*;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -40,6 +40,7 @@ public class NoticeBoardFragment extends Fragment {
     private static final String TAG = "NoticeBoardFragment";
     private ViewGroup rootView;
     private ParcelableLoginResponse userDetails;
+    private ILFGService lfgService;
     private BroadcastReceiver receiver;
     private PostFilter postFilter;
     private ExpandableListView filterView;
@@ -70,7 +71,8 @@ public class NoticeBoardFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
+        MainMenuActivity activity = (MainMenuActivity) getActivity();
+        this.lfgService = activity.getLfgService();
         postFilter = new PostFilter();
 
         receiver = new BroadcastReceiver() {
@@ -197,10 +199,9 @@ public class NoticeBoardFragment extends Fragment {
         Log.i(this.getClass().getName(), "loading posts " );
 
         final DeleteConfirmDialog deleteConfirmDialog = new DeleteConfirmDialog(this);
-        final ApplicationConfirmDialog applicationConfirmDialog = new ApplicationConfirmDialog(this);
+        final ApplicationConfirmDialog applicationConfirmDialog = new ApplicationConfirmDialog(this, lfgService);
 
-        LFGServicesImpl lfgServices = new LFGServicesImpl();
-        Call<List<Post>> loginResponse = lfgServices.getSearchForMemberPosts(
+        Call<List<Post>> loginResponse = lfgService.getSearchForMemberPosts(
                 userDetails.getUser().getServer(),
                 userDetails.getUser().getUserId(),
                 postFilter.showAllMaps?null:postFilter.map,
@@ -275,8 +276,7 @@ public class NoticeBoardFragment extends Fragment {
 
     public void deletePost(Integer userId, final Post post) {
         shouldReloadApplications = true;
-        LFGServicesImpl lfgServices = new LFGServicesImpl();
-        Call<Boolean> response = lfgServices.deletePost(userId, post.getPostId());
+        Call<Boolean> response = lfgService.deletePost(userId, post.getPostId());
         response.enqueue(new Callback<Boolean>() {
             @Override
             public void onResponse(Call<Boolean> call, Response<Boolean> response) {

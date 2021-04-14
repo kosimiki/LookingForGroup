@@ -20,12 +20,12 @@ import java.util.List;
  * Created by Miklós on 2016. 12. 10..
  */
 
-public class LFGServicesImpl implements ILFGServicesHelper{
+public class LFGService implements ILFGService {
 
     private static final String BASE_URL = "http://10.0.2.2:8080/";
-    private ILFGServicesHelper servicesHelper;
+    private final ILFGService servicesHelper;
 
-    public LFGServicesImpl() {
+    public LFGService() {
         GsonBuilder builder = new GsonBuilder();
         Gson gson =
                 builder.registerTypeAdapter(Date.class, new JsonDeserializer<Date>() {
@@ -37,7 +37,7 @@ public class LFGServicesImpl implements ILFGServicesHelper{
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
-        servicesHelper = retrofit.create(ILFGServicesHelper.class);
+        servicesHelper = retrofit.create(ILFGService.class);
     }
 
     public Call<Summoner> getSummoner(String name, Server server) {

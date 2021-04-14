@@ -6,10 +6,11 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.util.Log;
 import android.widget.Toast;
-import com.example.lookingforgroup.R;
+
+import hu.blog.megosztanam.R;
 import hu.blog.megosztanam.model.shared.Role;
 import hu.blog.megosztanam.model.shared.post.PostApplyRequest;
-import hu.blog.megosztanam.rest.LFGServicesImpl;
+import hu.blog.megosztanam.rest.ILFGService;
 import hu.blog.megosztanam.sub.menu.NoticeBoardFragment;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -22,14 +23,16 @@ public class ApplicationConfirmDialog {
     private static final String ROLES = "hu.blog.megosztanam.sub.menu.post.ApplicationConfirmDialog.ROLES";
     private static final String USER_ID = "hu.blog.megosztanam.sub.menu.post.ApplicationConfirmDialog.USER_ID";
     private static final String POST_ID = "hu.blog.megosztanam.sub.menu.post.ApplicationConfirmDialog.POST_ID";
+    private final ILFGService lfgService;
 
     private List<String> selectedRoles;
     private List<String> selectableRoles;
     private Activity activity;
     private NoticeBoardFragment noticeBoardFragment;
 
-    public ApplicationConfirmDialog(NoticeBoardFragment fragment){
-        this.noticeBoardFragment = fragment;
+    public ApplicationConfirmDialog(NoticeBoardFragment noticeBoardFragment, ILFGService lfgService) {
+        this.noticeBoardFragment = noticeBoardFragment;
+        this.lfgService = lfgService;
 
     }
 
@@ -85,8 +88,7 @@ public class ApplicationConfirmDialog {
     }
 
     private void applyForPost(PostApplyRequest request) {
-        LFGServicesImpl lfgServices = new LFGServicesImpl();
-        Call<Boolean> response = lfgServices.applyForPost(request);
+        Call<Boolean> response = lfgService.applyForPost(request);
         response.enqueue(new Callback<Boolean>() {
             @Override
             public void onResponse(Call<Boolean> call, Response<Boolean> response) {

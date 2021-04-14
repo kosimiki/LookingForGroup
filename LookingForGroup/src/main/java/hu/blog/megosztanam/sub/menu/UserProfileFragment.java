@@ -14,7 +14,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.lookingforgroup.R;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -22,58 +21,74 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.squareup.picasso.Picasso;
 
+import hu.blog.megosztanam.MainMenuActivity;
+import hu.blog.megosztanam.R;
 import hu.blog.megosztanam.login.GoogleAuthService;
 import hu.blog.megosztanam.login.LoginActivity;
 import hu.blog.megosztanam.login.SaveSharedPreference;
 import hu.blog.megosztanam.model.shared.LoginResponse;
 import hu.blog.megosztanam.model.shared.Summoner;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+import hu.blog.megosztanam.model.shared.User;
+import hu.blog.megosztanam.util.LoLService;
 
 /**
  * Created by Miklós on 2017. 04. 19..
  */
 public class UserProfileFragment extends Fragment {
 
-    private LoginResponse userDetails;
+    private GoogleAuthService authService;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        MainMenuActivity activity = (MainMenuActivity) getActivity();
+        this.authService = activity.getAuthService();
         ViewGroup rootView = (ViewGroup) inflater.inflate(
                 R.layout.user_profile, container, false);
-        userDetails = getArguments().getParcelable(LoginActivity.USER_DETAILS_EXTRA);
-        ImageView imageView = (ImageView) rootView.findViewById(R.id.profile_picture);
-        Log.i(this.getTag(), userDetails.getUser().getProfilePictureUrl());
-        Picasso.with(getActivity().getBaseContext()).load(userDetails.getUser().getProfilePictureUrl()).into(imageView);
+        LoginResponse userDetails = getArguments().getParcelable(LoginActivity.USER_DETAILS_EXTRA);
+        if(userDetails == null) {
+            Log.w("UserProfileFragment", "Missing user details");
+            return rootView;
+        }
 
+        User user = userDetails.getUser();
+
+        ImageView imageView = (ImageView) rootView.findViewById(R.id.profile_picture);
+        Picasso.with(getActivity().getBaseContext()).load(user.getProfilePictureUrl()).into(imageView);
 
         TextView userName = (TextView) rootView.findViewById(R.id.username);
-        userName.setText(userDetails.getUser().getGivenName());
+        userName.setText(user.getGivenName());
 
         TextView summonerName = (TextView) rootView.findViewById(R.id.summoner_name);
-        Summoner summoner = userDetails.getUser().getSummoner();
+        Summoner summoner = user.getSummoner();
         summonerName.setText(summoner.getName());
 
         TextView summonerLevel = (TextView) rootView.findViewById(R.id.profile_lvl);
-        summonerLevel.setText(summoner.getSummonerLevel().toString());
+        summonerLevel.setText(String.valueOf(summoner.getSummonerLevel()));
+
         ImageView summonerIcon = (ImageView) rootView.findViewById(R.id.profile_summoner_icon);
         createLogoutButton(rootView);
+
         TextView summonerServer = (TextView) rootView.findViewById(R.id.server);
-        summonerServer.setText(userDetails.getUser().getServer().getValue());
-        Picasso.with(getActivity().getBaseContext()).load("http://ddragon.leagueoflegends.com/cdn/6.3.1/img/profileicon/" + summoner.getProfileIconId() + ".png").into(summonerIcon);
+        summonerServer.setText(user.getServer().getValue());
+
+        setSummonerIcon(summoner, summonerIcon);
         return rootView;
+    }
+
+    private void setSummonerIcon(Summoner summoner, ImageView summonerIcon) {
+        Picasso.with(getActivity().getBaseContext())
+                .load(LoLService.getSummonerIconUrl(summoner.getProfileIconId()))
+                .into(summonerIcon);
     }
 
     private void createLogoutButton(ViewGroup viewGroup) {
         final Button logoutButton = (Button) viewGroup.findViewById(R.id.logou_button);
         logoutButton.setEnabled(false);
-        final GoogleAuthService authService = new GoogleAuthService(getActivity().getBaseContext());
         authService.getGoogleApiClient().registerConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
             @Override
             public void onConnected(@Nullable Bundle bundle) {
-                Log.i("lougout button", "api connected");
                 logoutButton.setEnabled(true);
             }
 
@@ -82,7 +97,6 @@ public class UserProfileFragment extends Fragment {
 
             }
         });
-        authService.getGoogleApiClient().connect();
 
         logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override

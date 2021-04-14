@@ -1,7 +1,6 @@
 package hu.blog.megosztanam.login;
 
 import android.content.Context;
-import android.support.v4.app.FragmentActivity;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -12,17 +11,11 @@ public class GoogleAuthService {
 
     private final GoogleApiClient googleApiClient;
 
-    public GoogleAuthService(Context context, FragmentActivity fa, GoogleApiClient.OnConnectionFailedListener cfl) {
-        googleApiClient = new GoogleApiClient.Builder(context)
-                .enableAutoManage(fa, cfl)
-                .addApi(Auth.GOOGLE_SIGN_IN_API, getSignInOptions())
-                .build();
-    }
-
     public GoogleAuthService(Context context) {
         googleApiClient = new GoogleApiClient.Builder(context)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, getSignInOptions())
                 .build();
+        googleApiClient.connect();
     }
 
     public GoogleApiClient getGoogleApiClient() {

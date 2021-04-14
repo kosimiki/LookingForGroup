@@ -10,25 +10,26 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.*;
-import com.example.lookingforgroup.R;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInApi;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
-import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.squareup.picasso.Picasso;
+
+import hu.blog.megosztanam.MainApplication;
 import hu.blog.megosztanam.MainMenuActivity;
+import hu.blog.megosztanam.R;
 import hu.blog.megosztanam.model.parcelable.ParcelableLoginResponse;
 import hu.blog.megosztanam.model.shared.LoginResponse;
 import hu.blog.megosztanam.model.shared.Summoner;
+import hu.blog.megosztanam.model.shared.User;
 import hu.blog.megosztanam.model.shared.messaging.Messaging;
 import hu.blog.megosztanam.model.shared.summoner.Server;
-import hu.blog.megosztanam.rest.LFGServicesImpl;
+import hu.blog.megosztanam.rest.ILFGService;
+import hu.blog.megosztanam.rest.LFGService;
+import hu.blog.megosztanam.util.LoLService;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -40,7 +41,7 @@ import java.util.Locale;
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor>, View.OnClickListener, GoogleApiClient.OnConnectionFailedListener {
+public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor>, View.OnClickListener {
 
 
     private static final String TAG = "LoginActivity";
@@ -62,10 +63,16 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private TextView foundSummonerName;
     private TextView summonerLevelLabel;
     private LinearLayout regForm;
+    private GoogleAuthService authService;
+    private ILFGService lfgService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        MainApplication application = (MainApplication) getApplication();
+        authService = application.getAppContainer().getAuthService();
+        lfgService = application.getAppContainer().getLfgService();
+
         FirebaseMessaging.getInstance().subscribeToTopic(Messaging.NEW_POSTS_TOPIC);
         server = Server.EUW;
         registrationRequired = false;
@@ -177,7 +184,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         if (registrationRequired) {
             handleSummonerName(summonerName.getQuery().toString());
         } else {
-            GoogleAuthService authService = new GoogleAuthService(this, this, this);
             Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(authService.getGoogleApiClient());
             startActivityForResult(signInIntent, RC_SIGN_IN);
         }
@@ -197,8 +203,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         idToken = token;
         Log.i(TAG, "THIS IS NEW THREAD ");
         Log.i(TAG, "GOT TOKEN: " + idToken);
-        LFGServicesImpl lfgServices = new LFGServicesImpl();
-        Call<LoginResponse> loginResponse = lfgServices.doLogin(idToken);
+        Call<LoginResponse> loginResponse = lfgService.doLogin(idToken);
         loginResponse.enqueue(new Callback<LoginResponse>() {
             @Override
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
@@ -232,7 +237,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     }
 
     private void updateUISuccessfulLogin(LoginResponse response) {
-        mStatusTextView.setText(response.getUser().getGivenName() + " " + response.getUser().getSummoner().getName());
+        User user = response.getUser();
+        String text = user.getGivenName() + " " + user.getSummoner().getName();
+        mStatusTextView.setText(text);
         findViewById(R.id.sign_in_button).setVisibility(View.GONE);
         summonerName.setVisibility(View.GONE);
         Log.i(TAG, "START NEW ACTIVITY");
@@ -251,7 +258,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     private void handleSignInResult(GoogleSignInResult result) {
         Log.d(TAG, "handleSignInResult:" + result.isSuccess());
-        if (result.isSuccess()) {
+        if (result.isSuccess() && result.getSignInAccount() != null) {
             acct = result.getSignInAccount();
             idToken = acct.getIdToken();
             doBackEndLogin(acct.getIdToken());
@@ -293,13 +300,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         registrationRequired = true;
     }
 
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-    }
-
     private void handleSummonerName(String name) {
-        LFGServicesImpl lfgServices = new LFGServicesImpl();
-        Call<Summoner> summonerCall = lfgServices.getSummoner(name, server);
+        Call<Summoner> summonerCall = lfgService.getSummoner(name, server);
         summonerCall.enqueue(new Callback<Summoner>() {
             @Override
             public void onResponse(Call<Summoner> call, Response<Summoner> response) {
@@ -324,8 +326,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
 
     private void getSummonerDetails(String name) {
-        LFGServicesImpl lfgServices = new LFGServicesImpl();
-        Call<Summoner> summonerCall = lfgServices.getSummoner(name, server);
+        Call<Summoner> summonerCall = lfgService.getSummoner(name, server);
         summonerCall.enqueue(new Callback<Summoner>() {
             @Override
             public void onResponse(Call<Summoner> call, Response<Summoner> response) {
@@ -335,12 +336,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         updateUI("NO SUMMONER FOUND");
 
                     } else {
-                        try {
-                            Picasso.with(getBaseContext()).load("http://avatar.leagueoflegends.com/" + server.getValue() + "/" + URLEncoder.encode(summoner.getName(), "utf-8") + ".png").into(summonerIcon);
-                        } catch (UnsupportedEncodingException e) {
-                            e.printStackTrace();
-                        }
-
+                        Picasso.with(getBaseContext())
+                                .load(LoLService.getSummonerIconUrl(summoner.getProfileIconId()))
+                                .into(summonerIcon);
                         updateUI(true, "Summoner found!", summoner);
 
                     }
@@ -360,9 +358,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     private void handleRegistration(String summonerId) {
         Log.i(TAG, "REG SUMMONER:  " + summonerId);
-
-        LFGServicesImpl lfgServices = new LFGServicesImpl();
-        Call<LoginResponse> loginResponse = lfgServices.doRegistration(idToken, summonerId, server);
+        Call<LoginResponse> loginResponse = lfgService.doRegistration(idToken, summonerId, server);
         loginResponse.enqueue(new Callback<LoginResponse>() {
             @Override
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
@@ -398,9 +394,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     }
 
     private void updateFirebaseId(Integer userId, String firebaseId) {
-        LFGServicesImpl lfgServices = new LFGServicesImpl();
         Log.i(TAG, "Logging in...");
-        Call<Void> loginResponse = lfgServices.updateFirebaseId(userId, firebaseId);
+        Call<Void> loginResponse = lfgService.updateFirebaseId(userId, firebaseId);
         loginResponse.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {

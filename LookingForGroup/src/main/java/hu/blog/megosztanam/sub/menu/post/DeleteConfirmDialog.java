@@ -5,7 +5,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.util.Log;
-import com.example.lookingforgroup.R;
+import hu.blog.megosztanam.R;
 import hu.blog.megosztanam.model.shared.Post;
 import hu.blog.megosztanam.sub.menu.NoticeBoardFragment;
 
@@ -23,7 +23,7 @@ public class DeleteConfirmDialog {
     }
 
     public Dialog createDialog(Activity activity, final Integer userId, final Post post) {
-        this.postId = postId;
+        this.postId = post.getPostId();
         this.activity = activity;
         this.userId = userId;
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);

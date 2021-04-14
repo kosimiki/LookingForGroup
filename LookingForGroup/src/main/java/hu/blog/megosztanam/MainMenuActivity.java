@@ -6,19 +6,21 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import com.example.lookingforgroup.R;
-import hu.blog.megosztanam.sub.menu.ApplicationsFragment;
-import hu.blog.megosztanam.sub.menu.NoticeBoardFragment;
-import hu.blog.megosztanam.sub.menu.UserProfileFragment;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainMenuActivity extends AppCompatActivity {
+import hu.blog.megosztanam.dependency.BackendServiceDependency;
+import hu.blog.megosztanam.dependency.GoogleAuthServiceDependency;
+import hu.blog.megosztanam.login.GoogleAuthService;
+import hu.blog.megosztanam.rest.ILFGService;
+import hu.blog.megosztanam.sub.menu.ApplicationsFragment;
+import hu.blog.megosztanam.sub.menu.NoticeBoardFragment;
+import hu.blog.megosztanam.sub.menu.UserProfileFragment;
+
+public class MainMenuActivity extends AppCompatActivity implements BackendServiceDependency, GoogleAuthServiceDependency {
     private UserProfileFragment userProfileFragment;
     private NoticeBoardFragment noticeBoardFragment;
     private ApplicationsFragment applicationsFragment;
@@ -29,7 +31,6 @@ public class MainMenuActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         userProfileFragment = new UserProfileFragment();
         userProfileFragment.setArguments(getIntent().getExtras());
         noticeBoardFragment = new NoticeBoardFragment();
@@ -65,14 +66,15 @@ public class MainMenuActivity extends AppCompatActivity {
 
 
     }
-    private void updatePosts(Integer position){
-        if(position == 1 && noticeBoardFragment.canLoad()){
+
+    private void updatePosts(Integer position) {
+        if (position == 1 && noticeBoardFragment.canLoad()) {
             noticeBoardFragment.loadPosts();
         }
     }
 
-    private void reloadApplications(Integer position){
-        if(position == 2 && noticeBoardFragment.getShouldReloadApplications()){
+    private void reloadApplications(Integer position) {
+        if (position == 2 && noticeBoardFragment.getShouldReloadApplications()) {
             noticeBoardFragment.setShouldReloadApplications(false);
             applicationsFragment.loadPosts();
         }
@@ -84,6 +86,18 @@ public class MainMenuActivity extends AppCompatActivity {
         adapter.addFragment(noticeBoardFragment, "Notice Board");
         adapter.addFragment(applicationsFragment, "Applicants");
         viewPager.setAdapter(adapter);
+    }
+
+    @Override
+    public ILFGService getLfgService() {
+        MainApplication application = (MainApplication) getApplication();
+        return application.getAppContainer().getLfgService();
+    }
+
+    @Override
+    public GoogleAuthService getAuthService() {
+        MainApplication application = (MainApplication) getApplication();
+        return application.getAppContainer().getAuthService();
     }
 
     class ViewPagerAdapter extends FragmentPagerAdapter {
