@@ -13,6 +13,7 @@ import android.widget.*;
 import com.example.lookingforgroup.R;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInApi;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
@@ -44,9 +45,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     private static final String TAG = "LoginActivity";
     public static final String USER_DETAILS_EXTRA = "hu.blog.megosztanam.user.extra";
-    private static final String CLIENT_ID = "212782821519-vi2k0kd4jnp5ikasas879h3hm22ivtdd.apps.googleusercontent.com";
     private static final int RC_SIGN_IN = 9001;
-    private GoogleApiClient mGoogleApiClient;
     private TextView mStatusTextView;
 
     private SearchView summonerName;
@@ -91,16 +90,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         );
 
         Log.i(TAG, "FireBase: " + FirebaseInstanceId.getInstance().getToken());
-
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(CLIENT_ID)
-                .requestEmail()
-                .build();
-
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this, this)
-                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                .build();
 
 
         googleSignInButton = (SignInButton) findViewById(R.id.sign_in_button);
@@ -188,7 +177,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         if (registrationRequired) {
             handleSummonerName(summonerName.getQuery().toString());
         } else {
-            Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+            GoogleAuthService authService = new GoogleAuthService(this, this, this);
+            Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(authService.getGoogleApiClient());
             startActivityForResult(signInIntent, RC_SIGN_IN);
         }
     }

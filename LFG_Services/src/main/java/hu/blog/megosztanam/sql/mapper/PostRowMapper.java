@@ -31,8 +31,9 @@ public class PostRowMapper implements RowMapper<Post> {
         Post post = new Post();
         post.setServer(Server.valueOf(rs.getString("server")));
         post.setPostId(rs.getInt("id"));
-        post.setUserId(rs.getInt("user_id"));
-        post.setOwner(summonerCache.get(rs.getString("summoner_id"), post.getServer()));
+        int userId = rs.getInt("user_id");
+        post.setUserId(userId);
+        post.setOwner(summonerCache.getByUserId(userId));
         post.setCreatedAt(rs.getTimestamp("created_at"));
         post.setDescription(rs.getString("description"));
         post.setGameType(new GameType(GameMap.valueOf(rs.getString("map")), rs.getBoolean("ranked")));

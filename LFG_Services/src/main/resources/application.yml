@@ -8,7 +8,7 @@ spring:
 
 lol:
   api:
-    key: ?api_key=RGAPI-e1f18854-0acd-48fe-b318-b793385afa42
+    key: ?api_key=RGAPI-c6bd2441-967a-4ad0-a10c-dd9ba5f1756d
 
 google:
   cloud:
