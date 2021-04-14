@@ -37,6 +37,7 @@ import java.util.List;
  */
 public class NoticeBoardFragment extends Fragment {
 
+    private static final String TAG = "NoticeBoardFragment";
     private ViewGroup rootView;
     private ParcelableLoginResponse userDetails;
     private BroadcastReceiver receiver;
@@ -76,7 +77,7 @@ public class NoticeBoardFragment extends Fragment {
             @Override
             public void onReceive(Context context, Intent intent) {
                 String s = intent.getStringExtra(MessagingService.MESSAGE);
-                // do something here.
+                Log.i(TAG, "Got extra: " + s);
             }
         };
 
@@ -162,7 +163,7 @@ public class NoticeBoardFragment extends Fragment {
                 String selected = (String) adapterView.getItemAtPosition(i);
                 switch (selected){
                     case filter_all_maps:
-                        postFilter.showAllMaps = selected.equals("All maps"); break;
+                        postFilter.showAllMaps = true; break;
                     case filter_summoners_rift:
                         postFilter.showAllMaps = false;
                         postFilter.map = GameMap.SUMMONERS_RIFT;

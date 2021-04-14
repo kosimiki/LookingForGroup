@@ -20,7 +20,7 @@ public class FirebaseInstanceIDService extends FirebaseInstanceIdService {
         // If you want to send messages to this application instance or
         // manage this apps subscriptions on the server side, send the
         // Instance ID token to your app server.
-//todo send this to backend server
+        // todo send this to backend server
    }
 
 }

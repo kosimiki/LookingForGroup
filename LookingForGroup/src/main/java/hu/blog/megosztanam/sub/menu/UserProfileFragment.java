@@ -16,6 +16,7 @@ import com.squareup.picasso.Picasso;
 import hu.blog.megosztanam.login.LoginActivity;
 import hu.blog.megosztanam.login.SaveSharedPreference;
 import hu.blog.megosztanam.model.shared.LoginResponse;
+import hu.blog.megosztanam.model.shared.Summoner;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -42,10 +43,11 @@ public class UserProfileFragment extends Fragment {
         userName.setText(userDetails.getUser().getGivenName());
 
         TextView summonerName = (TextView) rootView.findViewById(R.id.summoner_name);
-        summonerName.setText(userDetails.getUser().getSummoner().getName());
+        Summoner summoner = userDetails.getUser().getSummoner();
+        summonerName.setText(summoner.getName());
 
         TextView summonerLevel = (TextView) rootView.findViewById(R.id.profile_lvl);
-        summonerLevel.setText(userDetails.getUser().getSummoner().getSummonerLevel().toString());
+        summonerLevel.setText(summoner.getSummonerLevel().toString());
         ImageView summonerIcon = (ImageView) rootView.findViewById(R.id.profile_summoner_icon);
         Button logoutButton = (Button) rootView.findViewById(R.id.logou_button);
         logoutButton.setOnClickListener(new View.OnClickListener() {
@@ -58,11 +60,7 @@ public class UserProfileFragment extends Fragment {
         });
         TextView summonerServer = (TextView) rootView.findViewById(R.id.server);
         summonerServer.setText(userDetails.getUser().getServer().getValue());
-        try {
-            Picasso.with(getActivity().getBaseContext()).load("http://avatar.leagueoflegends.com/"+ userDetails.getUser().getServer().getValue() +"/"+ URLEncoder.encode(userDetails.getUser().getSummoner().getName(), "utf-8") +".png").into(summonerIcon);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+        Picasso.with(getActivity().getBaseContext()).load("http://ddragon.leagueoflegends.com/cdn/6.3.1/img/profileicon/" + summoner.getProfileIconId() +".png").into(summonerIcon);
         return rootView;
     }
 }

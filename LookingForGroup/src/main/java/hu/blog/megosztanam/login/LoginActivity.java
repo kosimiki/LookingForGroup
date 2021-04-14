@@ -98,7 +98,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 .build();
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
+                .enableAutoManage(this, this)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
 
@@ -146,7 +146,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     private void checkLogin() {
         String token = SaveSharedPreference.getIdToken(this.getBaseContext());
-        if (token != null && !token.isEmpty()) {
+        if (!token.isEmpty()) {
             doBackEndLogin(token);
         }
     }
