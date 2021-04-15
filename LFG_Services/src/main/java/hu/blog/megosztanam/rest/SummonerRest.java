@@ -94,6 +94,7 @@ public class SummonerRest {
     @RequestMapping(value = "/posts/apply", method = RequestMethod.POST)
     public Boolean applyForPost(
             @RequestBody @NotNull PostApplyRequest request) {
+        log.info("POST APPLICATION " + request.toString());
         return postService.applyForPost(request);
     }
 

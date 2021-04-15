@@ -224,11 +224,9 @@ public class NoticeBoardFragment extends Fragment {
                     recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getContext(), recyclerView ,new RecyclerItemClickListener.OnItemClickListener() {
                         @Override public void onItemClick(View view, int position) {
                             Log.i("ITEM_CLICK", "onItemClick started");
-
                             Post post = posts.get(position);
                             if(post.getIsOwner()){
                                 Log.i("ITEM_CLICK DELETE", "clicked post: " + post.toString());
-
                                 deleteConfirmDialog.createDialog(getActivity(), userDetails.getUser().getUserId(), post).show();
                             }else if(post.getCanApply()){
                                 Log.i("ITEM_CLICK", "clicked post: " + post.toString());

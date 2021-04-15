@@ -10,7 +10,6 @@ import hu.blog.megosztanam.model.shared.elo.Division;
 import hu.blog.megosztanam.model.shared.elo.Rank;
 import hu.blog.megosztanam.model.shared.elo.Tier;
 import hu.blog.megosztanam.model.shared.summoner.Server;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
@@ -25,8 +24,11 @@ import java.sql.SQLException;
 @Component
 public class SearchForMemberPostRowMapper implements RowMapper<Post> {
 
-    @Autowired
-    private SummonerCache summonerCache;
+    private final SummonerCache summonerCache;
+
+    public SearchForMemberPostRowMapper(SummonerCache summonerCache) {
+        this.summonerCache = summonerCache;
+    }
 
     @Override
     public Post mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -48,7 +50,7 @@ public class SearchForMemberPostRowMapper implements RowMapper<Post> {
         post.setPostType(PostType.valueOf(rs.getString("post_type")));
 
         Boolean isOwner = post.getUserId() == rs.getInt("query_user");
-        Boolean alreadyApplied = rs.getBoolean("applied");
+        boolean alreadyApplied = rs.getInt("applied") > 0;
         post.setIsOwner(isOwner);
         post.setCanApply(!isOwner && !alreadyApplied);
         return post;

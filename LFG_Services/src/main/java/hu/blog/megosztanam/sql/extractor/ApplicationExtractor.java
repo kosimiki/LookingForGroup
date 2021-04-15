@@ -48,7 +48,7 @@ public class ApplicationExtractor implements ResultSetExtractor<List<PostApplyRe
             ids.userId = rs.getInt("user_id");
             ids.post = postRowMapper.mapRow(rs,0);
             ids.summonerId = rs.getString("summoner_id");
-            ids.server = Server.valueOf(rs.getString("region"));
+            ids.server = Server.valueOf(rs.getString("region").replaceAll(" ", ""));
             ids.applicationDate = rs.getTimestamp("date_of_application");
             map.computeIfAbsent(ids, key-> new ArrayList<>());
             map.get(ids).add(Role.valueOf(rs.getString("role")));

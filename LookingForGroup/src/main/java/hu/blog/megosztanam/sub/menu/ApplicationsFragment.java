@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -46,7 +45,7 @@ public class ApplicationsFragment extends Fragment {
             String message = intent.getStringExtra(MessagingService.MESSAGE);
             boolean isPost = intent.getBooleanExtra(MessagingService.MESSAGE_TYPE_IS_POST, true);
             if (!isPost) {
-                loadPosts();
+                loadApplications();
             }
             Log.i(ApplicationsFragment.class.getName(), "Got message: " + message);
         }
@@ -58,14 +57,13 @@ public class ApplicationsFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         MainMenuActivity activity = (MainMenuActivity) getActivity();
         this.ilfgService = activity.getLfgService();
-        loadPosts();
+        loadApplications();
         LocalBroadcastManager.getInstance(activity).registerReceiver(mMessageReceiver,
                 new IntentFilter(MessagingService.RESULT));
     }
 
     @Override
     public void onDestroy() {
-        // Unregister since the activity is about to be closed.
         LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mMessageReceiver);
         super.onDestroy();
     }
@@ -85,12 +83,12 @@ public class ApplicationsFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        loadPosts();
+        loadApplications();
     }
 
-    public void loadPosts() {
-        Call<List<PostApplyResponse>> loginResponse = ilfgService.getApplications(userDetails.getUser().getUserId());
-        loginResponse.enqueue(new Callback<List<PostApplyResponse>>() {
+    public void loadApplications() {
+        Call<List<PostApplyResponse>> applicationResponse = ilfgService.getApplications(userDetails.getUser().getUserId());
+        applicationResponse.enqueue(new Callback<List<PostApplyResponse>>() {
             @Override
             public void onResponse(Call<List<PostApplyResponse>> call, Response<List<PostApplyResponse>> response) {
                 if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {

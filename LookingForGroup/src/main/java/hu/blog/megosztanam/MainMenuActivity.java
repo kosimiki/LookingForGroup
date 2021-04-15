@@ -76,7 +76,7 @@ public class MainMenuActivity extends AppCompatActivity implements BackendServic
     private void reloadApplications(Integer position) {
         if (position == 2 && noticeBoardFragment.getShouldReloadApplications()) {
             noticeBoardFragment.setShouldReloadApplications(false);
-            applicationsFragment.loadPosts();
+            applicationsFragment.loadApplications();
         }
     }
 
