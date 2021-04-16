@@ -3,9 +3,6 @@ package hu.blog.megosztanam.sub.menu;
 
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,11 +11,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.PendingResult;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
+import androidx.fragment.app.Fragment;
+
 import com.squareup.picasso.Picasso;
 
 import hu.blog.megosztanam.MainMenuActivity;
@@ -47,7 +41,7 @@ public class UserProfileFragment extends Fragment {
         ViewGroup rootView = (ViewGroup) inflater.inflate(
                 R.layout.user_profile, container, false);
         LoginResponse userDetails = getArguments().getParcelable(LoginActivity.USER_DETAILS_EXTRA);
-        if(userDetails == null) {
+        if (userDetails == null) {
             Log.w("UserProfileFragment", "Missing user details");
             return rootView;
         }
@@ -85,33 +79,15 @@ public class UserProfileFragment extends Fragment {
 
     private void createLogoutButton(ViewGroup viewGroup) {
         final Button logoutButton = viewGroup.findViewById(R.id.logou_button);
-        logoutButton.setEnabled(false);
-        authService.getGoogleApiClient().registerConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
-            @Override
-            public void onConnected(@Nullable Bundle bundle) {
-                logoutButton.setEnabled(true);
-            }
 
-            @Override
-            public void onConnectionSuspended(int i) {
-
-            }
-        });
 
         logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                GoogleApiClient googleApiClient = authService.getGoogleApiClient();
-                PendingResult<Status> statusPendingResult = Auth.GoogleSignInApi.signOut(googleApiClient);
-                statusPendingResult.setResultCallback(new ResultCallback<Status>() {
-                    @Override
-                    public void onResult(@NonNull Status status) {
-                        SaveSharedPreference.setTokenId(getActivity().getBaseContext(), "");
-                        final Intent redirect = new Intent(getActivity(), LoginActivity.class);
-                        getActivity().startActivity(redirect);
-                    }
-                });
-
+                authService.getGoogleSignInClient().signOut();
+                SaveSharedPreference.setTokenId(getActivity().getBaseContext(), "");
+                final Intent redirect = new Intent(getActivity(), LoginActivity.class);
+                getActivity().startActivity(redirect);
             }
         });
     }

@@ -11,6 +11,8 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 
 /**
  * Created by Miklós on 2016. 12. 10..
@@ -75,5 +77,9 @@ public class UserDao {
         return template.queryForObject("SELECT user_id, summoner_id, region FROM users WHERE user_id = :userId",
                 new MapSqlParameterSource("userId", userId), new DetailsRowMapper());
 
+    }
+
+    public Optional<String> getUser(String username) {
+        return null;
     }
 }

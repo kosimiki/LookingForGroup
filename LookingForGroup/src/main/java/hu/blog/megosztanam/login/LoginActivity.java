@@ -1,9 +1,6 @@
 package hu.blog.megosztanam.login;
 
-import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Intent;
-import android.content.Loader;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -18,12 +15,13 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.SignInButton;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.squareup.picasso.Picasso;
 
@@ -36,7 +34,6 @@ import hu.blog.megosztanam.model.parcelable.ParcelableLoginResponse;
 import hu.blog.megosztanam.model.shared.LoginResponse;
 import hu.blog.megosztanam.model.shared.Summoner;
 import hu.blog.megosztanam.model.shared.User;
-import hu.blog.megosztanam.model.shared.messaging.Messaging;
 import hu.blog.megosztanam.model.shared.summoner.Server;
 import hu.blog.megosztanam.rest.ILFGService;
 import hu.blog.megosztanam.util.LoLService;
@@ -47,7 +44,7 @@ import retrofit2.Response;
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor>, View.OnClickListener {
+public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
 
     private static final String TAG = "LoginActivity";
@@ -59,7 +56,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private boolean registrationRequired;
     private String idToken;
     private GoogleSignInAccount acct;
-    private Server server;
+    private Server server = Server.EUW;
     private RadioGroup radioGroup;
     private Button acceptSummonerButton;
     private Button searchSummonerButton;
@@ -77,9 +74,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         MainApplication application = (MainApplication) getApplication();
         authService = application.getAppContainer().getAuthService();
         lfgService = application.getAppContainer().getLfgService();
-
-        FirebaseMessaging.getInstance().subscribeToTopic(Messaging.NEW_POSTS_TOPIC);
-        server = Server.EUW;
         registrationRequired = false;
         setContentView(R.layout.activity_login);
         foundSummonerName = findViewById(R.id.found_summoner_name);
@@ -99,8 +93,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                                 }
                                             }
         );
-
-        Log.i(TAG, "FireBase: " + FirebaseInstanceId.getInstance().getToken());
 
 
         googleSignInButton = findViewById(R.id.sign_in_button);
@@ -125,7 +117,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         radioGroup = findViewById(R.id.region_group);
 
-        Log.i(TAG, "SET ON CHECK");
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -142,6 +133,15 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         regForm = findViewById(R.id.email_login_form);
         regForm.setVisibility(View.GONE);
 
+        authService.getGoogleSignInClient().silentSignIn()
+                .addOnCompleteListener(
+                        this,
+                        new OnCompleteListener<GoogleSignInAccount>() {
+                            @Override
+                            public void onComplete(@NonNull Task<GoogleSignInAccount> task) {
+                                handleSignInResult(task);
+                            }
+                        });
     }
 
     @Override
@@ -149,18 +149,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                            @NonNull int[] grantResults) {
     }
 
-    @Override
-    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        return null;
-    }
 
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> cursorLoader) {
-    }
 
     @Override
     public void onClick(View v) {
@@ -181,7 +170,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         if (registrationRequired) {
             handleSummonerName(summonerName.getQuery().toString());
         } else {
-            Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(authService.getGoogleApiClient());
+            Intent signInIntent = authService.getGoogleSignInClient().getSignInIntent();
             startActivityForResult(signInIntent, RC_SIGN_IN);
         }
     }
@@ -189,10 +178,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         if (requestCode == RC_SIGN_IN) {
-            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            handleSignInResult(result);
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            handleSignInResult(task);
         }
     }
 
@@ -249,14 +237,15 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         startActivity(intent);
     }
 
-    private void handleSignInResult(GoogleSignInResult result) {
-        Log.d(TAG, "handleSignInResult:" + result.isSuccess());
-        if (result.isSuccess() && result.getSignInAccount() != null) {
-            acct = result.getSignInAccount();
-            idToken = acct.getIdToken();
-            doBackEndLogin(acct.getIdToken());
-        } else {
-            updateUI(result.getStatus().toString());
+
+    private void handleSignInResult(@NonNull Task<GoogleSignInAccount> completedTask) {
+        try {
+            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+            idToken = account.getIdToken();
+            doBackEndLogin(account.getIdToken());
+        } catch (ApiException e) {
+            Log.w(TAG, "handleSignInResult:error", e);
+            updateUI("Logged off");
         }
     }
 
@@ -264,8 +253,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         if (accept) {
             foundSummonerName.setText(summoner.getName());
             summonerLevel.setText(String.format(Locale.ENGLISH, "LVL: %d", summoner.getSummonerLevel()));
-        } else {
-            googleSignInButton.setVisibility(View.GONE);
         }
         acceptSummonerButton.setEnabled(accept);
         mStatusTextView.setText(msg);

@@ -20,7 +20,9 @@ public class AuthInterceptor implements Interceptor {
     public Response intercept(Chain chain) throws IOException {
         Request.Builder builder = chain.request().newBuilder();
         int userId = SaveSharedPreference.getUserId(context);
+        String idToken = SaveSharedPreference.getIdToken(context);
         builder.addHeader("userId", String.valueOf(userId));
+        builder.addHeader("Authorization", idToken);
 
         return chain.proceed(builder.build());
     }

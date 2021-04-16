@@ -2,7 +2,15 @@ package hu.blog.megosztanam;
 
 
 import android.os.Bundle;
+
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.messaging.FirebaseMessaging;
+
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
@@ -15,6 +23,7 @@ import java.util.List;
 import hu.blog.megosztanam.dependency.BackendServiceDependency;
 import hu.blog.megosztanam.dependency.GoogleAuthServiceDependency;
 import hu.blog.megosztanam.login.GoogleAuthService;
+import hu.blog.megosztanam.model.shared.messaging.Messaging;
 import hu.blog.megosztanam.rest.ILFGService;
 import hu.blog.megosztanam.sub.menu.ApplicationsFragment;
 import hu.blog.megosztanam.sub.menu.NoticeBoardFragment;
@@ -25,12 +34,11 @@ public class MainMenuActivity extends AppCompatActivity implements BackendServic
     private NoticeBoardFragment noticeBoardFragment;
     private ApplicationsFragment applicationsFragment;
 
-    private TabLayout tabLayout;
-    private ViewPager viewPager;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FirebaseMessaging.getInstance().subscribeToTopic(Messaging.NEW_POSTS_TOPIC);
+        FirebaseMessaging.getInstance().subscribeToTopic(Messaging.POST_DELETED);
         userProfileFragment = new UserProfileFragment();
         userProfileFragment.setArguments(getIntent().getExtras());
         noticeBoardFragment = new NoticeBoardFragment();
@@ -40,28 +48,11 @@ public class MainMenuActivity extends AppCompatActivity implements BackendServic
 
         setContentView(R.layout.main_menu_layout);
 
-        viewPager = findViewById(R.id.viewpager);
+        ViewPager viewPager = findViewById(R.id.viewpager);
         setupViewPager(viewPager);
         viewPager.setOffscreenPageLimit(2);
 
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-//                updatePosts(position);
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
-
-        tabLayout = findViewById(R.id.tabs);
+        TabLayout tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
 
 
@@ -97,7 +88,6 @@ public class MainMenuActivity extends AppCompatActivity implements BackendServic
 
         @Override
         public Fragment getItem(int position) {
-
             return mFragmentList.get(position);
         }
 

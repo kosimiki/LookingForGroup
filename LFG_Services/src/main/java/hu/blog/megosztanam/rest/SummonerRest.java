@@ -43,7 +43,6 @@ public class SummonerRest {
     @RequestMapping(value = "/post", method = RequestMethod.POST)
     public Integer saveLookingForMemberPost(
             @RequestBody @NotNull Post post) {
-        log.info("summoner from rest: " + post.toString());
         return postService.saveLookingForMoreNotice(post);
     }
 
@@ -63,7 +62,7 @@ public class SummonerRest {
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public LoginResponse doLogin(@RequestBody String idToken) {
-        LoginResponse response = userService.doLogin(idToken);
+        LoginResponse response = userService.doLogin(idToken.replaceAll("\"", ""));
         log.info(response.toString());
         return response;
     }
