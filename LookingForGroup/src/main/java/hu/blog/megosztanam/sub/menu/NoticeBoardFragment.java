@@ -83,12 +83,13 @@ public class NoticeBoardFragment extends Fragment {
             }
         });
 
-        loadPosts();
+        loadPosts("activity created");
         loadFilter();
         mMessageReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                loadPosts();
+                Log.i(TAG, "fromMessageService: "  + intent.getStringExtra("fromMessageService"));
+                loadPosts("new post");
             }
         };
         IntentFilter intentFilter = new IntentFilter(MessagingService.NEW_POST);
@@ -100,6 +101,12 @@ public class NoticeBoardFragment extends Fragment {
     public void onDestroy() {
         LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mMessageReceiver);
         super.onDestroy();
+    }
+
+    @Override
+    public void onPause() {
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mMessageReceiver);
+        super.onPause();
     }
 
     @Override
@@ -122,19 +129,10 @@ public class NoticeBoardFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 postFilter.showRanked = b;
-                loadPosts();
+                loadPosts("checkbox");
             }
         });
 
-        CheckBox normalCheckbox = rootView.findViewById(R.id.normal_checkbox);
-        normalCheckbox.setChecked(postFilter.showNormal);
-        normalCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                postFilter.showNormal = b;
-                loadPosts();
-            }
-        });
         List<String> strings = new ArrayList<>();
         strings.add(filter_all_maps);
         strings.add(filter_summoners_rift);
@@ -166,19 +164,19 @@ public class NoticeBoardFragment extends Fragment {
                         postFilter.map = GameMap.TWISTED_TREE_LINE;
                         break;
                 }
-                loadPosts();
+                loadPosts("map selected");
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
                 postFilter.showAllMaps = true;
-                loadPosts();
+                loadPosts("show all maps");
             }
         });
     }
 
-    public void loadPosts() {
-        Log.i(this.getClass().getName(), "loading posts ");
+    public void loadPosts(String reason) {
+        Log.i(this.getClass().getName(), "loading posts - " + reason);
 
         final DeleteConfirmDialog deleteConfirmDialog = new DeleteConfirmDialog(this);
         final ApplicationConfirmDialog applicationConfirmDialog = new ApplicationConfirmDialog(this, lfgService);
@@ -199,7 +197,7 @@ public class NoticeBoardFragment extends Fragment {
                     recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getContext(), recyclerView, new RecyclerItemClickListener.OnItemClickListener() {
                         @Override
                         public void onItemClick(View view, int position) {
-                            Log.i(TAG, "Clicked: " + position);
+                            PostAdapter adapter = (PostAdapter) recyclerView.getAdapter();
                             Post post = adapter.getPost(position);
                             if (post.getIsOwner()) {
                                 deleteConfirmDialog.createDialog(getActivity(), userId, post, position).show();
@@ -232,7 +230,6 @@ public class NoticeBoardFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        loadPosts();
     }
 
     public void deletePost(Integer userId, final Post post, final int position) {

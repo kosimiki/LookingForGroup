@@ -79,7 +79,12 @@ public class ApplicationsFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        loadApplications();
+    }
+
+    @Override
+    public void onPause() {
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mMessageReceiver);
+        super.onPause();
     }
 
     public void loadApplications() {

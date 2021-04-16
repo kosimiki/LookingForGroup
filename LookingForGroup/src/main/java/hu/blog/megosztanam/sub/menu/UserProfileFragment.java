@@ -54,23 +54,23 @@ public class UserProfileFragment extends Fragment {
 
         User user = userDetails.getUser();
 
-        ImageView imageView = (ImageView) rootView.findViewById(R.id.profile_picture);
+        ImageView imageView = rootView.findViewById(R.id.profile_picture);
         Picasso.with(getActivity().getBaseContext()).load(user.getProfilePictureUrl()).into(imageView);
 
-        TextView userName = (TextView) rootView.findViewById(R.id.username);
+        TextView userName = rootView.findViewById(R.id.username);
         userName.setText(user.getGivenName());
 
-        TextView summonerName = (TextView) rootView.findViewById(R.id.summoner_name);
+        TextView summonerName = rootView.findViewById(R.id.summoner_name);
         Summoner summoner = user.getSummoner();
         summonerName.setText(summoner.getName());
 
-        TextView summonerLevel = (TextView) rootView.findViewById(R.id.profile_lvl);
+        TextView summonerLevel = rootView.findViewById(R.id.profile_lvl);
         summonerLevel.setText(String.valueOf(summoner.getSummonerLevel()));
 
-        ImageView summonerIcon = (ImageView) rootView.findViewById(R.id.profile_summoner_icon);
+        ImageView summonerIcon = rootView.findViewById(R.id.profile_summoner_icon);
         createLogoutButton(rootView);
 
-        TextView summonerServer = (TextView) rootView.findViewById(R.id.server);
+        TextView summonerServer = rootView.findViewById(R.id.server);
         summonerServer.setText(user.getServer().getValue());
 
         setSummonerIcon(summoner, summonerIcon);
@@ -84,7 +84,7 @@ public class UserProfileFragment extends Fragment {
     }
 
     private void createLogoutButton(ViewGroup viewGroup) {
-        final Button logoutButton = (Button) viewGroup.findViewById(R.id.logou_button);
+        final Button logoutButton = viewGroup.findViewById(R.id.logou_button);
         logoutButton.setEnabled(false);
         authService.getGoogleApiClient().registerConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
             @Override

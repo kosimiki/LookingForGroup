@@ -48,12 +48,17 @@ public class MessagingService extends FirebaseMessagingService {
         if ("/topics/NEW_POST".equals(from)) {
             intent = new Intent(NEW_POST);
             intent.putExtra("method", "POST");
+            intent.putExtra("fromMessageService", "true NEW");
         } else if ("/topics/POST_DELETED".equals(from)) {
             intent = new Intent(DELETED_POST);
             intent.putExtra("method", "DELETE");
             intent.putExtra("postId", remoteMessage.getData().get("postId"));
+            intent.putExtra("fromMessageService", "true DEL ");
+
         } else {
             intent = new Intent(NEW_APPLICATION);
+            intent.putExtra("fromMessageService", "true OTHER");
+
         }
         broadcastManager.sendBroadcast(intent);
 

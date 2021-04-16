@@ -31,14 +31,17 @@ public class PostServiceImpl implements IPostService {
 
     @Override
     public Integer saveLookingForMoreNotice(Post post) {
+        Integer integer = postDao.savePost(post);
         messaging.newPostBroadcastMessage(post);
-        return postDao.savePost(post);
+        return integer;
     }
 
     @Override
     public Boolean deletePost(Integer userId, Integer postId) {
+        Boolean aBoolean = postDao.deletePost(postId, userId);
+        applicationDAO.deleteApplications(postId);
         messaging.postDeleted(postId);
-        return postDao.deletePost(postId, userId);
+        return aBoolean;
     }
 
     @Override
@@ -48,8 +51,9 @@ public class PostServiceImpl implements IPostService {
 
     @Override
     public Boolean applyForPost(PostApplyRequest request) {
+        Boolean aBoolean = applicationDAO.saveApplication(request.getUserId(), request.getPostId(), request.getRoles());
         messaging.newApplicationMessage(request);
-        return applicationDAO.saveApplication(request.getUserId(), request.getPostId(), request.getRoles());
+        return aBoolean;
     }
 
     @Override

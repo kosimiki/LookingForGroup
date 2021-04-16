@@ -17,11 +17,11 @@
             <Spinner
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" android:id="@+id/map_selector" android:layout_weight="1"/>
-            <CheckBox
-                    android:text="@string/normal"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:id="@+id/normal_checkbox" android:layout_weight="0"
-                    android:elevation="1dp"/>
+<!--            <CheckBox-->
+<!--                    android:text="@string/normal"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content" android:id="@+id/normal_checkbox" android:layout_weight="0"-->
+<!--                    android:elevation="1dp"/>-->
             <CheckBox
                     android:text="@string/ranked"
                     android:layout_width="wrap_content"
@@ -32,16 +32,19 @@
                 android:layout_height="match_parent">
 
 
-            <Button
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
                     android:text="New posts"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:id="@+id/load_new_posts"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/load_new_posts"
                     android:layout_centerHorizontal="true"
                     android:layout_alignParentBottom="true"
                     style="@style/Widget.AppCompat.Button.Colored"
                     android:layout_marginBottom="10dp"
                     android:typeface="normal"
-                    android:textSize="12sp" android:visibility="gone"/>
+                    android:textSize="12sp"
+                    android:visibility="gone"
+                />
 
             <androidx.recyclerview.widget.RecyclerView android:id="@+id/looking_for_members_list_view"
                       style="@style/Widget.AppCompat.ListView"
@@ -51,7 +54,7 @@
                       android:layout_width="match_parent"
                       android:layout_height="match_parent"
                       android:layout_alignParentTop="true"
-                      android:layout_toRightOf="@+id/load_new_posts" android:layout_toEndOf="@+id/load_new_posts"
+
             >
 
             </androidx.recyclerview.widget.RecyclerView>
@@ -62,12 +65,11 @@
                     android:clickable="true"
                     android:id="@+id/create_new_post_floating"
                     android:layout_centerHorizontal="true"
-                    android:layout_alignParentRight="true"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentBottom="true"
                     android:layout_marginBottom="10dp"
-                    android:layout_marginRight="10dp"
-                    android:layout_marginEnd="10dp"/>
+                android:layout_marginEnd="10dp"
+                android:contentDescription="create new post" />
         </RelativeLayout>
     </LinearLayout>
 </LinearLayout>

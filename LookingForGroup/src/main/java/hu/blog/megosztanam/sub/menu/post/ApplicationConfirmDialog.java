@@ -93,7 +93,7 @@ public class ApplicationConfirmDialog {
             @Override
             public void onResponse(Call<Boolean> call, Response<Boolean> response) {
                 Log.i(PostActivity.class.getName(), "Response: " + response.isSuccessful());
-                noticeBoardFragment.loadPosts();
+                noticeBoardFragment.loadPosts("applied for post");
                 Toast toast = Toast.makeText(activity, "Applied for post.", Toast.LENGTH_SHORT );
                 toast.show();
 

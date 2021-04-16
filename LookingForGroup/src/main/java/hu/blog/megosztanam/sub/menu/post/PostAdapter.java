@@ -2,9 +2,11 @@ package hu.blog.megosztanam.sub.menu.post;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+
 import androidx.legacy.view.ViewCompat;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -60,7 +62,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     public void onBindViewHolder(PostViewHolder holder, int position) {
         Post post = list.get(position);
 
-        if(!post.getCanApply() && !post.getIsOwner()){
+        if (!post.getCanApply() && !post.getIsOwner()) {
             LinearLayout linearLayout = holder.rowItemLayout.findViewById(R.id.item_layout);
             linearLayout.setAlpha(0.5f);
             TextView alreadyApplied = holder.rowItemLayout.findViewById(R.id.already_applied);
@@ -68,12 +70,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         }
         holder.dateView.setText(DateFormat.getDateTimeInstance().format(post.getCreatedAt()));
         holder.summonerName.setText(post.getOwner().getName());
-        holder.summonerLevel.setText(String.format(Locale.ENGLISH,"%d",post.getOwner().getSummonerLevel()));
+        holder.summonerLevel.setText(String.format(Locale.ENGLISH, "%d", post.getOwner().getSummonerLevel()));
         setMapName(post.getGameType().getMap(), holder.mapName);
         holder.ranked.setText(post.getGameType().isRanked() ? "RANKED" : "NORMAL");
-        setMapImage(post.getGameType().getMap(),holder.mapIcon);
+        setMapImage(post.getGameType().getMap(), holder.mapIcon);
 
-        holder.openPositionCount.setText(String.valueOf(list.get(position).getOpenPositions().size()));
+        holder.openPositionCount.setText(String.valueOf(post.getOpenPositions().size()));
         setRoles(post.getGameType().getMap(), holder, post.getOpenPositions());
 
         if (post.getGameType().isRanked()) {
@@ -130,7 +132,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     }
 
 
-    private List<ImageView> getImageViews(PostAdapter.PostViewHolder holder){
+    private List<ImageView> getImageViews(PostAdapter.PostViewHolder holder) {
         List<ImageView> imageViews = new ArrayList<>();
         imageViews.add(holder.topRoleView);
         imageViews.add(holder.junglerRoleView);
@@ -140,21 +142,35 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         return imageViews;
     }
 
-    private void setMapName(GameMap gameMap, TextView map){
-        switch (gameMap){
-            case TWISTED_TREE_LINE: map.setText(R.string.twisted_treeline_map_name);break;
-            case SUMMONERS_RIFT:    map.setText(R.string.summoners_rift_map_name);break;
-            case HOWLING_FJORD:     map.setText(R.string.howling_abyss_map_name);break;
-            default:     map.setText(R.string.special_map_name);break;
+    private void setMapName(GameMap gameMap, TextView map) {
+        switch (gameMap) {
+            case TWISTED_TREE_LINE:
+                map.setText(R.string.twisted_treeline_map_name);
+                break;
+            case SUMMONERS_RIFT:
+                map.setText(R.string.summoners_rift_map_name);
+                break;
+            case HOWLING_FJORD:
+                map.setText(R.string.howling_abyss_map_name);
+                break;
+            default:
+                map.setText(R.string.special_map_name);
+                break;
         }
     }
 
-    void setMapImage(GameMap map, ImageView icon){
+    void setMapImage(GameMap map, ImageView icon) {
         icon.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        switch (map){
-            case SUMMONERS_RIFT:    icon.setImageDrawable(summonersRiftMap);break;
-            case HOWLING_FJORD:     icon.setImageDrawable(howlingAbyssMap);break;
-            default:    icon.setImageDrawable(twistedTreelineMap);break;
+        switch (map) {
+            case SUMMONERS_RIFT:
+                icon.setImageDrawable(summonersRiftMap);
+                break;
+            case HOWLING_FJORD:
+                icon.setImageDrawable(howlingAbyssMap);
+                break;
+            default:
+                icon.setImageDrawable(twistedTreelineMap);
+                break;
         }
     }
 

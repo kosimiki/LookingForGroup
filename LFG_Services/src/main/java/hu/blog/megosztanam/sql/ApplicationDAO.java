@@ -8,7 +8,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSourceUtils;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -35,22 +34,31 @@ public class ApplicationDAO {
     private ApplicationExtractor extractor;
 
     @Autowired
-    public ApplicationDAO(JdbcTemplate simpleTemplate){
+    public ApplicationDAO(JdbcTemplate simpleTemplate) {
         this.template = new NamedParameterJdbcTemplate(simpleTemplate);
     }
 
-    public Boolean saveApplication(Integer userId, Integer postId, List<Role> roles){
+    public Boolean saveApplication(Integer userId, Integer postId, List<Role> roles) {
         List<Application> applications = new ArrayList<>();
         roles.forEach(role -> applications.add(new Application(userId, postId, role.getValue())));
-        return this.template.batchUpdate(INSERT, SqlParameterSourceUtils.createBatch(applications.toArray())).length>0;
+        return this.template.batchUpdate(INSERT, SqlParameterSourceUtils.createBatch(applications.toArray())).length > 0;
     }
 
-    public List<PostApplyResponse> getApplications(Integer userId){
+    public List<PostApplyResponse> getApplications(Integer userId) {
         return this.template.query(QUERY, new MapSqlParameterSource("userId", userId), extractor);
     }
 
+    public void deleteApplications(Integer postId) {
+        template.update("DELETE FROM applications WHERE post_id = :postId",
+                new MapSqlParameterSource("postId", postId));
+    }
+    public void deleteApplication(Integer applicantUserId) {
+        template.update("DELETE FROM applications WHERE user_id = :applicantUserId",
+                new MapSqlParameterSource("applicantUserId", applicantUserId));
+    }
 
-    class Application{
+
+    class Application {
         private Integer userId;
         private Integer postId;
         private String role;
