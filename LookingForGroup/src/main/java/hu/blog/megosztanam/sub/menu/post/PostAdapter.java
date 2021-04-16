@@ -2,9 +2,9 @@ package hu.blog.megosztanam.sub.menu.post;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.support.v13.view.ViewCompat;
-import android.support.v7.widget.CardView;
-import android.support.v7.widget.RecyclerView;
+import androidx.legacy.view.ViewCompat;
+import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,8 +18,6 @@ import hu.blog.megosztanam.R;
 import hu.blog.megosztanam.model.shared.GameMap;
 import hu.blog.megosztanam.model.shared.Post;
 import hu.blog.megosztanam.model.shared.Role;
-import hu.blog.megosztanam.model.shared.post.PostApplyResponse;
-import hu.blog.megosztanam.sub.menu.application.ApplicationAdapter;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -31,24 +29,17 @@ import java.util.Locale;
  */
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
 
-    private ArrayList<Post> list;
-    private Drawable summonersRiftMap;
-    private Drawable howlingAbyssMap;
-    private Drawable anyRole;
-    private Drawable twistedTreelineMap;
+    private final ArrayList<Post> list;
+    private final Drawable summonersRiftMap;
+    private final Drawable howlingAbyssMap;
+    private final Drawable anyRole;
+    private final Drawable twistedTreelineMap;
 
     public PostAdapter(List<Post> posts, Context context) {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            anyRole = context.getApplicationContext().getDrawable(R.drawable.role_any);
-            summonersRiftMap = context.getApplicationContext().getDrawable(R.drawable.summoners_rift_map_small);
-            howlingAbyssMap = context.getApplicationContext().getDrawable(R.drawable.howling_abyss_map_small);
-            twistedTreelineMap = context.getApplicationContext().getDrawable(R.drawable.twisted_treeline_map_small);
-        } else {
-            summonersRiftMap = context.getResources().getDrawable(R.drawable.summoners_rift_map_small);
-            howlingAbyssMap = context.getResources().getDrawable(R.drawable.howling_abyss_map_small);
-            twistedTreelineMap = context.getResources().getDrawable(R.drawable.twisted_treeline_map_small);
-            anyRole = context.getResources().getDrawable(R.drawable.role_any);
-        }
+        summonersRiftMap = context.getResources().getDrawable(R.drawable.summoners_rift_map_small);
+        howlingAbyssMap = context.getResources().getDrawable(R.drawable.howling_abyss_map_small);
+        twistedTreelineMap = context.getResources().getDrawable(R.drawable.twisted_treeline_map_small);
+        anyRole = context.getResources().getDrawable(R.drawable.role_any);
 
         this.list = new ArrayList<>();
         this.list.addAll(posts);
@@ -61,14 +52,18 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         return new PostAdapter.PostViewHolder(v);
     }
 
+    public Post getPost(int position) {
+        return list.get(position);
+    }
+
     @Override
     public void onBindViewHolder(PostViewHolder holder, int position) {
         Post post = list.get(position);
 
         if(!post.getCanApply() && !post.getIsOwner()){
-            LinearLayout linearLayout = (LinearLayout) holder.rowItemLayout.findViewById(R.id.item_layout);
+            LinearLayout linearLayout = holder.rowItemLayout.findViewById(R.id.item_layout);
             linearLayout.setAlpha(0.5f);
-            TextView alreadyApplied = (TextView) holder.rowItemLayout.findViewById(R.id.already_applied);
+            TextView alreadyApplied = holder.rowItemLayout.findViewById(R.id.already_applied);
             alreadyApplied.setVisibility(View.VISIBLE);
         }
         holder.dateView.setText(DateFormat.getDateTimeInstance().format(post.getCreatedAt()));
@@ -85,14 +80,14 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             holder.minimumRank.setText(post.getMinimumRank().toString());
             holder.maximumRank.setText(post.getMaximumRank().toString());
         } else {
-            TableRow rankRow = (TableRow) holder.rowItemLayout.findViewById(R.id.rank_row);
+            TableRow rankRow = holder.rowItemLayout.findViewById(R.id.rank_row);
             ((ViewGroup) holder.rowItemLayout.findViewById(R.id.looking_for_members_table)).removeView(rankRow);
         }
 
         if (post.getDescription() != null && !post.getDescription().isEmpty()) {
             holder.description.setText(post.getDescription());
         } else {
-            LinearLayout descriptionView = (LinearLayout) holder.rowItemLayout.findViewById(R.id.description_layout);
+            LinearLayout descriptionView = holder.rowItemLayout.findViewById(R.id.description_layout);
             holder.rowItemLayout.removeView(descriptionView);
         }
 
@@ -104,19 +99,19 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             for (Role role : roles) {
                 switch (role) {
                     case SUPPORT:
-                        ViewCompat.setAlpha(holder.supportRoleView, 1);
+                        holder.supportRoleView.setAlpha(1.0f);
                         break;
                     case TOP:
-                        ViewCompat.setAlpha(holder.topRoleView, 1);
+                        holder.topRoleView.setAlpha(1.0f);
                         break;
                     case JUNGLER:
-                        ViewCompat.setAlpha(holder.junglerRoleView, 1);
+                        holder.junglerRoleView.setAlpha(1.0f);
                         break;
                     case BOT:
-                        ViewCompat.setAlpha(holder.botRoleView, 1);
+                        holder.botRoleView.setAlpha(1.0f);
                         break;
                     case MID:
-                        ViewCompat.setAlpha(holder.midRoleView, 1);
+                        holder.midRoleView.setAlpha(1.0f);
                         break;
                 }
             }
@@ -125,10 +120,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             for (int i = 0; i < roleIcons.size(); i++) {
                 roleIcons.get(i).setImageDrawable(anyRole);
                 if (i < roles.size()) {
-                    ViewCompat.setAlpha(roleIcons.get(i), 1);
+                    roleIcons.get(i).setAlpha(1.0f);
                 }
                 if (map.equals(GameMap.TWISTED_TREE_LINE) && i > 2) {
-                    ViewCompat.setAlpha(roleIcons.get(i), 0);
+                    roleIcons.get(i).setAlpha(0.0f);
                 }
             }
         }
@@ -157,7 +152,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     void setMapImage(GameMap map, ImageView icon){
         icon.setScaleType(ImageView.ScaleType.CENTER_CROP);
         switch (map){
-            case TWISTED_TREE_LINE: icon.setImageDrawable(twistedTreelineMap); break;
             case SUMMONERS_RIFT:    icon.setImageDrawable(summonersRiftMap);break;
             case HOWLING_FJORD:     icon.setImageDrawable(howlingAbyssMap);break;
             default:    icon.setImageDrawable(twistedTreelineMap);break;
@@ -167,6 +161,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     @Override
     public int getItemCount() {
         return this.list.size();
+    }
+
+    public void remove(int position) {
+        list.remove(position);
+        notifyItemRemoved(position);
     }
 
 
@@ -191,26 +190,24 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
         PostViewHolder(View itemView) {
             super(itemView);
-            Log.i(this.getClass().getName(), "begin ApplicationViewHolder ");
-            rowItemLayout = (CardView) itemView.findViewById(R.id.row_item_layout);
-            mapName = (TextView) itemView.findViewById(R.id.map_name);
-            ranked = (TextView) itemView.findViewById(R.id.ranked);
-            summonerName = (TextView) itemView.findViewById(R.id.owner_summoner_name);
-            summonerLevel = (TextView) itemView.findViewById(R.id.summoner_level_in_row);
-            dateView = (TextView) itemView.findViewById(R.id.post_date);
-            openPositionCount = (TextView) itemView.findViewById(R.id.open_position_count);
-            minimumRank = (TextView) itemView.findViewById(R.id.min_required_rank);
-            maximumRank = (TextView) itemView.findViewById(R.id.max_required_rank);
-            description = (TextView) itemView.findViewById(R.id.description);
+            rowItemLayout = itemView.findViewById(R.id.row_item_layout);
+            mapName = itemView.findViewById(R.id.map_name);
+            ranked = itemView.findViewById(R.id.ranked);
+            summonerName = itemView.findViewById(R.id.owner_summoner_name);
+            summonerLevel = itemView.findViewById(R.id.summoner_level_in_row);
+            dateView = itemView.findViewById(R.id.post_date);
+            openPositionCount = itemView.findViewById(R.id.open_position_count);
+            minimumRank = itemView.findViewById(R.id.min_required_rank);
+            maximumRank = itemView.findViewById(R.id.max_required_rank);
+            description = itemView.findViewById(R.id.description);
 
-            mapIcon = (ImageView) itemView.findViewById(R.id.map_icon);
+            mapIcon = itemView.findViewById(R.id.map_icon);
 
-            topRoleView = (ImageView) itemView.findViewById(R.id.role_top_view);
-            midRoleView = (ImageView) itemView.findViewById(R.id.role_mid_view);
-            junglerRoleView = (ImageView) itemView.findViewById(R.id.role_jugnler_view);
-            supportRoleView = (ImageView) itemView.findViewById(R.id.role_support_view);
-            botRoleView = (ImageView) itemView.findViewById(R.id.role_bot_view);
-            Log.i(this.getClass().getName(), "begin ApplicationViewHolder ");
+            topRoleView = itemView.findViewById(R.id.role_top_view);
+            midRoleView = itemView.findViewById(R.id.role_mid_view);
+            junglerRoleView = itemView.findViewById(R.id.role_jugnler_view);
+            supportRoleView = itemView.findViewById(R.id.role_support_view);
+            botRoleView = itemView.findViewById(R.id.role_bot_view);
 
         }
     }

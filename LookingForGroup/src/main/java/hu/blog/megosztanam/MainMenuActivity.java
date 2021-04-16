@@ -2,12 +2,12 @@ package hu.blog.megosztanam;
 
 
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
+import com.google.android.material.tabs.TabLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.viewpager.widget.ViewPager;
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +40,7 @@ public class MainMenuActivity extends AppCompatActivity implements BackendServic
 
         setContentView(R.layout.main_menu_layout);
 
-        viewPager = (ViewPager) findViewById(R.id.viewpager);
+        viewPager = findViewById(R.id.viewpager);
         setupViewPager(viewPager);
         viewPager.setOffscreenPageLimit(2);
 
@@ -61,23 +61,10 @@ public class MainMenuActivity extends AppCompatActivity implements BackendServic
             }
         });
 
-        tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
 
 
-    }
-
-    private void updatePosts(Integer position) {
-        if (position == 1 && noticeBoardFragment.canLoad()) {
-            noticeBoardFragment.loadPosts();
-        }
-    }
-
-    private void reloadApplications(Integer position) {
-        if (position == 2 && noticeBoardFragment.getShouldReloadApplications()) {
-            noticeBoardFragment.setShouldReloadApplications(false);
-            applicationsFragment.loadApplications();
-        }
     }
 
     private void setupViewPager(ViewPager viewPager) {

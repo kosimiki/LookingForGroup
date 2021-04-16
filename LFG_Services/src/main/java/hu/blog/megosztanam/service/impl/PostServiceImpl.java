@@ -2,17 +2,13 @@ package hu.blog.megosztanam.service.impl;
 
 import hu.blog.megosztanam.model.shared.GameMap;
 import hu.blog.megosztanam.model.shared.Post;
-import hu.blog.megosztanam.model.shared.elo.Division;
-import hu.blog.megosztanam.model.shared.elo.Tier;
 import hu.blog.megosztanam.model.shared.post.PostApplyRequest;
 import hu.blog.megosztanam.model.shared.post.PostApplyResponse;
 import hu.blog.megosztanam.model.shared.summoner.Server;
-import hu.blog.megosztanam.service.ICloudMessaging;
 import hu.blog.megosztanam.service.IMessagingService;
 import hu.blog.megosztanam.service.IPostService;
 import hu.blog.megosztanam.sql.ApplicationDAO;
 import hu.blog.megosztanam.sql.PostDao;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,14 +19,15 @@ import java.util.List;
 @Service
 public class PostServiceImpl implements IPostService {
 
-    @Autowired
-    private PostDao postDao;
+    private final PostDao postDao;
+    private final ApplicationDAO applicationDAO;
+    private final IMessagingService messaging;
 
-    @Autowired
-    private ApplicationDAO applicationDAO;
-
-    @Autowired
-    IMessagingService messaging;
+    public PostServiceImpl(PostDao postDao, ApplicationDAO applicationDAO, IMessagingService messaging) {
+        this.postDao = postDao;
+        this.applicationDAO = applicationDAO;
+        this.messaging = messaging;
+    }
 
     @Override
     public Integer saveLookingForMoreNotice(Post post) {
@@ -40,7 +37,7 @@ public class PostServiceImpl implements IPostService {
 
     @Override
     public Boolean deletePost(Integer userId, Integer postId) {
-        messaging.postDeleted();
+        messaging.postDeleted(postId);
         return postDao.deletePost(postId, userId);
     }
 

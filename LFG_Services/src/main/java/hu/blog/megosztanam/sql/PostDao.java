@@ -62,7 +62,7 @@ public class PostDao {
                     "AND (:map is null or map = :map) " +
                     "AND (:isRanked is null or ranked = :isRanked) " +
                     " GROUP BY l.id, l.map, l.ranked, l.min_tier, l.max_tier, l.min_div, l.max_div, l.description, l.created_at, :queryUser, COALESCE(a.user_id, 0) " +
-                    " ORDER BY created_at DESC";
+                    " ORDER BY created_at, map, user_id DESC";
 
     private static final String SELECT_LFM_POST_BY_ID =
             "SELECT * FROM looking_for_member WHERE id = :postId ";

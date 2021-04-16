@@ -13,19 +13,13 @@ import hu.blog.megosztanam.sub.menu.NoticeBoardFragment;
  * Created by Miklós on 2017. 06. 04..
  */
 public class DeleteConfirmDialog {
-    private Integer postId;
-    private Activity activity;
-    private Integer userId;
     private NoticeBoardFragment noticeBoardFragment;
 
     public DeleteConfirmDialog(NoticeBoardFragment fragment){
         this.noticeBoardFragment = fragment;
     }
 
-    public Dialog createDialog(Activity activity, final Integer userId, final Post post) {
-        this.postId = post.getPostId();
-        this.activity = activity;
-        this.userId = userId;
+    public Dialog createDialog(Activity activity, final Integer userId, final Post post, final int position) {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         Log.i("ApplicationConfirm", "AlertDialog.Builder");
 
@@ -33,7 +27,7 @@ public class DeleteConfirmDialog {
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
-                        noticeBoardFragment.deletePost(userId, post);
+                        noticeBoardFragment.deletePost(userId, post, position);
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {

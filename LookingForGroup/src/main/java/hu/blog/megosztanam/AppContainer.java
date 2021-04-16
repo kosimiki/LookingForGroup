@@ -13,7 +13,7 @@ public class AppContainer {
 
     public AppContainer(Context context) {
         this.authService = new GoogleAuthService(context);
-        this.lfgService = new LFGService();
+        this.lfgService = new LFGService(context);
     }
 
     public GoogleAuthService getAuthService() {

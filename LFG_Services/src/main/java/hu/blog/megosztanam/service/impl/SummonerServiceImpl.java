@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * Created by Miklós on 2016. 11. 27..
@@ -31,24 +32,20 @@ public class SummonerServiceImpl implements ISummonerService {
     private static final String HTTPS = "https://";
     private static final Logger LOGGER = LoggerFactory.getLogger(SummonerServiceImpl.class);
 
-    @Autowired
-    private IRestHelper restHelper;
-
     @Value("${lol.api.key}")
     private String apiKey;
 
-    @Value("${google.oauth.client.id}")
-    private String clientId;
 
     @Override
     public Summoner getSummoner(String summonerName, Server server) {
+        RestTemplate restTemplate = new RestTemplate();
         Summoner summoner = new Summoner();
         summoner.setId(null);
         summoner.setName("NAME NOT FOUND");
         try {
             String url = HTTPS + Servers.getServerV3(server) + SUMMONER_DETAILS_BY_NAME_V3 + summonerName + apiKey;
             LOGGER.info("Calling GET on: " + url);
-            return restHelper.getForObject(url, Summoner.class);
+            return restTemplate.getForObject(url, Summoner.class);
         }catch (RestClientException e){
             LOGGER.error("REST CLIENT EX: " + e.getMessage(), e);
             return summoner;
@@ -57,13 +54,14 @@ public class SummonerServiceImpl implements ISummonerService {
 
     @Override
     public Summoner getById(String summonerId, Server server) {
+        RestTemplate restTemplate = new RestTemplate();
         Summoner summoner = new Summoner();
         summoner.setId(null);
         summoner.setName("NAME NOT FOUND");
         String url = HTTPS + Servers.getServerV3(server) + SUMMONER_DETAILS_BY_ID_V3 + summonerId + apiKey;
         LOGGER.info("Calling GET on: " + url);
         try {
-            return restHelper.getForObject(url, Summoner.class);
+            return restTemplate.getForObject(url, Summoner.class);
         } catch (RestClientException e){
             LOGGER.error("REST CLIENT EX: " + e.getMessage(), e);
             return summoner;
@@ -72,6 +70,8 @@ public class SummonerServiceImpl implements ISummonerService {
 
     @Override
     public SummonerGameStatistics getStatistics(String summonerId, Server server) {
+        RestTemplate restTemplate = new RestTemplate();
+
         SummonerGameStatistics gameStatistics = new SummonerGameStatistics();
         Rank unRanked = new Rank();
         unRanked.setDivision(Division.I);
@@ -84,7 +84,7 @@ public class SummonerServiceImpl implements ISummonerService {
         LOGGER.info("Calling GET on: " + url);
         String json = null;
         try{
-            json = restHelper.getForObject(url, String.class);
+            json = restTemplate.getForObject(url, String.class);
         }catch (HttpClientErrorException exception){
             LOGGER.info("Not found ?  " + exception);
         }

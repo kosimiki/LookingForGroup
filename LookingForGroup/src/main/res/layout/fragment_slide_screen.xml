@@ -43,7 +43,7 @@
                     android:typeface="normal"
                     android:textSize="12sp" android:visibility="gone"/>
 
-            <android.support.v7.widget.RecyclerView android:id="@+id/looking_for_members_list_view"
+            <androidx.recyclerview.widget.RecyclerView android:id="@+id/looking_for_members_list_view"
                       style="@style/Widget.AppCompat.ListView"
                       android:fillViewport="true"
                       android:divider="@android:color/transparent"
@@ -54,8 +54,8 @@
                       android:layout_toRightOf="@+id/load_new_posts" android:layout_toEndOf="@+id/load_new_posts"
             >
 
-            </android.support.v7.widget.RecyclerView>
-            <android.support.design.widget.FloatingActionButton
+            </androidx.recyclerview.widget.RecyclerView>
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
                     android:src="@drawable/ic_add"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

@@ -1,15 +1,34 @@
 package hu.blog.megosztanam;
 
 import android.app.Application;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+
+import hu.blog.megosztanam.login.SaveSharedPreference;
+import hu.blog.megosztanam.messaging.MessagingService;
 
 public class MainApplication extends Application {
 
     private AppContainer appContainer;
 
+    private final BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String firebaseToken = intent.getStringExtra(MessagingService.TOKEN_UPDATE);
+            SaveSharedPreference.setFirebaseId(getBaseContext(), firebaseToken);
+            int userId = SaveSharedPreference.getUserId(getBaseContext());
+            appContainer.getLfgService().updateFirebaseId(userId, firebaseToken);
+        }
+    };
+
+
     @Override
     public void onCreate() {
         super.onCreate();
         appContainer = new AppContainer(getApplicationContext());
+        this.registerReceiver(mMessageReceiver, new IntentFilter(MessagingService.TOKEN_UPDATE));
     }
 
     public AppContainer getAppContainer() {

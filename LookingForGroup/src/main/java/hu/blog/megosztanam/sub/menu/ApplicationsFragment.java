@@ -6,10 +6,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+
+import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,19 +37,13 @@ import java.util.List;
  */
 public class ApplicationsFragment extends Fragment {
 
-    private List<PostApplyResponse> applications;
     private ParcelableLoginResponse userDetails;
     private RecyclerView recyclerView;
     private ILFGService ilfgService;
     private final BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            String message = intent.getStringExtra(MessagingService.MESSAGE);
-            boolean isPost = intent.getBooleanExtra(MessagingService.MESSAGE_TYPE_IS_POST, true);
-            if (!isPost) {
-                loadApplications();
-            }
-            Log.i(ApplicationsFragment.class.getName(), "Got message: " + message);
+            loadApplications();
         }
     };
 
@@ -59,7 +55,7 @@ public class ApplicationsFragment extends Fragment {
         this.ilfgService = activity.getLfgService();
         loadApplications();
         LocalBroadcastManager.getInstance(activity).registerReceiver(mMessageReceiver,
-                new IntentFilter(MessagingService.RESULT));
+                new IntentFilter(MessagingService.NEW_APPLICATION));
     }
 
     @Override
@@ -74,7 +70,7 @@ public class ApplicationsFragment extends Fragment {
         ViewGroup rootView = (ViewGroup) inflater.inflate(
                 R.layout.applications_sub_menu, container, false);
         userDetails = getArguments().getParcelable(LoginActivity.USER_DETAILS_EXTRA);
-        recyclerView = (RecyclerView) rootView.findViewById(R.id.applications_list);
+        recyclerView = rootView.findViewById(R.id.applications_list);
         LinearLayoutManager llm = new LinearLayoutManager(getActivity().getBaseContext());
         recyclerView.setLayoutManager(llm);
         return rootView;

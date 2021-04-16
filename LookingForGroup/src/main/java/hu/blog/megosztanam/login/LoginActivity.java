@@ -5,18 +5,29 @@ import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.*;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RadioGroup;
+import android.widget.SearchView;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.SignInButton;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.squareup.picasso.Picasso;
+
+import java.util.Locale;
 
 import hu.blog.megosztanam.MainApplication;
 import hu.blog.megosztanam.MainMenuActivity;
@@ -28,15 +39,10 @@ import hu.blog.megosztanam.model.shared.User;
 import hu.blog.megosztanam.model.shared.messaging.Messaging;
 import hu.blog.megosztanam.model.shared.summoner.Server;
 import hu.blog.megosztanam.rest.ILFGService;
-import hu.blog.megosztanam.rest.LFGService;
 import hu.blog.megosztanam.util.LoLService;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.Locale;
 
 /**
  * A login screen that offers login via email/password.
@@ -61,7 +67,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private ImageView summonerIcon;
     private TextView summonerLevel;
     private TextView foundSummonerName;
-    private TextView summonerLevelLabel;
     private LinearLayout regForm;
     private GoogleAuthService authService;
     private ILFGService lfgService;
@@ -77,15 +82,14 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         server = Server.EUW;
         registrationRequired = false;
         setContentView(R.layout.activity_login);
-        foundSummonerName = (TextView) findViewById(R.id.found_summoner_name);
-        mStatusTextView = (TextView) findViewById(R.id.status);
-        summonerName = (SearchView) findViewById(R.id.summonerName);
+        foundSummonerName = findViewById(R.id.found_summoner_name);
+        mStatusTextView = findViewById(R.id.status);
+        summonerName = findViewById(R.id.summonerName);
         summonerName.setQueryHint("Summoner name");
         summonerName.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                                                 @Override
                                                 public boolean onQueryTextSubmit(String s) {
                                                     getSummonerDetails(s);
-
                                                     return true;
                                                 }
 
@@ -99,11 +103,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         Log.i(TAG, "FireBase: " + FirebaseInstanceId.getInstance().getToken());
 
 
-        googleSignInButton = (SignInButton) findViewById(R.id.sign_in_button);
+        googleSignInButton = findViewById(R.id.sign_in_button);
         googleSignInButton.setOnClickListener(this);
 
-        acceptSummonerButton = (Button) findViewById(R.id.button_accept_summoner);
-        searchSummonerButton = (Button) findViewById(R.id.button_search_new);
+        acceptSummonerButton = findViewById(R.id.button_accept_summoner);
+        searchSummonerButton = findViewById(R.id.button_search_new);
         acceptSummonerButton.setOnClickListener(this);
         acceptSummonerButton.setEnabled(false);
         searchSummonerButton.setOnClickListener(this);
@@ -115,11 +119,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             }
         });
 
-        summonerIcon = (ImageView) findViewById(R.id.summoner_icon);
-        summonerLevel = (TextView) findViewById(R.id.summoner_level);
+        summonerIcon = findViewById(R.id.summoner_icon);
+        summonerLevel = findViewById(R.id.summoner_level);
         summonerIcon.setVisibility(View.INVISIBLE);
 
-        radioGroup = (RadioGroup) findViewById(R.id.region_group);
+        radioGroup = findViewById(R.id.region_group);
 
         Log.i(TAG, "SET ON CHECK");
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -135,16 +139,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 }
             }
         });
-        regForm = (LinearLayout) findViewById(R.id.email_login_form);
+        regForm = findViewById(R.id.email_login_form);
         regForm.setVisibility(View.GONE);
 
-    }
-
-    private void checkLogin() {
-        String token = SaveSharedPreference.getIdToken(this.getBaseContext());
-        if (!token.isEmpty()) {
-            doBackEndLogin(token);
-        }
     }
 
     @Override
@@ -211,12 +208,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 Log.i(TAG, "AFTER LOGIN: " + loginResponse.getLoginStatus());
                 switch (loginResponse.getLoginStatus()) {
                     case SUCCESSFUL:
-                        updateUI(loginResponse.getUser().getGivenName() + "\n " + loginResponse.getUser().getSummoner().getName());
                         registrationRequired = false;
-
-                        SaveSharedPreference.setTokenId(getBaseContext(), idToken);
-
-                        updateUISuccessfulLogin(loginResponse);
+                        updateFirebaseId(loginResponse, idToken);
                         break;
                     case REGISTRATION_REQUIRED:
                         updateForReg(loginResponse.getUser().getGivenName() + " has no summoner registered");
@@ -364,17 +357,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
                 Log.i(TAG, response.message());
                 Log.i(TAG, response.body().toString());
-                LoginResponse loginResponse = response.body();
+                final LoginResponse loginResponse = response.body();
                 switch (loginResponse.getLoginStatus()) {
                     case SUCCESSFUL:
                         updateUI(loginResponse.getUser().getGivenName() + "\n " + loginResponse.getUser().getSummoner().getName() + "\n " + loginResponse.getUser().getSummoner().getId());
                         registrationRequired = false;
                         Log.i(TAG, "SUCCESSFUL REG " + loginResponse.toString());
-                        String firebaseToken = FirebaseInstanceId.getInstance().getToken();
-                        updateFirebaseId(loginResponse.getUser().getUserId(),firebaseToken);
-                        SaveSharedPreference.setFirebaseId(getBaseContext(), firebaseToken);
-                        SaveSharedPreference.setTokenId(getBaseContext(), idToken);
-                        updateUISuccessfulLogin(loginResponse);
+                        updateFirebaseId(loginResponse, idToken);
                         break;
                     case REGISTRATION_REQUIRED:
                         updateForReg(loginResponse.getUser().getGivenName() + " has no summoner registered");
@@ -393,10 +382,30 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         });
     }
 
+    private void updateFirebaseId(final LoginResponse loginResponse, final String token) {
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(new OnCompleteListener<String>() {
+                    @Override
+                    public void onComplete(@NonNull Task<String> task) {
+                        if (!task.isSuccessful()) {
+                            Log.w(TAG, "Fetching FCM registration token failed", task.getException());
+                            return;
+                        }
+                        String firebaseToken = task.getResult();
+                        Log.i(TAG, "Firebase token: " + firebaseToken);
+                        Integer userId = loginResponse.getUser().getUserId();
+                        updateFirebaseId(userId, firebaseToken);
+                        SaveSharedPreference.setFirebaseId(getBaseContext(), firebaseToken);
+                        SaveSharedPreference.setUserId(getBaseContext(), userId);
+                        SaveSharedPreference.setTokenId(getBaseContext(), token);
+                        updateUISuccessfulLogin(loginResponse);
+                    }
+                });
+    }
+
     private void updateFirebaseId(Integer userId, String firebaseId) {
-        Log.i(TAG, "Logging in...");
-        Call<Void> loginResponse = lfgService.updateFirebaseId(userId, firebaseId);
-        loginResponse.enqueue(new Callback<Void>() {
+        Call<Void> updateFirebaseId = lfgService.updateFirebaseId(userId, firebaseId);
+        updateFirebaseId.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
 
@@ -404,8 +413,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                Log.i(TAG, "Login failed", t);
-
+                Log.i(TAG, "Firebase id update failed", t);
             }
         });
     }

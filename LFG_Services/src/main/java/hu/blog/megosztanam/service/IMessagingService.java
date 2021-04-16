@@ -9,7 +9,7 @@ import hu.blog.megosztanam.model.shared.post.PostApplyRequest;
 public interface IMessagingService {
 
     void newPostBroadcastMessage(Post post);
-    void postDeleted();
+    void postDeleted(Integer postId);
     void newApplicationMessage(PostApplyRequest postApplyRequest);
 
 }

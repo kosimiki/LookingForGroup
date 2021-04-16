@@ -1,26 +1,30 @@
 package hu.blog.megosztanam.service.impl;
 
-import hu.blog.megosztanam.model.UserDetails;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.FirebaseMessagingException;
+import com.google.firebase.messaging.Message;
+import hu.blog.megosztanam.cache.SummonerCache;
 import hu.blog.megosztanam.model.shared.Post;
 import hu.blog.megosztanam.model.shared.Summoner;
 import hu.blog.megosztanam.model.shared.messaging.Messaging;
 import hu.blog.megosztanam.model.shared.post.Notification;
 import hu.blog.megosztanam.model.shared.post.PostApplyRequest;
 import hu.blog.megosztanam.model.shared.post.PostNotification;
-import hu.blog.megosztanam.rest.SummonerRest;
-import hu.blog.megosztanam.service.ICloudMessaging;
 import hu.blog.megosztanam.service.IMessagingService;
-import hu.blog.megosztanam.service.IRestHelper;
-import hu.blog.megosztanam.service.ISummonerService;
 import hu.blog.megosztanam.sql.PostDao;
 import hu.blog.megosztanam.sql.UserDao;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.stream.Collectors;
 
 /**
@@ -31,75 +35,101 @@ public class MessagingServiceImpl implements IMessagingService {
 
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(MessagingServiceImpl.class);
 
-    @Autowired
-    IRestHelper restHelper;
+    private final SummonerCache summonerService;
+    private final UserDao userDao;
+    private final PostDao postDao;
 
-    @Value("${google.cloud.messaging.server.key}")
-    String key;
+    public MessagingServiceImpl(SummonerCache summonerService, UserDao userDao, PostDao postDao) {
+        this.summonerService = summonerService;
+        this.userDao = userDao;
+        this.postDao = postDao;
+    }
 
-    @Value("${google.cloud.messaging.server.id}")
-    String id;
+    @PostConstruct
+    public void init() {
+        FileInputStream serviceAccount;
+        try {
+            ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+            URL is = classloader.getResource("firebase-lookingforgroup-firebase-adminsdk-sgtlc-a7cff7d097.json");
+            serviceAccount = new FileInputStream(is.getFile());
+            FirebaseOptions options = FirebaseOptions.builder()
+                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                    .setDatabaseUrl("https://fir-lookingforgroup.firebaseio.com")
+                    .build();
 
-    @Autowired
-    ICloudMessaging cloudMessaging;
+            FirebaseApp.initializeApp(options);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-    @Autowired
-    UserDao userDao;
-
-    @Autowired
-    ISummonerService service;
-
-    @Autowired
-    PostDao postDao;
+    }
 
 
     @Override
     public void newPostBroadcastMessage(Post post) {
-        PostNotification postNotification = new PostNotification();
-        Notification notification = new Notification();
-        notification.setTitle("New posts available");
-        notification.setBody(Messaging.NEW_POST + post.getOwner().getName()
-                + " is looking for teammates on "
-                + post.getGameType().getMap().getValue()
-                + ". " + post.getDescription());
-        postNotification.setNotification(notification);
+        log.info("broadcasting NEW_POST to /topics/" + Messaging.NEW_POSTS_TOPIC);
+        Message message = Message.builder()
+                .putData("postId", String.valueOf(post.getPostId()))
+                .setTopic(Messaging.NEW_POSTS_TOPIC)
+                .build();
 
-        postNotification.setTo("/topics/" + Messaging.NEW_POSTS_TOPIC);
-        cloudMessaging.sendMessage("key=" + key, postNotification);
+        try {
+            String response = FirebaseMessaging.getInstance().send(message);
+            System.out.println("Successfully sent message: " + response);
+        } catch (FirebaseMessagingException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
-    public void postDeleted() {
-        PostNotification postNotification = new PostNotification();
-        Notification notification = new Notification();
-        notification.setTitle("Post deleted");
-        notification.setBody(Messaging.POST_DELETED);
-        postNotification.setNotification(notification);
+    public void postDeleted(Integer postId) {
+        log.info("broadcasting DELETE to /topics/" + Messaging.POST_DELETED);
+        Message message = Message.builder()
+                .putData("postId", String.valueOf(postId))
+                .setTopic(Messaging.POST_DELETED)
+                .build();
 
-        postNotification.setTo("/topics/" + Messaging.NEW_POSTS_TOPIC);
-        cloudMessaging.sendMessage("key=" + key, postNotification);
+        try {
+            String response = FirebaseMessaging.getInstance().send(message);
+            System.out.println("Successfully sent message: " + response);
+        } catch (FirebaseMessagingException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void newApplicationMessage(PostApplyRequest postApplyRequest) {
-        PostNotification postNotification = new PostNotification();
-        Notification notification = new Notification();
-        notification.setTitle("A summoner wants to play with you!");
-        postNotification.setNotification(notification);
-        log.info("user id " + postApplyRequest.getUserId());
-        log.info("post id " + postApplyRequest.getPostId());
-        UserDetails details = userDao.getSummoner(postApplyRequest.getUserId());
-        Summoner summoner = service.getById(details.getSummonerId(), details.getServer());
+        String firebaseId = userDao.getFirebaseId(postDao.getOwnerId(postApplyRequest.getPostId()));
+        log.info("sending message to " + firebaseId + " _END");
+
+
+        Integer applicantUserId = postApplyRequest.getUserId();
+        Summoner summoner = summonerService.getByUserId(applicantUserId);
+        String title = "Summoner " + summoner.getName() + " wants to play with you!";
         Post post = postDao.getPostById(postApplyRequest.getPostId());
-        notification.setBody(summoner.getName()
-                + " (" + summoner.getSummonerLevel() + ")"
-                + " applied for " +
-                postApplyRequest.getRoles().stream()
+        String roles = postApplyRequest.getRoles().stream()
                 .map(Enum::name)
-                .collect(Collectors.joining(","))
-                + " roles on " + "(" + (post.getGameType().isRanked()?"Ranked":"Normal")+ ")" + post.getGameType().getMap().name());
-        postNotification.setTo(userDao.getFirebaseId(postDao.getOwnerId(postApplyRequest.getPostId())));
-        log.info(postNotification.toString());
-        cloudMessaging.sendMessage("key=" + key, postNotification);
+                .collect(Collectors.joining(","));
+        String gameType = post.getGameType().isRanked() ? "Ranked" : "Normal";
+        String map = post.getGameType().getMap().name();
+        String body = summoner.getName()
+                + " (" + summoner.getSummonerLevel() + ")"
+                + " applied for " + roles + " roles on " + "(" + gameType + ")" + map;
+        Message message = Message.builder()
+                .putData("message", body)
+                .setNotification(com.google.firebase.messaging.Notification.builder()
+                        .setTitle(title)
+                        .setBody(body)
+                        .build())
+                .setToken(firebaseId)
+                .build();
+
+        try {
+            String response = FirebaseMessaging.getInstance().send(message);
+            System.out.println("Successfully sent message: " + response);
+        } catch (FirebaseMessagingException e) {
+            e.printStackTrace();
+        }
+
     }
 }
