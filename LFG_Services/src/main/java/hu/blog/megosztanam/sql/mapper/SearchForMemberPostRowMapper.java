@@ -37,7 +37,7 @@ public class SearchForMemberPostRowMapper implements RowMapper<Post> {
         post.setPostId(rs.getInt("id"));
         int userId = rs.getInt("user_id");
         post.setUserId(userId);
-        post.setOwner(summonerCache.getByUserId(userId));
+        post.setOwner(summonerCache.getSummonerByUserId(userId));
         post.setCreatedAt(rs.getTimestamp("created_at"));
         post.setDescription(rs.getString("description"));
         post.setGameType(new GameType(GameMap.valueOf(rs.getString("map")), rs.getBoolean("ranked")));

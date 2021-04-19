@@ -2,9 +2,8 @@ package hu.blog.megosztanam.rest;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cloud.netflix.feign.EnableFeignClients;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -13,11 +12,12 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  */
 @EnableTransactionManagement
 @Configuration
+@EnableCaching
 @EnableFeignClients(basePackages = "hu.blog.megosztanam")
 @SpringBootApplication(scanBasePackages = "hu.blog.megosztanam")
 public class LFGApplication {
     public static void main(String[] args) {
-        ApplicationContext ctx = SpringApplication.run(LFGApplication.class, args);
+        SpringApplication.run(LFGApplication.class, args);
     }
 
 }

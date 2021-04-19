@@ -65,4 +65,28 @@ public class PostServiceImpl implements IPostService {
     public Post getPostById(Integer postId) {
         return postDao.getPostById(postId);
     }
+
+    @Override
+    public void acceptApplication(Integer postId, Integer userId) {
+        applicationDAO.acceptApplication(postId, userId);
+        messaging.acceptedApplication(postId, userId);
+    }
+
+    @Override
+    public void rejectApplication(Integer postId, Integer applicantUserId) {
+        applicationDAO.deleteApplication(postId, applicantUserId);
+        messaging.rejectedApplication(postId, applicantUserId);
+    }
+
+    @Override
+    public void revokeApplication(Integer postId, Integer applicantUserId) {
+        applicationDAO.deleteApplication(postId, applicantUserId);
+        messaging.revokedApplication(postId, applicantUserId);
+    }
+
+    @Override
+    public void confirmApplication(Integer postId, Integer applicantUserId) {
+        applicationDAO.deleteApplication(postId, applicantUserId);
+        messaging.confirmedApplication(postId, applicantUserId);
+    }
 }

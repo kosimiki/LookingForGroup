@@ -2,8 +2,6 @@ package hu.blog.megosztanam.service;
 
 import hu.blog.megosztanam.model.shared.GameMap;
 import hu.blog.megosztanam.model.shared.Post;
-import hu.blog.megosztanam.model.shared.elo.Division;
-import hu.blog.megosztanam.model.shared.elo.Tier;
 import hu.blog.megosztanam.model.shared.post.PostApplyRequest;
 import hu.blog.megosztanam.model.shared.post.PostApplyResponse;
 import hu.blog.megosztanam.model.shared.summoner.Server;
@@ -27,4 +25,11 @@ public interface IPostService {
 
     Post getPostById(Integer postId);
 
+    void acceptApplication(Integer postId, Integer userId);
+
+    void rejectApplication(Integer postId, Integer userId);
+
+    void revokeApplication(Integer postId, Integer applicantUserId);
+
+    void confirmApplication(Integer postId, Integer applicantUserId);
 }

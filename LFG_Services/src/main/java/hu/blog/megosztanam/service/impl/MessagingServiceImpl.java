@@ -9,21 +9,19 @@ import com.google.firebase.messaging.Message;
 import hu.blog.megosztanam.cache.SummonerCache;
 import hu.blog.megosztanam.model.shared.Post;
 import hu.blog.megosztanam.model.shared.Summoner;
+import hu.blog.megosztanam.model.shared.messaging.MessageType;
 import hu.blog.megosztanam.model.shared.messaging.Messaging;
-import hu.blog.megosztanam.model.shared.post.Notification;
 import hu.blog.megosztanam.model.shared.post.PostApplyRequest;
-import hu.blog.megosztanam.model.shared.post.PostNotification;
 import hu.blog.megosztanam.service.IMessagingService;
 import hu.blog.megosztanam.sql.PostDao;
 import hu.blog.megosztanam.sql.UserDao;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.stream.Collectors;
 
@@ -33,7 +31,7 @@ import java.util.stream.Collectors;
 @Service
 public class MessagingServiceImpl implements IMessagingService {
 
-    private static final org.slf4j.Logger log = LoggerFactory.getLogger(MessagingServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(MessagingServiceImpl.class);
 
     private final SummonerCache summonerService;
     private final UserDao userDao;
@@ -100,11 +98,8 @@ public class MessagingServiceImpl implements IMessagingService {
     @Override
     public void newApplicationMessage(PostApplyRequest postApplyRequest) {
         String firebaseId = userDao.getFirebaseId(postDao.getOwnerId(postApplyRequest.getPostId()));
-        log.info("sending message to " + firebaseId + " _END");
-
-
         Integer applicantUserId = postApplyRequest.getUserId();
-        Summoner summoner = summonerService.getByUserId(applicantUserId);
+        Summoner summoner = summonerService.getSummonerByUserId(applicantUserId);
         String title = "Summoner " + summoner.getName() + " wants to play with you!";
         Post post = postDao.getPostById(postApplyRequest.getPostId());
         String roles = postApplyRequest.getRoles().stream()
@@ -115,13 +110,62 @@ public class MessagingServiceImpl implements IMessagingService {
         String body = summoner.getName()
                 + " (" + summoner.getSummonerLevel() + ")"
                 + " applied for " + roles + " roles on " + "(" + gameType + ")" + map;
+
+        sendMessage(firebaseId, MessageType.NEW_APPLICATION, title, body);
+
+    }
+
+    @Override
+    public void acceptedApplication(Integer postId, Integer userId) {
+        Post post = postDao.getPostById(postId);
+        String firebaseId = userDao.getFirebaseId(userId);
+        Summoner summoner = summonerService.getSummonerByUserId(post.getUserId());
+        String title = "Summoner " + summoner.getName() + " accepted your application";
+        String body = "Game mode: " + post.getGameType().getMap().getValue();
+        sendMessage(firebaseId, MessageType.NEW_APPLICATION, title, body);
+    }
+
+    @Override
+    public void rejectedApplication(Integer postId, Integer applicantUserId) {
+        Post post = postDao.getPostById(postId);
+        String firebaseId = userDao.getFirebaseId(applicantUserId);
+        Summoner summoner = summonerService.getSummonerByUserId(post.getUserId());
+        String title = "Summoner " + summoner.getName() + " rejected your application";
+        String body = "Game mode: " + post.getGameType().getMap().getValue();
+        sendMessage(firebaseId, MessageType.APPLICATION_REJECTED, title, body);
+
+    }
+
+    @Override
+    public void revokedApplication(Integer postId, Integer applicantUserId) {
+        Post post = postDao.getPostById(postId);
+        String firebaseId = userDao.getFirebaseId(post.getUserId());
+        Summoner summoner = summonerService.getSummonerByUserId(applicantUserId);
+        String title = "Summoner " + summoner.getName() + " revoked their application";
+        String body = "Game mode: " + post.getGameType().getMap().getValue();
+        sendMessage(firebaseId, MessageType.APPLICATION_REJECTED, title, body);
+    }
+
+    @Override
+    public void confirmedApplication(Integer postId, Integer applicantUserId) {
+        Post post = postDao.getPostById(postId);
+        String firebaseId = userDao.getFirebaseId(post.getUserId());
+        Summoner summoner = summonerService.getSummonerByUserId(applicantUserId);
+        String title = "Summoner " + summoner.getName() + " confirmed their application";
+        String body = "Game mode: " + post.getGameType().getMap().getValue();
+        sendMessage(firebaseId, MessageType.APPLICATION_CONFIRMED, title, body);
+    }
+
+    private void sendMessage(String toFirebaseId, String messageType, String title, String body) {
+        log.info("sending message to " + toFirebaseId + " _END");
         Message message = Message.builder()
                 .putData("message", body)
+                .putData("message_type", messageType)
                 .setNotification(com.google.firebase.messaging.Notification.builder()
                         .setTitle(title)
                         .setBody(body)
                         .build())
-                .setToken(firebaseId)
+                .setToken(toFirebaseId)
                 .build();
 
         try {
@@ -130,6 +174,5 @@ public class MessagingServiceImpl implements IMessagingService {
         } catch (FirebaseMessagingException e) {
             e.printStackTrace();
         }
-
     }
 }

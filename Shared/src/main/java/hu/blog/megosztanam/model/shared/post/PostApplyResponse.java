@@ -16,10 +16,19 @@ public class PostApplyResponse {
     private Post post;
     private String summonerName;
     private Integer summonerLevel;
+    private boolean accepted;
     private Rank soloRank;
     private Rank flexRank;
     private List<Role> roles;
     private Date createdAt;
+
+    public boolean isAccepted() {
+        return accepted;
+    }
+
+    public void setAccepted(boolean accepted) {
+        this.accepted = accepted;
+    }
 
     public Date getCreatedAt() {
         return createdAt;

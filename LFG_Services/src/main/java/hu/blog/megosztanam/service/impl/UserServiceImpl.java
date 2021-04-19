@@ -89,5 +89,10 @@ public class UserServiceImpl implements IUserService {
         userDao.saveMessagingToken(userId, token);
     }
 
+    @Override
+    public Optional<Integer> getUserIdByEmail(String email) {
+        return userDao.getUserIdByEmail(email);
+    }
+
 
 }

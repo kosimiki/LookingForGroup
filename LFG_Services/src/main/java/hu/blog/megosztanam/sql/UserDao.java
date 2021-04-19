@@ -4,6 +4,7 @@ import hu.blog.megosztanam.model.UserDetails;
 import hu.blog.megosztanam.model.shared.summoner.Server;
 import hu.blog.megosztanam.sql.mapper.DetailsRowMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -20,10 +21,9 @@ import java.util.Optional;
 @Repository
 public class UserDao {
 
-    private NamedParameterJdbcTemplate template;
-    private SimpleJdbcInsert insert;
+    private final NamedParameterJdbcTemplate template;
+    private final SimpleJdbcInsert insert;
 
-    @Autowired
     public UserDao(JdbcTemplate simpleTemplate) {
         this.insert = new SimpleJdbcInsert(simpleTemplate).withTableName("users").usingGeneratedKeyColumns("user_id");
         this.template = new NamedParameterJdbcTemplate(simpleTemplate);
@@ -57,11 +57,11 @@ public class UserDao {
         return firebaseId != null ? firebaseId.replaceAll(" ", "") : null;
     }
 
-    public int saveMessagingToken(Integer userId, String token) {
+    public void saveMessagingToken(Integer userId, String token) {
         SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("token", token)
                 .addValue("userId", userId);
-        return template.update(SAVE_TOKEN, parameterSource);
+        template.update(SAVE_TOKEN, parameterSource);
     }
 
     public int saveUser(String email, String summonerId, Server server) {
@@ -79,7 +79,13 @@ public class UserDao {
 
     }
 
-    public Optional<String> getUser(String username) {
-        return null;
+    public Optional<Integer> getUserIdByEmail(String email) {
+        try {
+            Integer userId = template.queryForObject("SELECT user_id FROM users where email_address = :email",
+                    new MapSqlParameterSource("email", email), Integer.class);
+            return Optional.of(userId);
+        } catch (EmptyResultDataAccessException ex) {
+            return Optional.empty();
+        }
     }
 }

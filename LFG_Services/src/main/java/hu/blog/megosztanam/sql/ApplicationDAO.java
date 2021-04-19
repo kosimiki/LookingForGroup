@@ -19,7 +19,6 @@ import java.util.List;
 @Repository
 public class ApplicationDAO {
 
-    private NamedParameterJdbcTemplate template;
 
     private static final String INSERT = "INSERT INTO applications (user_id, post_id, role, date_of_application) values (:userId, :postId, :role, NOW())";
 
@@ -30,11 +29,13 @@ public class ApplicationDAO {
             "WHERE l.user_id = :userId " +
             "ORDER BY a.date_of_application DESC";
 
-    @Autowired
-    private ApplicationExtractor extractor;
+    private final ApplicationExtractor extractor;
+    private final NamedParameterJdbcTemplate template;
+
 
     @Autowired
-    public ApplicationDAO(JdbcTemplate simpleTemplate) {
+    public ApplicationDAO(ApplicationExtractor extractor, JdbcTemplate simpleTemplate) {
+        this.extractor = extractor;
         this.template = new NamedParameterJdbcTemplate(simpleTemplate);
     }
 
@@ -52,13 +53,23 @@ public class ApplicationDAO {
         template.update("DELETE FROM applications WHERE post_id = :postId",
                 new MapSqlParameterSource("postId", postId));
     }
-    public void deleteApplication(Integer applicantUserId) {
-        template.update("DELETE FROM applications WHERE user_id = :applicantUserId",
-                new MapSqlParameterSource("applicantUserId", applicantUserId));
+
+    public void deleteApplication(Integer postId, Integer applicantUserId) {
+        MapSqlParameterSource parameters = new MapSqlParameterSource("applicantUserId", applicantUserId);
+        parameters.addValue("postId", postId);
+        template.update("DELETE FROM applications WHERE user_id = :applicantUserId and post_id = :postId",
+                parameters);
+    }
+
+    public void acceptApplication(Integer postId, Integer applicantUserId) {
+        MapSqlParameterSource parameters = new MapSqlParameterSource("applicantUserId", applicantUserId);
+        parameters.addValue("postId", postId);
+        template.update("UPDATE applications set accepted = true WHERE user_id = :applicantUserId and post_id = :postId",
+                parameters);
     }
 
 
-    class Application {
+    static class Application {
         private Integer userId;
         private Integer postId;
         private String role;

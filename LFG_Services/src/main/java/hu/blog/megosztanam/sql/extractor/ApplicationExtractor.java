@@ -1,23 +1,17 @@
 package hu.blog.megosztanam.sql.extractor;
 
 import hu.blog.megosztanam.cache.SummonerCache;
-import hu.blog.megosztanam.cache.SummonerRankCache;
 import hu.blog.megosztanam.model.shared.Post;
 import hu.blog.megosztanam.model.shared.Role;
 import hu.blog.megosztanam.model.shared.Summoner;
 import hu.blog.megosztanam.model.shared.SummonerGameStatistics;
-import hu.blog.megosztanam.model.shared.post.PostApplyRequest;
 import hu.blog.megosztanam.model.shared.post.PostApplyResponse;
 import hu.blog.megosztanam.model.shared.summoner.Server;
-import hu.blog.megosztanam.service.ISummonerService;
 import hu.blog.megosztanam.sql.mapper.PostRowMapper;
-import hu.blog.megosztanam.sql.mapper.SearchForMemberPostRowMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
@@ -29,14 +23,13 @@ import java.util.*;
 public class ApplicationExtractor implements ResultSetExtractor<List<PostApplyResponse>> {
 
 
-    @Autowired
-    SummonerRankCache rankCache;
+    private final SummonerCache summonerCache;
+    private final PostRowMapper postRowMapper;
 
-    @Autowired
-    SummonerCache summonerCache;
-
-    @Autowired
-    PostRowMapper postRowMapper;
+    public ApplicationExtractor(SummonerCache summonerCache, PostRowMapper postRowMapper) {
+        this.summonerCache = summonerCache;
+        this.postRowMapper = postRowMapper;
+    }
 
     @Override
     public List<PostApplyResponse> extractData(ResultSet rs) throws SQLException, DataAccessException {
@@ -55,8 +48,8 @@ public class ApplicationExtractor implements ResultSetExtractor<List<PostApplyRe
         }
         map.forEach((key, value) -> {
             PostApplyResponse response = new PostApplyResponse();
-            SummonerGameStatistics gameStatistics = rankCache.get(key.summonerId, key.server);
-            Summoner summoner = summonerCache.get(key.summonerId, key.server);
+            SummonerGameStatistics gameStatistics = summonerCache.getRank(key.summonerId, key.server);
+            Summoner summoner = summonerCache.getSummonerBySummonerId(key.summonerId, key.server);
 
             response.setFlexRank(gameStatistics.getFlexRank());
             response.setSoloRank(gameStatistics.getSoloRank());
