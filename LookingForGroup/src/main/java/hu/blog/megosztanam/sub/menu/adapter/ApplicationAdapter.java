@@ -1,13 +1,7 @@
-package hu.blog.megosztanam.sub.menu.application;
+package hu.blog.megosztanam.sub.menu.adapter;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-
-import androidx.core.content.ContextCompat;
-import androidx.legacy.view.ViewCompat;
-import androidx.cardview.widget.CardView;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,15 +9,19 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import hu.blog.megosztanam.R;
-import hu.blog.megosztanam.model.shared.GameMap;
-import hu.blog.megosztanam.model.shared.Role;
-import hu.blog.megosztanam.model.shared.post.PostApplyResponse;
+import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+import hu.blog.megosztanam.R;
+import hu.blog.megosztanam.model.shared.GameMap;
+import hu.blog.megosztanam.model.shared.Role;
+import hu.blog.megosztanam.model.shared.post.PostApplyResponse;
 
 /**
  * Created by Miklós on 2017. 05. 28..
@@ -151,6 +149,17 @@ public class ApplicationAdapter extends RecyclerView.Adapter<ApplicationAdapter.
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
+    }
+
+    public PostApplyResponse getApplication(int position) {
+        return applicants.get(position);
+    }
+
+    public void remove(int position) {
+        if (position > -1 && position < applicants.size()) {
+            applicants.remove(position);
+            notifyItemRemoved(position);
+        }
     }
 
     class ApplicationViewHolder extends RecyclerView.ViewHolder {

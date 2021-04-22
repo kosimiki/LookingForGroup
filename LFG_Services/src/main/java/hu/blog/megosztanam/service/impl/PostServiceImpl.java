@@ -58,8 +58,15 @@ public class PostServiceImpl implements IPostService {
 
     @Override
     public List<PostApplyResponse> getPostAppliesForUser(Integer userId) {
-        return applicationDAO.getApplications(userId);
+        return applicationDAO.getApplicationsByPostOwner(userId);
     }
+
+    @Override
+    public List<PostApplyResponse> getApplicationsByApplicant(Integer userId) {
+        return applicationDAO.getApplicationsByApplicant(userId);
+    }
+
+
 
     @Override
     public Post getPostById(Integer postId) {

@@ -9,6 +9,8 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import hu.blog.megosztanam.model.shared.messaging.MessageType;
+
 
 /**
  * Created by Miklós on 2017. 05. 07..
@@ -17,11 +19,12 @@ public class MessagingService extends FirebaseMessagingService {
 
     private static final String TAG = MessagingService.class.getName();
 
-    public static final String NEW_POST = "hu.blog.megosztanam.messaging.MessagingService.NEW_POST";
-    public static final String DELETED_POST = "hu.blog.megosztanam.messaging.MessagingService.DELETED_POST";
-    public static final String NEW_APPLICATION = "hu.blog.megosztanam.messaging.MessagingService.NEW_APPLICATION";
-    static final public String RESULT = "hu.blog.megosztanam.messaging.MessagingService.REQUEST_PROCESSED";
-    static final public String TOKEN_UPDATE = "hu.blog.megosztanam.messaging.MessagingService.TOKEN_UPDATE";
+    public static final String PACKAGE_NAME = "hu.blog.megosztanam.messaging.MessagingService.";
+    public static final String NEW_POST = PACKAGE_NAME + "NEW_POST";
+    public static final String DELETED_POST = PACKAGE_NAME + "DELETED_POST";
+    public static final String NEW_APPLICATION = PACKAGE_NAME + "NEW_APPLICATION";
+    static final public String RESULT = PACKAGE_NAME + "REQUEST_PROCESSED";
+    static final public String TOKEN_UPDATE = PACKAGE_NAME + "TOKEN_UPDATE";
 
     private LocalBroadcastManager broadcastManager;
 
@@ -49,18 +52,27 @@ public class MessagingService extends FirebaseMessagingService {
             intent = new Intent(NEW_POST);
             intent.putExtra("method", "POST");
             intent.putExtra("fromMessageService", "true NEW");
+            broadcastManager.sendBroadcast(intent);
+            return;
         } else if ("/topics/POST_DELETED".equals(from)) {
             intent = new Intent(DELETED_POST);
             intent.putExtra("method", "DELETE");
             intent.putExtra("postId", remoteMessage.getData().get("postId"));
             intent.putExtra("fromMessageService", "true DEL ");
+            broadcastManager.sendBroadcast(intent);
+            return;
 
         } else {
-            intent = new Intent(NEW_APPLICATION);
-            intent.putExtra("fromMessageService", "true OTHER");
-
+            Log.i(TAG, remoteMessage.getData().toString());
+            String messageType = remoteMessage.getData().get("messageType");
+            String message = remoteMessage.getData().get("message");
+            if (messageType != null) {
+                intent = new Intent(messageType);
+                intent.putExtra("message", message);
+                broadcastManager.sendBroadcast(intent);
+                return;
+            }
         }
-        broadcastManager.sendBroadcast(intent);
 
 
         if (remoteMessage.getData().size() > 0) {

@@ -73,9 +73,15 @@ public class ApplicationRestController {
         return (AuthenticatedUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
-    @RequestMapping(value = "/users/{userId}/applications", method = RequestMethod.GET)
-    public List<PostApplyResponse> applyForPost(
+    @RequestMapping(value = "/users/{userId}/posts/applications", method = RequestMethod.GET)
+    public List<PostApplyResponse> getApplicationsForPostsOfUser(
             @PathVariable @Min(0) Integer userId) {
         return postService.getPostAppliesForUser(userId);
+    }
+
+    @RequestMapping(value = "/users/{userId}/applications", method = RequestMethod.GET)
+    public List<PostApplyResponse> getApplicationsByApplicant(
+            @PathVariable @Min(0) Integer userId) {
+        return postService.getApplicationsByApplicant(userId);
     }
 }

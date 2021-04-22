@@ -160,7 +160,7 @@ public class MessagingServiceImpl implements IMessagingService {
         log.info("sending message to " + toFirebaseId + " _END");
         Message message = Message.builder()
                 .putData("message", body)
-                .putData("message_type", messageType)
+                .putData("messageType", messageType)
                 .setNotification(com.google.firebase.messaging.Notification.builder()
                         .setTitle(title)
                         .setBody(body)

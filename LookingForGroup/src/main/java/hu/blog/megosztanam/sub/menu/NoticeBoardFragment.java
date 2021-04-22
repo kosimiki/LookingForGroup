@@ -25,7 +25,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import hu.blog.megosztanam.MainMenuActivity;
 import hu.blog.megosztanam.R;
@@ -34,11 +36,13 @@ import hu.blog.megosztanam.messaging.MessagingService;
 import hu.blog.megosztanam.model.parcelable.ParcelableLoginResponse;
 import hu.blog.megosztanam.model.shared.GameMap;
 import hu.blog.megosztanam.model.shared.Post;
+import hu.blog.megosztanam.model.shared.messaging.MessageType;
+import hu.blog.megosztanam.model.shared.post.PostApplyResponse;
 import hu.blog.megosztanam.rest.ILFGService;
-import hu.blog.megosztanam.sub.menu.post.ApplicationConfirmDialog;
-import hu.blog.megosztanam.sub.menu.post.DeleteConfirmDialog;
+import hu.blog.megosztanam.sub.menu.adapter.PostAdapter;
+import hu.blog.megosztanam.sub.menu.dialog.ApplicationDialogService;
+import hu.blog.megosztanam.sub.menu.dialog.DeleteConfirmDialog;
 import hu.blog.megosztanam.sub.menu.post.PostActivity;
-import hu.blog.megosztanam.sub.menu.post.PostAdapter;
 import hu.blog.megosztanam.sub.menu.post.PostFilter;
 import hu.blog.megosztanam.sub.menu.post.RecyclerItemClickListener;
 import retrofit2.Call;
@@ -62,9 +66,14 @@ public class NoticeBoardFragment extends Fragment {
     private RecyclerView recyclerView;
     private BroadcastReceiver mMessageReceiver;
 
+    private DeleteConfirmDialog deleteConfirmDialog;
+    private ApplicationDialogService applicationDialogService;
+    private Map<Integer, PostApplyResponse> myApplications;
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        myApplications = new HashMap<>();
         final FragmentActivity parentActivity = getActivity();
         final MainMenuActivity activity = (MainMenuActivity) parentActivity;
         this.lfgService = activity.getLfgService();
@@ -72,6 +81,7 @@ public class NoticeBoardFragment extends Fragment {
 
         FloatingActionButton newPostButton = parentActivity.findViewById(R.id.create_new_post_floating);
         userDetails = getArguments().getParcelable(LoginActivity.USER_DETAILS_EXTRA);
+        getMyApplications();
 
         newPostButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,12 +98,17 @@ public class NoticeBoardFragment extends Fragment {
         mMessageReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                Log.i(TAG, "fromMessageService: "  + intent.getStringExtra("fromMessageService"));
+                Log.i(TAG, "fromMessageService: " + intent.getStringExtra("fromMessageService"));
                 loadPosts("new post");
             }
         };
         IntentFilter intentFilter = new IntentFilter(MessagingService.NEW_POST);
+        intentFilter.addAction(MessageType.APPLICATION_REJECTED);
+        intentFilter.addAction(MessageType.APPLICATION_CONFIRMED);
         intentFilter.addAction(MessagingService.DELETED_POST);
+
+        deleteConfirmDialog = new DeleteConfirmDialog(this);
+        applicationDialogService = new ApplicationDialogService(this, lfgService);
         LocalBroadcastManager.getInstance(parentActivity).registerReceiver(mMessageReceiver, intentFilter);
     }
 
@@ -120,6 +135,23 @@ public class NoticeBoardFragment extends Fragment {
         LinearLayoutManager llm = new LinearLayoutManager(getActivity().getBaseContext());
         recyclerView.setLayoutManager(llm);
         return rootView;
+    }
+
+    private void getMyApplications() {
+        Call<List<PostApplyResponse>> applicationsOfApplicant = lfgService.getApplicationsOfApplicant(userDetails.getUser().getUserId());
+        applicationsOfApplicant.enqueue(new Callback<List<PostApplyResponse>>() {
+            @Override
+            public void onResponse(Call<List<PostApplyResponse>> call, Response<List<PostApplyResponse>> response) {
+                for (PostApplyResponse application : response.body()) {
+                    myApplications.put(application.getPost().getPostId(), application);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<PostApplyResponse>> call, Throwable t) {
+
+            }
+        });
     }
 
     private void loadFilter() {
@@ -178,8 +210,6 @@ public class NoticeBoardFragment extends Fragment {
     public void loadPosts(String reason) {
         Log.i(this.getClass().getName(), "loading posts - " + reason);
 
-        final DeleteConfirmDialog deleteConfirmDialog = new DeleteConfirmDialog(this);
-        final ApplicationConfirmDialog applicationConfirmDialog = new ApplicationConfirmDialog(this, lfgService);
 
         final Integer userId = userDetails.getUser().getUserId();
         Call<List<Post>> posts = lfgService.getSearchForMemberPosts(
@@ -202,7 +232,11 @@ public class NoticeBoardFragment extends Fragment {
                             if (post.getIsOwner()) {
                                 deleteConfirmDialog.createDialog(getActivity(), userId, post, position).show();
                             } else if (post.getCanApply()) {
-                                applicationConfirmDialog.createDialog(new ArrayList<>(post.getOpenPositions()), userId, post.getPostId(), getActivity()).show();
+                                applicationDialogService.createApplicationDialog(new ArrayList<>(post.getOpenPositions()), userId, post.getPostId(), getActivity()).show();
+                            } else {
+                                PostApplyResponse application = myApplications.get(post.getPostId());
+                                boolean accepted = application != null && application.isAccepted();
+                                applicationDialogService.managementDialog(getActivity(), userId, post, accepted).show();
                             }
                         }
 
@@ -237,8 +271,7 @@ public class NoticeBoardFragment extends Fragment {
         response.enqueue(new Callback<Boolean>() {
             @Override
             public void onResponse(Call<Boolean> call, Response<Boolean> response) {
-                Log.i(PostActivity.class.getName(), "Response: " + response.isSuccessful());
-                Toast toast = Toast.makeText(getActivity(), "deleted: " + post.getPostId(), Toast.LENGTH_SHORT);
+                Toast toast = Toast.makeText(getActivity(), R.string.deleted_post + " " + post.getPostId(), Toast.LENGTH_SHORT);
                 toast.show();
                 PostAdapter adapter = (PostAdapter) recyclerView.getAdapter();
                 adapter.remove(position);
@@ -253,4 +286,37 @@ public class NoticeBoardFragment extends Fragment {
     }
 
 
+    public void revokeApplication(Integer userId, final Post post) {
+        Call<Void> response = lfgService.revokeApplication(userId, post.getPostId());
+        response.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                Toast toast = Toast.makeText(getActivity(), R.string.application_revoked, Toast.LENGTH_SHORT);
+                toast.show();
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Log.w(PostActivity.class.getName(), "Failure: " + t.toString());
+            }
+        });
+
+    }
+
+
+    public void confirmApplication(Integer userId, Post post) {
+        Call<Void> response = lfgService.confirmApplication(userId, post.getPostId());
+        response.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                Toast toast = Toast.makeText(getActivity(), R.string.application_confirmed, Toast.LENGTH_SHORT);
+                toast.show();
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Log.w(PostActivity.class.getName(), "Failure: " + t.toString());
+            }
+        });
+    }
 }

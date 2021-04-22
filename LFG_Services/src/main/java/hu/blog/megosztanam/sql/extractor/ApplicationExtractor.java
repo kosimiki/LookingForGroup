@@ -36,15 +36,17 @@ public class ApplicationExtractor implements ResultSetExtractor<List<PostApplyRe
 
         List<PostApplyResponse> result = new ArrayList<>();
         Map<Ids, List<Role>> map = new HashMap<>();
-        while (rs.next()){
+        Map<Integer, Boolean> postAccepted = new HashMap<>();
+        while (rs.next()) {
             Ids ids = new Ids();
             ids.userId = rs.getInt("user_id");
-            ids.post = postRowMapper.mapRow(rs,0);
+            ids.post = postRowMapper.mapRow(rs, 0);
             ids.summonerId = rs.getString("summoner_id");
             ids.server = Server.valueOf(rs.getString("region").replaceAll(" ", ""));
             ids.applicationDate = rs.getTimestamp("date_of_application");
-            map.computeIfAbsent(ids, key-> new ArrayList<>());
+            map.computeIfAbsent(ids, key -> new ArrayList<>());
             map.get(ids).add(Role.valueOf(rs.getString("role")));
+            postAccepted.put(ids.post.getPostId(), rs.getBoolean("accepted"));
         }
         map.forEach((key, value) -> {
             PostApplyResponse response = new PostApplyResponse();
@@ -53,6 +55,7 @@ public class ApplicationExtractor implements ResultSetExtractor<List<PostApplyRe
 
             response.setFlexRank(gameStatistics.getFlexRank());
             response.setSoloRank(gameStatistics.getSoloRank());
+            response.setAccepted(postAccepted.get(key.post.getPostId()));
             response.setPost(key.post);
             response.setUserId(key.userId);
             response.setCreatedAt(key.applicationDate);
@@ -66,7 +69,7 @@ public class ApplicationExtractor implements ResultSetExtractor<List<PostApplyRe
         return result;
     }
 
-    private class Ids{
+    private static class Ids {
         int userId;
         Post post;
         String summonerId;

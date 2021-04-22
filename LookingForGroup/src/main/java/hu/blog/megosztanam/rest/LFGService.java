@@ -86,8 +86,33 @@ public class LFGService implements ILFGService {
     }
 
     @Override
+    public Call<List<PostApplyResponse>> getApplicationsOfApplicant(Integer userId) {
+        return servicesHelper.getApplicationsOfApplicant(userId);
+    }
+
+    @Override
     public Call<Void> updateFirebaseId(Integer userId, String firebaseId) {
         return servicesHelper.updateFirebaseId(userId, firebaseId);
+    }
+
+    @Override
+    public Call<Void> acceptApplication(Integer postId, Integer userId) {
+        return servicesHelper.acceptApplication(postId, userId);
+    }
+
+    @Override
+    public Call<Void> rejectApplication(Integer postId, Integer userId) {
+        return servicesHelper.rejectApplication(postId, userId);
+    }
+
+    @Override
+    public Call<Void> revokeApplication(Integer userId, Integer postId) {
+        return servicesHelper.revokeApplication(userId, postId);
+    }
+
+    @Override
+    public Call<Void> confirmApplication(Integer postId, Integer userId) {
+        return servicesHelper.confirmApplication(postId, userId);
     }
 
     private OkHttpClient okhttpClient(Context context) {

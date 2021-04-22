@@ -1,4 +1,4 @@
-package hu.blog.megosztanam.sub.menu.post;
+package hu.blog.megosztanam.sub.menu.dialog;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -13,7 +13,7 @@ import hu.blog.megosztanam.sub.menu.NoticeBoardFragment;
  * Created by Miklós on 2017. 06. 04..
  */
 public class DeleteConfirmDialog {
-    private NoticeBoardFragment noticeBoardFragment;
+    private final NoticeBoardFragment noticeBoardFragment;
 
     public DeleteConfirmDialog(NoticeBoardFragment fragment){
         this.noticeBoardFragment = fragment;
@@ -21,7 +21,6 @@ public class DeleteConfirmDialog {
 
     public Dialog createDialog(Activity activity, final Integer userId, final Post post, final int position) {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        Log.i("ApplicationConfirm", "AlertDialog.Builder");
 
         builder.setMessage(R.string.delete_post)
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {

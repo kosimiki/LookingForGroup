@@ -23,6 +23,8 @@ public interface IPostService {
 
     List<PostApplyResponse> getPostAppliesForUser(Integer userId);
 
+    List<PostApplyResponse> getApplicationsByApplicant(Integer userId);
+
     Post getPostById(Integer postId);
 
     void acceptApplication(Integer postId, Integer userId);

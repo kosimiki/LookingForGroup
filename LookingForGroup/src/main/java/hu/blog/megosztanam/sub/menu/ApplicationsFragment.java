@@ -1,36 +1,39 @@
 package hu.blog.megosztanam.sub.menu;
 
 
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
+import java.util.List;
 
 import hu.blog.megosztanam.MainMenuActivity;
 import hu.blog.megosztanam.R;
 import hu.blog.megosztanam.login.LoginActivity;
 import hu.blog.megosztanam.messaging.MessagingService;
 import hu.blog.megosztanam.model.parcelable.ParcelableLoginResponse;
+import hu.blog.megosztanam.model.shared.messaging.MessageType;
 import hu.blog.megosztanam.model.shared.post.PostApplyResponse;
 import hu.blog.megosztanam.rest.ILFGService;
-import hu.blog.megosztanam.sub.menu.application.ApplicationAdapter;
+import hu.blog.megosztanam.sub.menu.adapter.ApplicationAdapter;
+import hu.blog.megosztanam.sub.menu.post.RecyclerItemClickListener;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import java.util.List;
 
 /**
  * Created by Miklós on 2017. 04. 19..
@@ -54,8 +57,12 @@ public class ApplicationsFragment extends Fragment {
         MainMenuActivity activity = (MainMenuActivity) getActivity();
         this.ilfgService = activity.getLfgService();
         loadApplications();
+        IntentFilter filter = new IntentFilter(MessageType.NEW_APPLICATION);
+        filter.addAction(MessageType.APPLICATION_CONFIRMED);
+        filter.addAction(MessageType.APPLICATION_REVOKED);
         LocalBroadcastManager.getInstance(activity).registerReceiver(mMessageReceiver,
-                new IntentFilter(MessagingService.NEW_APPLICATION));
+                filter
+        );
     }
 
     @Override
@@ -95,6 +102,63 @@ public class ApplicationsFragment extends Fragment {
                 if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
                     ApplicationAdapter adapter = new ApplicationAdapter(response.body(), getActivity().getBaseContext());
                     recyclerView.setAdapter(adapter);
+                    recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getContext(), recyclerView, new RecyclerItemClickListener.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(View view, final int position) {
+                            final ApplicationAdapter adapter = (ApplicationAdapter) recyclerView.getAdapter();
+                            PostApplyResponse application = adapter.getApplication(position);
+                            final int postId = application.getPost().getPostId();
+                            final int applicantUserId = application.getUserId();
+                            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+                            builder.setMessage(R.string.appcept_or_reject_application)
+                                    .setPositiveButton(R.string.accept, new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            ilfgService.acceptApplication(postId, applicantUserId).enqueue(new Callback<Void>() {
+                                                @Override
+                                                public void onResponse(Call<Void> call, Response<Void> response) {
+                                                    Toast toast = Toast.makeText(getActivity(), R.string.accpted_application, Toast.LENGTH_SHORT);
+                                                    toast.show();
+                                                    adapter.remove(position);
+                                                }
+
+                                                @Override
+                                                public void onFailure(Call<Void> call, Throwable t) {
+                                                    Toast toast = Toast.makeText(getActivity(), R.string.failed_to_accep_application, Toast.LENGTH_SHORT);
+                                                    toast.show();
+                                                }
+                                            });
+                                        }
+                                    })
+                                    .setNegativeButton(R.string.reject, new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            ilfgService.rejectApplication(postId, applicantUserId).enqueue(new Callback<Void>() {
+                                                @Override
+                                                public void onResponse(Call<Void> call, Response<Void> response) {
+                                                    Toast toast = Toast.makeText(getActivity(), R.string.rejected_application, Toast.LENGTH_SHORT);
+                                                    toast.show();
+                                                    adapter.remove(position);
+                                                }
+
+                                                @Override
+                                                public void onFailure(Call<Void> call, Throwable t) {
+                                                    Toast toast = Toast.makeText(getActivity(), R.string.failed_to_reject_application, Toast.LENGTH_SHORT);
+                                                    toast.show();
+                                                }
+                                            });
+                                        }
+                                    });
+                            AlertDialog alertDialog = builder.create();
+                            alertDialog.show();
+                        }
+
+                        @Override
+                        public void onLongItemClick(View view, int position) {
+                            // do whatever
+                        }
+                    }));
 
                 } else {
                     Log.i(this.getClass().getName(), "Is successful " + response.isSuccessful());

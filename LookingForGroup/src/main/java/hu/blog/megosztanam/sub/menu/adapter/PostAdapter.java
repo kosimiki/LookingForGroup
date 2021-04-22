@@ -1,13 +1,7 @@
-package hu.blog.megosztanam.sub.menu.post;
+package hu.blog.megosztanam.sub.menu.adapter;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-
-import androidx.legacy.view.ViewCompat;
-import androidx.cardview.widget.CardView;
-import androidx.recyclerview.widget.RecyclerView;
-
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,15 +10,18 @@ import android.widget.LinearLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import hu.blog.megosztanam.R;
-import hu.blog.megosztanam.model.shared.GameMap;
-import hu.blog.megosztanam.model.shared.Post;
-import hu.blog.megosztanam.model.shared.Role;
+import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+import hu.blog.megosztanam.R;
+import hu.blog.megosztanam.model.shared.GameMap;
+import hu.blog.megosztanam.model.shared.Post;
+import hu.blog.megosztanam.model.shared.Role;
 
 /**
  * Created by Miklós on 2017. 06. 25..
@@ -180,8 +177,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     }
 
     public void remove(int position) {
-        list.remove(position);
-        notifyItemRemoved(position);
+        if (position > -1 && position < list.size()) {
+            list.remove(position);
+            notifyItemRemoved(position);
+        }
     }
 
 

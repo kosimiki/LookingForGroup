@@ -53,4 +53,18 @@
     <string name="cancel">Cancel</string>
     <string name="already_applied">You already applied to this post</string>
     <string name="date">2017.03.23 20:14</string>
+    <string name="application_revoked">Application revoked</string>
+    <string name="deleted_post">Deleted post</string>
+    <string name="confirm_application_question">Do you want to confirm your application for this post?</string>
+    <string name="revoke_application">Revoke my application</string>
+    <string name="confirm_application">Confirm my application</string>
+    <string name="application_confirmed">application confirmed</string>
+    <string name="appcept_or_reject_application">Do you want to accept or reject this application?</string>
+    <string name="accept">accept</string>
+    <string name="reject">reject</string>
+    <string name="applied_for_post">Applied for post</string>
+    <string name="accpted_application">accepted application</string>
+    <string name="rejected_application">rejected application</string>
+    <string name="failed_to_accep_application">failed to accept application</string>
+    <string name="failed_to_reject_application">failed to reject application</string>
 </resources>
