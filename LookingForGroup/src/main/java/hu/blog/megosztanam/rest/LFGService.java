@@ -96,6 +96,11 @@ public class LFGService implements ILFGService {
     }
 
     @Override
+    public Call<Void> deleteUser(Integer userId) {
+        return servicesHelper.deleteUser(userId);
+    }
+
+    @Override
     public Call<Void> acceptApplication(Integer postId, Integer userId) {
         return servicesHelper.acceptApplication(postId, userId);
     }

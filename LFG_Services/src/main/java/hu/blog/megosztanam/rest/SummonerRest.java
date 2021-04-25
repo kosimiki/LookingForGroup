@@ -1,14 +1,17 @@
 package hu.blog.megosztanam.rest;
 
 
+import hu.blog.megosztanam.model.AuthenticatedUser;
 import hu.blog.megosztanam.model.shared.LoginResponse;
 import hu.blog.megosztanam.model.shared.Summoner;
 import hu.blog.megosztanam.model.shared.SummonerGameStatistics;
 import hu.blog.megosztanam.model.shared.summoner.Server;
 import hu.blog.megosztanam.service.ISummonerService;
 import hu.blog.megosztanam.service.IUserService;
+import hu.blog.megosztanam.service.impl.DeleteService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.Min;
@@ -23,12 +26,15 @@ public class SummonerRest {
 
     private final ISummonerService summonerService;
     private final IUserService userService;
+    private final DeleteService deleteService;
 
     private static final Logger log = LoggerFactory.getLogger(SummonerRest.class);
 
-    public SummonerRest(ISummonerService summonerService, IUserService userService) {
+    public SummonerRest(ISummonerService summonerService,
+                        IUserService userService, DeleteService deleteService) {
         this.summonerService = summonerService;
         this.userService = userService;
+        this.deleteService = deleteService;
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
@@ -41,9 +47,20 @@ public class SummonerRest {
     @RequestMapping(value = "/users/{userId}", method = RequestMethod.PUT)
     public void updateMessagingToken(
             @PathVariable("userId") @Min(0) Integer userId,
-            @RequestParam("firebaseId") @NotNull String messagingToken) {
+            @RequestBody @NotNull String messagingToken) {
         log.info("Updating token to: " + messagingToken + " _end");
-        userService.updateMessagingToken(userId, messagingToken);
+        userService.updateMessagingToken(userId, messagingToken.replaceAll("\"", ""));
+    }
+
+    @RequestMapping(value = "/users/{userId}", method = RequestMethod.DELETE)
+    public void deleteUser(
+            @PathVariable("userId") @Min(0) Integer userId) {
+        AuthenticatedUser user = getPrincipal();
+        if (user.getUserId() == userId) {
+            deleteService.deleteUser(userId);
+        } else {
+            throw new RuntimeException(userId + " is not authorized to do this.");
+        }
     }
 
     @RequestMapping(value = "/lol/{server}/summoners/{name}", method = RequestMethod.GET)
@@ -64,5 +81,8 @@ public class SummonerRest {
         return summonerService.getStatistics(summonerId, server);
     }
 
+    private AuthenticatedUser getPrincipal() {
+        return (AuthenticatedUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
 
 }

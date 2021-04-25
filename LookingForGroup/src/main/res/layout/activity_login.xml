@@ -1,4 +1,4 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
               android:layout_height="match_parent" android:gravity="center_horizontal"
               android:orientation="vertical" android:paddingBottom="@dimen/activity_vertical_margin"
@@ -9,75 +9,121 @@
 
     <!-- Login progress -->
     <TextView
-            android:id="@+id/status"
-            android:layout_width="match_parent"
-            android:text="@string/signed_out"
-            android:textSize="24sp"
-            android:layout_height="wrap_content"
-            android:textAlignment="center" android:padding="5dp"
-            android:layout_marginBottom="30dp"/>
+        android:id="@+id/status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:padding="5dp"
+        android:text="@string/signed_out"
+        android:textAlignment="center"
+        android:textSize="24sp"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="30dp" />
+
     <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@+id/status"
+        tools:layout_editor_absoluteX="30dp">
+
         <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" app:srcCompat="@mipmap/role_bot"
-                android:id="@+id/summoner_icon" android:layout_weight="1" android:paddingEnd="5dp"
-            tools:ignore="RtlSymmetry"
-            android:contentDescription="@string/summoner_icon" />
+            android:id="@+id/summoner_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:contentDescription="@string/summoner_icon"
+            android:paddingEnd="5dp"
+            app:srcCompat="@color/colorPrimary"
+            tools:ignore="RtlSymmetry" />
+
         <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:id="@+id/found_summoner_name" android:layout_weight="3"
-                android:textSize="24sp" android:paddingTop="10dp" android:layout_gravity="end"
-                android:paddingEnd="3dp"/>
+            android:id="@+id/found_summoner_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_weight="3"
+            android:paddingTop="10dp"
+            android:textSize="24sp" />
+
         <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:id="@+id/summoner_level" android:layout_weight="1"
-                android:textSize="24sp"  android:layout_gravity="start"
-                android:paddingTop="10dp"/>
+            android:id="@+id/summoner_level"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_weight="1"
+            android:paddingTop="10dp"
+            android:textSize="24sp" />
     </LinearLayout>
-    <LinearLayout android:id="@+id/email_login_form" android:layout_width="match_parent"
-                  android:layout_height="wrap_content" android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/email_login_form"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+        tools:layout_editor_absoluteX="30dp">
 
         <RadioGroup
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:id="@+id/region_group"
-                android:orientation='horizontal'
-                android:layout_gravity="center_horizontal"
-                android:gravity="center_horizontal"
-                android:checkedButton="@+id/radio_button_euw" android:layout_marginTop="5dp">
+            android:id="@+id/region_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="5dp"
+            android:checkedButton="@+id/radio_button_euw"
+            android:gravity="center_horizontal"
+            android:orientation='horizontal'>
+
             <RadioButton
-                    android:text="@string/euw"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:id="@+id/radio_button_euw"
-                    android:layout_marginEnd="15dp"/>
+                android:id="@+id/radio_button_euw"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="15dp"
+                android:text="@string/euw" />
+
             <RadioButton
-                    android:text="@string/eune"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:id="@+id/radio_button_eune"/>
+                android:id="@+id/radio_button_eune"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/eune" />
         </RadioGroup>
+
         <SearchView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" android:id="@+id/summonerName" android:layout_marginTop="10dp"/>
+            android:id="@+id/summonerName"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="10dp" />
 
         <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-            <Button
-                    android:text="@string/search_summoner"
-                    style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:id="@+id/button_search_new" android:layout_weight="1"/>
             <Button
-                    android:text="@string/registration_accept_summoner"
-                    style="@style/Widget.AppCompat.Button.Colored"
+                android:id="@+id/button_search_new"
+                style="@style/Widget.AppCompat.Button.Colored"
 
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:id="@+id/button_accept_summoner" android:layout_weight="1"/>
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/search_summoner" />
+
+            <Button
+                android:id="@+id/button_accept_summoner"
+                style="@style/Widget.AppCompat.Button.Colored"
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/registration_accept_summoner" />
         </LinearLayout>
+
+        <CheckBox
+            android:id="@+id/privacy_and_policy_checkbox"
+            android:layout_width="360dp"
+            android:layout_height="wrap_content"
+            android:text="@string/accept_privacy_policy" />
 
     </LinearLayout>
 
@@ -86,12 +132,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
-        android:padding="5dp" />
+        android:layout_marginTop="10dp"
+        android:padding="5dp"
+        app:layout_constraintTop_toBottomOf="@+id/email_login_form"
+        tools:layout_editor_absoluteX="30dp" />
 
-    <CheckBox
-        android:id="@+id/checkBox"
-        android:layout_width="368dp"
-        android:layout_height="wrap_content"
-        android:text="@string/accept_privacy_policy" />
+    <Button
+        android:id="@+id/back_to_account_selection"
+        android:layout_width="238dp"
+        android:layout_height="51dp"
+        android:text="@string/back_to_account_selecion"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

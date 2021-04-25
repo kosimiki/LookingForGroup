@@ -24,6 +24,7 @@ public class GoogleVerifier {
 
     public Optional<User> parseToken(String token) {
         if(token == null || token.isEmpty()) {
+            System.out.println("Token must not be empty");
             return Optional.empty();
         }
         try {
@@ -32,6 +33,7 @@ public class GoogleVerifier {
             if (idToken != null) {
                 GoogleIdToken.Payload payload = idToken.getPayload();
                 User user = new User();
+                System.out.println("GoogleId:" + payload.getSubject());
                 user.setGoogleId(payload.getSubject());
                 return Optional.of(user);
             }

@@ -1,10 +1,18 @@
 package hu.blog.megosztanam.login;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.MediaRouteButton;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
@@ -30,6 +38,7 @@ import hu.blog.megosztanam.MainMenuActivity;
 import hu.blog.megosztanam.R;
 import hu.blog.megosztanam.model.parcelable.ParcelableLoginResponse;
 import hu.blog.megosztanam.model.shared.LoginResponse;
+import hu.blog.megosztanam.model.shared.Post;
 import hu.blog.megosztanam.model.shared.Summoner;
 import hu.blog.megosztanam.model.shared.User;
 import hu.blog.megosztanam.model.shared.summoner.Server;
@@ -63,6 +72,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private LinearLayout regForm;
     private GoogleAuthService authService;
     private ILFGService lfgService;
+    private boolean privacyAccepted = false;
+    private boolean foundSummoner = false;
+    private Button backToAcc;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +85,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         registrationRequired = false;
         setContentView(R.layout.activity_login);
         foundSummonerName = findViewById(R.id.found_summoner_name);
+        CheckBox privacyAndPolicyCheckbox = findViewById(R.id.privacy_and_policy_checkbox);
+        privacyAndPolicyCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                privacyAccepted = isChecked;
+                acceptSummonerButton.setEnabled(foundSummoner && privacyAccepted);
+            }
+        });
         mStatusTextView = findViewById(R.id.status);
         summonerName = findViewById(R.id.summonerName);
         summonerName.setQueryHint("Summoner name");
@@ -90,6 +110,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                             }
         );
 
+        final Activity activity = this;
+        backToAcc = findViewById(R.id.back_to_account_selection);
+        backToAcc.setVisibility(View.INVISIBLE);
+        backToAcc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                authService.logoutUser(activity);
+            }
+        });
 
         googleSignInButton = findViewById(R.id.sign_in_button);
         googleSignInButton.setOnClickListener(this);
@@ -195,7 +224,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         updateForReg(getString(R.string.user_has_no_summoner));
                         break;
                     case FAILED:
-                        updateUI(getString(R.string.failed_to_login));
+                        handleSummonerResponse(getString(R.string.failed_to_login));
                         break;
                 }
             }
@@ -237,35 +266,34 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             doBackEndLogin(account.getIdToken());
         } catch (ApiException e) {
             Log.w(TAG, "handleSignInResult:error", e);
-            updateUI("Logged off");
+            handleSummonerResponse("Logged off");
         }
     }
 
-    private void updateUI(Boolean accept, String msg, Summoner summoner) {
-        if (accept) {
-            foundSummonerName.setText(summoner.getName());
-            summonerLevel.setText(String.format(Locale.ENGLISH, "LVL: %d", summoner.getSummonerLevel()));
-        }
-        acceptSummonerButton.setEnabled(accept);
-        mStatusTextView.setText(msg);
-        setDetailViewsVisibility(accept);
-
+    private void handleSummonerResponse(String msg, Summoner summoner) {
+        foundSummonerName.setText(summoner.getName());
+        summonerLevel.setText(String.format(Locale.ENGLISH, "LVL: %d", summoner.getSummonerLevel()));
+        handleSummonerResponse(msg);
     }
 
-    private void setDetailViewsVisibility(boolean isVisible) {
+
+    private void handleSummonerResponse(String message) {
+        acceptSummonerButton.setEnabled(foundSummoner && privacyAccepted);
+        mStatusTextView.setText(message);
+        setSummonerDetailVisibility(foundSummoner);
+    }
+
+    private void setSummonerDetailVisibility(boolean isVisible) {
         int visibility = isVisible ? View.VISIBLE : View.INVISIBLE;
         foundSummonerName.setVisibility(visibility);
         summonerLevel.setVisibility(visibility);
         summonerIcon.setVisibility(visibility);
     }
 
-    private void updateUI(String msg) {
-        updateUI(false, msg, null);
-    }
-
 
     private void updateForReg(String msg) {
         regForm.setVisibility(View.VISIBLE);
+        backToAcc.setVisibility(View.VISIBLE);
         googleSignInButton.setVisibility(View.INVISIBLE);
         googleSignInButton.setEnabled(false);
         mStatusTextView.setText(msg);
@@ -282,17 +310,21 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     Summoner summoner = response.body();
                     if (summoner.getId() == null) {
                         handler.notFound();
+                        foundSummoner = false;
                     } else {
+                        foundSummoner = true;
                         handler.found(summoner);
                     }
                 } else {
-                    updateUI(getString(R.string.summoner_not_found));
+                    foundSummoner = false;
+                    handleSummonerResponse(getString(R.string.summoner_not_found));
                 }
             }
 
             @Override
             public void onFailure(Call<Summoner> call, Throwable t) {
-                updateUI(getString(R.string.summoner_not_found));
+                foundSummoner = false;
+                handleSummonerResponse(getString(R.string.summoner_not_found));
             }
         });
     }
@@ -301,7 +333,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         handleSummoner(name, new ISummonerResponseHandler() {
             @Override
             public void notFound() {
-                updateUI(getString(R.string.summoner_not_found));
+                handleSummonerResponse(getString(R.string.summoner_not_found));
             }
 
             @Override
@@ -315,7 +347,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         handleSummoner(name, new ISummonerResponseHandler() {
             @Override
             public void notFound() {
-                updateUI(getString(R.string.summoner_not_found));
+                handleSummonerResponse(getString(R.string.summoner_not_found));
             }
 
             @Override
@@ -323,40 +355,46 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 Picasso.with(getBaseContext())
                         .load(LoLService.getSummonerIconUrl(summoner.getProfileIconId()))
                         .into(summonerIcon);
-                updateUI(true, getString(R.string.summoner_found), summoner);
+                handleSummonerResponse(getString(R.string.summoner_found), summoner);
             }
         });
     }
 
     private void handleRegistration(String summonerId) {
-        Log.i(TAG, "REG SUMMONER:  " + summonerId);
         Call<LoginResponse> loginResponse = lfgService.doRegistration(idToken, summonerId, server);
         loginResponse.enqueue(new Callback<LoginResponse>() {
             @Override
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
-                Log.i(TAG, response.message());
-                Log.i(TAG, response.body().toString());
-                final LoginResponse loginResponse = response.body();
-                switch (loginResponse.getLoginStatus()) {
-                    case SUCCESSFUL:
-                        updateUI(loginResponse.getUser().getSummoner().getName() + "\n " + loginResponse.getUser().getSummoner().getId());
-                        registrationRequired = false;
-                        updateFirebaseId(loginResponse, idToken);
-                        break;
-                    case REGISTRATION_REQUIRED:
-                        int userHasNoSummoner = R.string.user_has_no_summoner;
-                        updateForReg(getString(userHasNoSummoner));
-                        break;
-                    case FAILED:
-                        int failedToLogin = R.string.failed_to_login;
-                        updateUI(getString(failedToLogin));
-                        break;
+                if (response.isSuccessful() && response.body() != null) {
+                    final LoginResponse loginResponse = response.body();
+                    switch (loginResponse.getLoginStatus()) {
+                        case SUCCESSFUL:
+                            handleSummonerResponse(loginResponse.getUser().getSummoner().getName() + "\n " + loginResponse.getUser().getSummoner().getId());
+                            registrationRequired = false;
+                            updateFirebaseId(loginResponse, idToken);
+                            break;
+                        case REGISTRATION_REQUIRED:
+                            int userHasNoSummoner = R.string.user_has_no_summoner;
+                            updateForReg(getString(userHasNoSummoner));
+                            break;
+                        case FAILED:
+                            int failedToLogin = R.string.failed_to_login;
+                            handleSummonerResponse(getString(failedToLogin));
+                            break;
+                    }
+                } else {
+                    try {
+                        Log.i(TAG, response.errorBody().toString());
+                    } catch (Exception ex) {
+                        Log.e(TAG, ex.getLocalizedMessage(), ex);
+                    }
                 }
+
             }
 
             @Override
             public void onFailure(Call<LoginResponse> call, Throwable t) {
-                updateUI(getString(R.string.summoner_not_found));
+                handleSummonerResponse(getString(R.string.summoner_not_found));
             }
         });
     }
@@ -373,10 +411,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         String firebaseToken = task.getResult();
                         Log.i(TAG, "Firebase token: " + firebaseToken);
                         Integer userId = loginResponse.getUser().getUserId();
-                        updateFirebaseId(userId, firebaseToken);
                         SaveSharedPreference.setFirebaseId(getBaseContext(), firebaseToken);
                         SaveSharedPreference.setUserId(getBaseContext(), userId);
                         SaveSharedPreference.setTokenId(getBaseContext(), token);
+                        updateFirebaseId(userId, firebaseToken);
                         updateUISuccessfulLogin(loginResponse);
                     }
                 });
@@ -396,5 +434,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             }
         });
     }
+
 }
 

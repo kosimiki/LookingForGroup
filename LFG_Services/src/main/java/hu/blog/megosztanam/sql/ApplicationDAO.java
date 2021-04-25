@@ -34,7 +34,8 @@ public class ApplicationDAO {
             "JOIN looking_for_member l ON a.post_id = l.id \n" +
             "JOIN users u ON a.user_id = u.user_id\n" +
             "WHERE a.user_id = :userId " +
-            "ORDER BY a.date_of_application DESC";;
+            "ORDER BY a.date_of_application DESC";
+    ;
 
 
     private final ApplicationExtractor extractor;
@@ -59,6 +60,11 @@ public class ApplicationDAO {
 
     public List<PostApplyResponse> getApplicationsByApplicant(Integer userId) {
         return this.template.query(APPLICATIONS_OF_USER, new MapSqlParameterSource("userId", userId), extractor);
+    }
+
+    public void deleteApplicationsOfUser(Integer userId) {
+        this.template.update("DELETE FROM applications WHERE user_id = :userId",
+                new MapSqlParameterSource("userId", userId));
     }
 
     public void deleteApplications(Integer postId) {

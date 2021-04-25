@@ -86,4 +86,7 @@
     <string name="create_new_post">create new post</string>
     <string name="reload_posts">reload posts</string>
     <string name="posts_changed">posts changed</string>
+    <string name="delete_profile">Delete profile</string>
+    <string name="delete_profile_question">Do you want to delete your profile?</string>
+    <string name="back_to_account_selecion">Back to account selecion</string>
 </resources>

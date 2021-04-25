@@ -34,4 +34,6 @@ public interface IPostService {
     void revokeApplication(Integer postId, Integer applicantUserId);
 
     void confirmApplication(Integer postId, Integer applicantUserId);
+
+    void deletePostsAndApplications(Integer userId);
 }

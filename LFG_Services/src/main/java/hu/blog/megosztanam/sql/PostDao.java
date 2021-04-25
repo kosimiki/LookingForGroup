@@ -9,8 +9,6 @@ import hu.blog.megosztanam.sql.mapper.RoleRowMapper;
 import hu.blog.megosztanam.sql.mapper.SearchForMemberPostRowMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.SqlParameter;
-import org.springframework.jdbc.core.SqlTypeValue;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -20,11 +18,9 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.JDBCType;
-import java.sql.SQLType;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Created by Miklós on 2017. 04. 20..
@@ -115,6 +111,11 @@ public class PostDao {
             post.setOpenPositions(template.query(SELECT_OPEN_ROLES, new MapSqlParameterSource("looking_for_member_id", post.getPostId()), new RoleRowMapper()));
         });
         return posts;
+    }
+
+    public List<Integer> getPostsOfUser(Integer userId) {
+        return template.queryForList("SELECT id FROM looking_for_member WHERE user_id = :userId",
+                new MapSqlParameterSource("userId", userId), Integer.class);
     }
 
     @Transactional

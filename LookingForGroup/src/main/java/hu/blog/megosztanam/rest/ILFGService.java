@@ -59,7 +59,10 @@ public interface ILFGService {
     Call<List<PostApplyResponse>> getApplicationsOfApplicant(@Path("userId") Integer userId);
 
     @PUT("/users/{userId}")
-    Call<Void> updateFirebaseId(@Path("userId") Integer userId, @Query("firebaseId") String firebaseId);
+    Call<Void> updateFirebaseId(@Path("userId") Integer userId, @Body String firebaseId);
+
+    @DELETE("/users/{userId}")
+    Call<Void> deleteUser(@Path("userId") Integer userId);
 
     @PUT("/posts/{postId}/applications/{userId}")
     Call<Void> acceptApplication(@Path("postId") Integer postId, @Path("userId") Integer userId);

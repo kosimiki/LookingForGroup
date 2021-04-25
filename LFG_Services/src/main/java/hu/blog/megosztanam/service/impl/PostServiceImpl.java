@@ -10,6 +10,7 @@ import hu.blog.megosztanam.service.IPostService;
 import hu.blog.megosztanam.sql.ApplicationDAO;
 import hu.blog.megosztanam.sql.PostDao;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -67,7 +68,6 @@ public class PostServiceImpl implements IPostService {
     }
 
 
-
     @Override
     public Post getPostById(Integer postId) {
         return postDao.getPostById(postId);
@@ -95,5 +95,11 @@ public class PostServiceImpl implements IPostService {
     public void confirmApplication(Integer postId, Integer applicantUserId) {
         applicationDAO.deleteApplication(postId, applicantUserId);
         messaging.confirmedApplication(postId, applicantUserId);
+    }
+
+    @Transactional
+    @Override
+    public void deletePostsAndApplications(Integer userId) {
+
     }
 }

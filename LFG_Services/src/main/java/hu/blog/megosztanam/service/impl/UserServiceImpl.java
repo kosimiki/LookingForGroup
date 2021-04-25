@@ -6,6 +6,7 @@ import hu.blog.megosztanam.model.shared.LoginResponse;
 import hu.blog.megosztanam.model.shared.LoginStatus;
 import hu.blog.megosztanam.model.shared.User;
 import hu.blog.megosztanam.model.shared.summoner.Server;
+import hu.blog.megosztanam.service.IPostService;
 import hu.blog.megosztanam.service.ISummonerService;
 import hu.blog.megosztanam.service.IUserService;
 import hu.blog.megosztanam.sql.UserDao;
@@ -29,7 +30,9 @@ public class UserServiceImpl implements IUserService {
     private final GoogleVerifier verifier;
 
 
-    public UserServiceImpl(UserDao userDao, ISummonerService summonerService, GoogleVerifier verifier) {
+    public UserServiceImpl(UserDao userDao,
+                           ISummonerService summonerService,
+                           GoogleVerifier verifier) {
         this.userDao = userDao;
         this.summonerService = summonerService;
         this.verifier = verifier;
@@ -93,6 +96,5 @@ public class UserServiceImpl implements IUserService {
     public Optional<Integer> getUserByGoogleId(String googleId) {
         return userDao.getUserByGoogleId(googleId);
     }
-
 
 }

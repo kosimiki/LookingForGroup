@@ -87,4 +87,9 @@ public class UserDao {
             return Optional.empty();
         }
     }
+
+    public void deleteUser(Integer userId) {
+        template.update("DELETE FROM users WHERE user_id = :userId",
+                new MapSqlParameterSource("userId", userId));
+    }
 }
