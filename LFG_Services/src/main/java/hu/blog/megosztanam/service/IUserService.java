@@ -15,5 +15,5 @@ public interface IUserService {
     LoginResponse doLogin(String idTokenString);
     LoginResponse register(String idTokenString, String summonerId, Server server);
     void updateMessagingToken(Integer userId, String token);
-    Optional<Integer> getUserIdByEmail(String email);
+    Optional<Integer> getUserByGoogleId(String googleId);
 }

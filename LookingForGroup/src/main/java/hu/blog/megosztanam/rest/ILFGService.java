@@ -24,13 +24,13 @@ import retrofit2.http.Query;
 
 public interface ILFGService {
 
-    @GET("/{server}/summoners/{name}")
+    @GET("/lol/{server}/summoners/{name}")
     Call<Summoner> getSummoner(@Path("name") String name, @Path("server") Server server);
 
     @POST("/login")
     Call<LoginResponse> doLogin(@Body String idToken);
 
-    @POST("/{server}/registration/{summonerId}")
+    @POST("/lol/{server}/registration/{summonerId}")
     Call<LoginResponse> doRegistration(@Body String idToken,
                                        @Path("summonerId") String summonerId,
                                        @Path("server") Server server);

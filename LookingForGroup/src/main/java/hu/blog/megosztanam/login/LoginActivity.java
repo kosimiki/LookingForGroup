@@ -14,10 +14,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -55,9 +53,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private SearchView summonerName;
     private boolean registrationRequired;
     private String idToken;
-    private GoogleSignInAccount acct;
     private Server server = Server.EUW;
-    private RadioGroup radioGroup;
     private Button acceptSummonerButton;
     private Button searchSummonerButton;
     private SignInButton googleSignInButton;
@@ -115,7 +111,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         summonerLevel = findViewById(R.id.summoner_level);
         summonerIcon.setVisibility(View.INVISIBLE);
 
-        radioGroup = findViewById(R.id.region_group);
+        RadioGroup radioGroup = findViewById(R.id.region_group);
 
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -148,7 +144,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
     }
-
 
 
     @Override
@@ -186,24 +181,21 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private void doBackEndLogin(String token) {
         idToken = token;
-        Log.i(TAG, "THIS IS NEW THREAD ");
-        Log.i(TAG, "GOT TOKEN: " + idToken);
         Call<LoginResponse> loginResponse = lfgService.doLogin(idToken);
         loginResponse.enqueue(new Callback<LoginResponse>() {
             @Override
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
                 LoginResponse loginResponse = response.body();
-                Log.i(TAG, "AFTER LOGIN: " + loginResponse.getLoginStatus());
                 switch (loginResponse.getLoginStatus()) {
                     case SUCCESSFUL:
                         registrationRequired = false;
                         updateFirebaseId(loginResponse, idToken);
                         break;
                     case REGISTRATION_REQUIRED:
-                        updateForReg(loginResponse.getUser().getGivenName() + " has no summoner registered");
+                        updateForReg(getString(R.string.user_has_no_summoner));
                         break;
                     case FAILED:
-                        updateUI(loginResponse.getUser().getGivenName());
+                        updateUI(getString(R.string.failed_to_login));
                         break;
                 }
             }
@@ -219,7 +211,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private void updateUISuccessfulLogin(LoginResponse response) {
         User user = response.getUser();
-        String text = user.getGivenName() + " " + user.getSummoner().getName();
+        String text = user.getSummoner().getName();
         mStatusTextView.setText(text);
         findViewById(R.id.sign_in_button).setVisibility(View.GONE);
         summonerName.setVisibility(View.GONE);
@@ -280,7 +272,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         registrationRequired = true;
     }
 
-    private void handleSummonerName(String name) {
+
+    private void handleSummoner(String name, final ISummonerResponseHandler handler) {
         Call<Summoner> summonerCall = lfgService.getSummoner(name, server);
         summonerCall.enqueue(new Callback<Summoner>() {
             @Override
@@ -288,50 +281,49 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 if (response.isSuccessful()) {
                     Summoner summoner = response.body();
                     if (summoner.getId() == null) {
-                        updateUI("NO SUMMONER FOUND");
+                        handler.notFound();
                     } else {
-                        handleRegistration(summoner.getId());
+                        handler.found(summoner);
                     }
                 } else {
-                    updateUI("NO SUMMONER FOUND");
+                    updateUI(getString(R.string.summoner_not_found));
                 }
             }
 
             @Override
             public void onFailure(Call<Summoner> call, Throwable t) {
-                updateUI("NO SUMMONER FOUND");
+                updateUI(getString(R.string.summoner_not_found));
             }
         });
     }
 
-
-    private void getSummonerDetails(String name) {
-        Call<Summoner> summonerCall = lfgService.getSummoner(name, server);
-        summonerCall.enqueue(new Callback<Summoner>() {
+    private void handleSummonerName(String name) {
+        handleSummoner(name, new ISummonerResponseHandler() {
             @Override
-            public void onResponse(Call<Summoner> call, Response<Summoner> response) {
-                if (response.isSuccessful()) {
-                    Summoner summoner = response.body();
-                    if (summoner.getId() == null) {
-                        updateUI("NO SUMMONER FOUND");
-
-                    } else {
-                        Picasso.with(getBaseContext())
-                                .load(LoLService.getSummonerIconUrl(summoner.getProfileIconId()))
-                                .into(summonerIcon);
-                        updateUI(true, "Summoner found!", summoner);
-
-                    }
-                } else {
-                    Log.i(TAG, "GET SUMMONER DETAILS not successful:" + response.body());
-                    updateUI("NO SUMMONER FOUND");
-                }
+            public void notFound() {
+                updateUI(getString(R.string.summoner_not_found));
             }
 
             @Override
-            public void onFailure(Call<Summoner> call, Throwable t) {
-                Log.i(TAG, "GET SUMMONER DETAILS FAILED:" + t.getMessage());
-                updateUI("NO SUMMONER FOUND");
+            public void found(Summoner summoner) {
+                handleRegistration(summoner.getId());
+            }
+        });
+    }
+
+    private void getSummonerDetails(String name) {
+        handleSummoner(name, new ISummonerResponseHandler() {
+            @Override
+            public void notFound() {
+                updateUI(getString(R.string.summoner_not_found));
+            }
+
+            @Override
+            public void found(Summoner summoner) {
+                Picasso.with(getBaseContext())
+                        .load(LoLService.getSummonerIconUrl(summoner.getProfileIconId()))
+                        .into(summonerIcon);
+                updateUI(true, getString(R.string.summoner_found), summoner);
             }
         });
     }
@@ -347,24 +339,24 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 final LoginResponse loginResponse = response.body();
                 switch (loginResponse.getLoginStatus()) {
                     case SUCCESSFUL:
-                        updateUI(loginResponse.getUser().getGivenName() + "\n " + loginResponse.getUser().getSummoner().getName() + "\n " + loginResponse.getUser().getSummoner().getId());
+                        updateUI(loginResponse.getUser().getSummoner().getName() + "\n " + loginResponse.getUser().getSummoner().getId());
                         registrationRequired = false;
-                        Log.i(TAG, "SUCCESSFUL REG " + loginResponse.toString());
                         updateFirebaseId(loginResponse, idToken);
                         break;
                     case REGISTRATION_REQUIRED:
-                        updateForReg(loginResponse.getUser().getGivenName() + " has no summoner registered");
+                        int userHasNoSummoner = R.string.user_has_no_summoner;
+                        updateForReg(getString(userHasNoSummoner));
                         break;
                     case FAILED:
-                        updateUI(loginResponse.getUser().getGivenName());
+                        int failedToLogin = R.string.failed_to_login;
+                        updateUI(getString(failedToLogin));
                         break;
                 }
             }
 
             @Override
             public void onFailure(Call<LoginResponse> call, Throwable t) {
-                updateUI("NO SUMMONER FOUND");
-
+                updateUI(getString(R.string.summoner_not_found));
             }
         });
     }

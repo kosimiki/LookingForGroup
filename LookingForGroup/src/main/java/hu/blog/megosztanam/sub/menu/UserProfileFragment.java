@@ -48,12 +48,6 @@ public class UserProfileFragment extends Fragment {
 
         User user = userDetails.getUser();
 
-        ImageView imageView = rootView.findViewById(R.id.profile_picture);
-        Picasso.with(getActivity().getBaseContext()).load(user.getProfilePictureUrl()).into(imageView);
-
-        TextView userName = rootView.findViewById(R.id.username);
-        userName.setText(user.getGivenName());
-
         TextView summonerName = rootView.findViewById(R.id.summoner_name);
         Summoner summoner = user.getSummoner();
         summonerName.setText(summoner.getName());

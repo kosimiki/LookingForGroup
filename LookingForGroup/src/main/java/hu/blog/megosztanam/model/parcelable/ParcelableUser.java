@@ -20,9 +20,6 @@ public class ParcelableUser extends User implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeValue(this.userId);
         dest.writeString(this.idTokenString);
-        dest.writeString(this.email);
-        dest.writeString(this.givenName);
-        dest.writeString(this.profilePictureUrl);
         dest.writeValue(this.authenticated);
         dest.writeParcelable(new ParcelableSummoner(this.summoner), flags);
         dest.writeString(this.idToken);
@@ -33,9 +30,6 @@ public class ParcelableUser extends User implements Parcelable {
     public ParcelableUser(User user){
         this.userId = user.getUserId();
         this.idTokenString = user.getIdTokenString();
-        this.email = user.getEmail();
-        this.givenName = user.getGivenName();
-        this.profilePictureUrl = user.getProfilePictureUrl();
         this.authenticated = user.getAuthenticated();
         this.summoner = user.getSummoner();
         this.idToken = user.getIdToken();
@@ -47,9 +41,6 @@ public class ParcelableUser extends User implements Parcelable {
     protected ParcelableUser(Parcel in) {
         this.userId = (Integer) in.readValue(Integer.class.getClassLoader());
         this.idTokenString = in.readString();
-        this.email = in.readString();
-        this.givenName = in.readString();
-        this.profilePictureUrl = in.readString();
         this.authenticated = (Boolean) in.readValue(Boolean.class.getClassLoader());
         this.summoner = in.readParcelable(Summoner.class.getClassLoader());
         this.idToken = in.readString();

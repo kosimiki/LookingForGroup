@@ -32,9 +32,7 @@ public class GoogleVerifier {
             if (idToken != null) {
                 GoogleIdToken.Payload payload = idToken.getPayload();
                 User user = new User();
-                user.setEmail(payload.getEmail());
-                user.setGivenName((String) payload.get("given_name"));
-                user.setProfilePictureUrl((String) payload.get("picture"));
+                user.setGoogleId(payload.getSubject());
                 return Optional.of(user);
             }
         } catch (Exception e) {

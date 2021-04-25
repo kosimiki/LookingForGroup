@@ -49,8 +49,8 @@ public class UserServiceImpl implements IUserService {
         if (user.isPresent()) {
             user.get().setIdToken(idTokenString);
             loginResponse.setUser(user.get());
-            if (userDao.isRegisteredUser(user.get().getEmail())) {
-                UserDetails userDetails = userDao.getSummonerId(user.get().getEmail());
+            if (userDao.isRegisteredUser(user.get().getGoogleId())) {
+                UserDetails userDetails = userDao.getSummonerId(user.get().getGoogleId());
                 user.get().setUserId(userDetails.getUserId());
                 user.get().setServer(userDetails.getServer());
                 user.get().setSummoner(summonerService.getById(userDetails.getSummonerId(), userDetails.getServer()));
@@ -71,7 +71,7 @@ public class UserServiceImpl implements IUserService {
         LoginResponse registrationResponse = new LoginResponse();
         Optional<User> user = verifier.parseToken(idTokenString);
         if (user.isPresent()) {
-            user.get().setUserId(userDao.saveUser(user.get().getEmail(), summonerId, server));
+            user.get().setUserId(userDao.saveUser(user.get().getGoogleId(), summonerId, server));
             user.get().setSummoner(summonerService.getById(summonerId, server));
             user.get().setServer(server);
             registrationResponse.setUser(user.get());
@@ -90,8 +90,8 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public Optional<Integer> getUserIdByEmail(String email) {
-        return userDao.getUserIdByEmail(email);
+    public Optional<Integer> getUserByGoogleId(String googleId) {
+        return userDao.getUserByGoogleId(googleId);
     }
 
 

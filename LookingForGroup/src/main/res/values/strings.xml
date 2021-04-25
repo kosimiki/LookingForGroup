@@ -67,4 +67,12 @@
     <string name="rejected_application">rejected application</string>
     <string name="failed_to_accep_application">failed to accept application</string>
     <string name="failed_to_reject_application">failed to reject application</string>
+    <string name="failed_to_login">failed to login</string>
+    <string name="user_has_no_summoner">user has no registered summoner</string>
+    <string name="summoner_not_found">Summoner not found</string>
+    <string name="summoner_found">Summoner found</string>
+    <string name="logout">Logout</string>
+    <string name="no_server">No server</string>
+    <string name="todo">Summoner icon</string>
+    <string name="summoner_level">summoner level</string>
 </resources>

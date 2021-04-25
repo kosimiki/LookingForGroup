@@ -10,9 +10,7 @@ public class User {
 
     protected Integer userId;
     protected String idTokenString;
-    protected String email;
-    protected String givenName;
-    protected String profilePictureUrl;
+    protected String googleId;
     protected Boolean authenticated;
     protected Summoner summoner;
     protected String idToken;
@@ -59,29 +57,14 @@ public class User {
         this.idTokenString = idTokenString;
     }
 
-    public String getEmail() {
-        return email;
+    public String getGoogleId() {
+        return googleId;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setGoogleId(String googleId) {
+        this.googleId = googleId;
     }
 
-    public String getGivenName() {
-        return givenName;
-    }
-
-    public void setGivenName(String givenName) {
-        this.givenName = givenName;
-    }
-
-    public String getProfilePictureUrl() {
-        return profilePictureUrl;
-    }
-
-    public void setProfilePictureUrl(String profilePictureUrl) {
-        this.profilePictureUrl = profilePictureUrl;
-    }
 
     public Boolean getAuthenticated() {
         return authenticated;
@@ -104,13 +87,11 @@ public class User {
         return "User{" +
                 "userId=" + userId +
                 ", idTokenString='" + idTokenString + '\'' +
-                ", email='" + email + '\'' +
-                ", givenName='" + givenName + '\'' +
-                ", profilePictureUrl='" + profilePictureUrl + '\'' +
+                ", googleId='" + googleId + '\'' +
                 ", authenticated=" + authenticated +
                 ", summoner=" + summoner +
                 ", idToken='" + idToken + '\'' +
-                ", server ='" + (server == null? null :server.getValue()) + '\'' +
+                ", server ='" + (server == null ? null : server.getValue()) + '\'' +
                 '}';
     }
 }

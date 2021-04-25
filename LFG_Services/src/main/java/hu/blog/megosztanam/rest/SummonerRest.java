@@ -46,19 +46,19 @@ public class SummonerRest {
         userService.updateMessagingToken(userId, messagingToken);
     }
 
-    @RequestMapping(value = "/{server}/summoners/{name}", method = RequestMethod.GET)
+    @RequestMapping(value = "/lol/{server}/summoners/{name}", method = RequestMethod.GET)
     public Summoner getSummoner(@PathVariable String name, @PathVariable Server server) {
         return summonerService.getSummoner(name, server);
     }
 
-    @RequestMapping(value = "/{server}/registration/{summonerId}", method = RequestMethod.POST)
+    @RequestMapping(value = "/lol/{server}/registration/{summonerId}", method = RequestMethod.POST)
     public LoginResponse doRegistration(@RequestBody String idToken,
                                         @PathVariable @NotNull @Min(1) String summonerId,
                                         @PathVariable Server server) {
-        return userService.register(idToken, summonerId, server);
+        return userService.register(idToken.replaceAll("\"", ""), summonerId, server);
     }
 
-    @RequestMapping(value = "/{server}/league/{summonerId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/lol/{server}/league/{summonerId}", method = RequestMethod.GET)
     public SummonerGameStatistics getStats(@PathVariable @NotNull @Min(1) String summonerId,
                                            @PathVariable Server server) {
         return summonerService.getStatistics(summonerId, server);

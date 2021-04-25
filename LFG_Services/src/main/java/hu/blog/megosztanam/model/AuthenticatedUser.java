@@ -8,11 +8,11 @@ import java.util.Collection;
 public class AuthenticatedUser implements UserDetails {
 
     private final int userId;
-    private final String email;
+    private final String googleId;
 
-    public AuthenticatedUser(String email, int userId) {
+    public AuthenticatedUser(String googleId, int userId) {
         this.userId = userId;
-        this.email = email;
+        this.googleId = googleId;
     }
 
     @Override
@@ -27,7 +27,7 @@ public class AuthenticatedUser implements UserDetails {
 
     @Override
     public String getUsername() {
-        return email;
+        return googleId;
     }
 
     @Override

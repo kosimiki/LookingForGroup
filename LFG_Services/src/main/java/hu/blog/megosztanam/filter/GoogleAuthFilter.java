@@ -32,10 +32,10 @@ public class GoogleAuthFilter extends OncePerRequestFilter {
         LOGGER.info(request.getMethod() + " " + request.getServletPath());
         Optional<User> user = verifier.parseToken(request.getHeader("Authorization"));
         if (user.isPresent()) {
-            String email = user.get().getEmail();
-            Optional<Integer> userIdByEmail = userService.getUserIdByEmail(email);
-            if (userIdByEmail.isPresent()) {
-                AuthenticatedUser userDetails = getUserDetails(email, userIdByEmail.get());
+            String googleId = user.get().getGoogleId();
+            Optional<Integer> userIdByGoogleId = userService.getUserByGoogleId(googleId);
+            if (userIdByGoogleId.isPresent()) {
+                AuthenticatedUser userDetails = getUserDetails(googleId, userIdByGoogleId.get());
                 UsernamePasswordAuthenticationToken
                         authentication = new UsernamePasswordAuthenticationToken(
                         userDetails, null,
@@ -49,8 +49,8 @@ public class GoogleAuthFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    public static AuthenticatedUser getUserDetails(String email, int userId) {
-        return new AuthenticatedUser(email, userId);
+    public static AuthenticatedUser getUserDetails(String googleId, int userId) {
+        return new AuthenticatedUser(googleId, userId);
     }
 
 

@@ -249,7 +249,6 @@ public class NoticeBoardFragment extends Fragment {
                 } else {
                     Log.i(this.getClass().getName(), "Is successful" + response.isSuccessful());
                 }
-                Log.i(this.getClass().getName(), "Response body size: " + response.body().size());
 
             }
 

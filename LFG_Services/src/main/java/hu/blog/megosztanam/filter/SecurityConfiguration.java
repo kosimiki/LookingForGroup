@@ -25,7 +25,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable();
         http.authorizeRequests()
-                .antMatchers(HttpMethod.POST, "/login").permitAll()
+                .antMatchers( "/login", "/lol/**").permitAll()
                 .anyRequest()
                 .authenticated();
 
@@ -35,9 +35,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(email -> {
-            Optional<Integer> userIdByEmail = userService.getUserIdByEmail(email);
-            return userIdByEmail.map(integer -> GoogleAuthFilter.getUserDetails(email, integer)).orElse(null);
+        auth.userDetailsService(googleId -> {
+            Optional<Integer> userIdByGoogleId = userService.getUserByGoogleId(googleId);
+            return userIdByGoogleId.map(integer -> GoogleAuthFilter.getUserDetails(googleId, integer)).orElse(null);
         });
     }
 
