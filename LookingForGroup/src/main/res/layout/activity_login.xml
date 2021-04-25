@@ -23,16 +23,18 @@
         <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" app:srcCompat="@mipmap/role_bot"
-                android:id="@+id/summoner_icon" android:layout_weight="1" android:paddingRight="5dp"/>
+                android:id="@+id/summoner_icon" android:layout_weight="1" android:paddingEnd="5dp"
+            tools:ignore="RtlSymmetry"
+            android:contentDescription="@string/summoner_icon" />
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" android:id="@+id/found_summoner_name" android:layout_weight="3"
-                android:textAlignment="viewStart" android:textSize="24sp" android:paddingTop="10dp" android:layout_gravity="end"
-                android:paddingRight="3dp"/>
+                android:textSize="24sp" android:paddingTop="10dp" android:layout_gravity="end"
+                android:paddingEnd="3dp"/>
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" android:id="@+id/summoner_level" android:layout_weight="1"
-                android:textSize="24sp" android:textAlignment="textEnd" android:layout_gravity="start"
+                android:textSize="24sp"  android:layout_gravity="start"
                 android:paddingTop="10dp"/>
     </LinearLayout>
     <LinearLayout android:id="@+id/email_login_form" android:layout_width="match_parent"
@@ -46,12 +48,12 @@
                 android:gravity="center_horizontal"
                 android:checkedButton="@+id/radio_button_euw" android:layout_marginTop="5dp">
             <RadioButton
-                    android:text="EUW"
+                    android:text="@string/euw"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" android:id="@+id/radio_button_euw"
-                    android:layout_marginRight="15dp"/>
+                    android:layout_marginEnd="15dp"/>
             <RadioButton
-                    android:text="EUNE"
+                    android:text="@string/eune"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" android:id="@+id/radio_button_eune"/>
         </RadioGroup>
@@ -64,13 +66,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
             <Button
-                    android:text="Search summoner"
+                    android:text="@string/search_summoner"
                     style="@style/Widget.AppCompat.Button.Colored"
 
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" android:id="@+id/button_search_new" android:layout_weight="1"/>
             <Button
-                    android:text="Accept"
+                    android:text="@string/registration_accept_summoner"
                     style="@style/Widget.AppCompat.Button.Colored"
 
                     android:layout_width="wrap_content"
@@ -78,9 +80,18 @@
         </LinearLayout>
 
     </LinearLayout>
+
     <com.google.android.gms.common.SignInButton
-            android:id="@+id/sign_in_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" android:layout_margin="5dp" android:padding="5dp"/>
+        android:id="@+id/sign_in_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:padding="5dp" />
+
+    <CheckBox
+        android:id="@+id/checkBox"
+        android:layout_width="368dp"
+        android:layout_height="wrap_content"
+        android:text="@string/accept_privacy_policy" />
 
 </LinearLayout>

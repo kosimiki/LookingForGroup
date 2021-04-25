@@ -2,13 +2,11 @@
 <!-- fragment_screen_slide_page.xml -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools" android:id="@+id/content"
-              android:layout_width="match_parent"
-            android:layout_height="match_parent" >
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimaryLight">
 
-    <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" android:background="@color/colorPrimaryLight">
         <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
@@ -17,11 +15,6 @@
             <Spinner
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" android:id="@+id/map_selector" android:layout_weight="1"/>
-<!--            <CheckBox-->
-<!--                    android:text="@string/normal"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content" android:id="@+id/normal_checkbox" android:layout_weight="0"-->
-<!--                    android:elevation="1dp"/>-->
             <CheckBox
                     android:text="@string/ranked"
                     android:layout_width="wrap_content"
@@ -31,20 +24,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:text="New posts"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/load_new_posts"
-                    android:layout_centerHorizontal="true"
-                    android:layout_alignParentBottom="true"
-                    style="@style/Widget.AppCompat.Button.Colored"
-                    android:layout_marginBottom="10dp"
-                    android:typeface="normal"
-                    android:textSize="12sp"
-                    android:visibility="gone"
-                />
 
             <androidx.recyclerview.widget.RecyclerView android:id="@+id/looking_for_members_list_view"
                       style="@style/Widget.AppCompat.ListView"
@@ -69,7 +48,20 @@
                     android:layout_alignParentBottom="true"
                     android:layout_marginBottom="10dp"
                 android:layout_marginEnd="10dp"
-                android:contentDescription="create new post" />
+                android:contentDescription="@string/create_new_post" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/reload_posts"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/create_new_post_floating"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="10dp"
+                android:clickable="true"
+                android:contentDescription="@string/reload_posts"
+                android:visibility="invisible"
+                app:srcCompat="@android:drawable/ic_popup_sync" />
+
         </RelativeLayout>
-    </LinearLayout>
 </LinearLayout>

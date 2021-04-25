@@ -80,8 +80,18 @@ public class NoticeBoardFragment extends Fragment {
         postFilter = new PostFilter();
 
         FloatingActionButton newPostButton = parentActivity.findViewById(R.id.create_new_post_floating);
+        final FloatingActionButton reloadPostsButton = parentActivity.findViewById(R.id.reload_posts);
         userDetails = getArguments().getParcelable(LoginActivity.USER_DETAILS_EXTRA);
         getMyApplications();
+
+        reloadPostsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loadPosts("reload button");
+                reloadPostsButton.setVisibility(View.INVISIBLE);
+                reloadPostsButton.setEnabled(false);
+            }
+        });
 
         newPostButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -99,7 +109,10 @@ public class NoticeBoardFragment extends Fragment {
             @Override
             public void onReceive(Context context, Intent intent) {
                 Log.i(TAG, "fromMessageService: " + intent.getStringExtra("fromMessageService"));
-                loadPosts("new post");
+                Toast toast = Toast.makeText(getActivity(), R.string.posts_changed, Toast.LENGTH_SHORT);
+                toast.show();
+                reloadPostsButton.setEnabled(true);
+                reloadPostsButton.setVisibility(View.VISIBLE);
             }
         };
         IntentFilter intentFilter = new IntentFilter(MessagingService.NEW_POST);

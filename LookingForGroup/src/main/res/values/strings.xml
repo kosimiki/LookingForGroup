@@ -75,4 +75,15 @@
     <string name="no_server">No server</string>
     <string name="todo">Summoner icon</string>
     <string name="summoner_level">summoner level</string>
+    <string name="eune">EUNE</string>
+    <string name="euw">EUW</string>
+    <string name="search_summoner">Search summoner</string>
+    <string name="registration_accept_summoner">Accept</string>
+    <string name="accept_privacy_policy">accept privacy policy</string>
+    <string name="summoner_icon">Summoner icon</string>
+    <string name="new_posts">new posts are available</string>
+    <string name="new_posts_available_button">New posts are available</string>
+    <string name="create_new_post">create new post</string>
+    <string name="reload_posts">reload posts</string>
+    <string name="posts_changed">posts changed</string>
 </resources>
