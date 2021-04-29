@@ -2,6 +2,7 @@ package hu.blog.megosztanam.model.parcelable;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+
 import hu.blog.megosztanam.model.shared.Summoner;
 
 /**

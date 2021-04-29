@@ -1,7 +1,14 @@
 package hu.blog.megosztanam.sub.menu.post;
 
 import android.content.Context;
-import com.tech.freak.wizardpager.model.*;
+
+import com.tech.freak.wizardpager.model.AbstractWizardModel;
+import com.tech.freak.wizardpager.model.BranchPage;
+import com.tech.freak.wizardpager.model.MultipleFixedChoicePage;
+import com.tech.freak.wizardpager.model.Page;
+import com.tech.freak.wizardpager.model.PageList;
+import com.tech.freak.wizardpager.model.SingleFixedChoicePage;
+import com.tech.freak.wizardpager.model.TextPage;
 
 public class PostWizardModel extends AbstractWizardModel {
     public PostWizardModel(Context context) {

@@ -39,8 +39,8 @@ public class PostServiceImpl implements IPostService {
 
     @Override
     public Boolean deletePost(Integer userId, Integer postId) {
-        Boolean aBoolean = postDao.deletePost(postId, userId);
         applicationDAO.deleteApplications(postId);
+        Boolean aBoolean = postDao.deletePost(postId, userId);
         messaging.postDeleted(postId);
         return aBoolean;
     }
@@ -51,10 +51,9 @@ public class PostServiceImpl implements IPostService {
     }
 
     @Override
-    public Boolean applyForPost(PostApplyRequest request) {
-        Boolean aBoolean = applicationDAO.saveApplication(request.getUserId(), request.getPostId(), request.getRoles());
+    public void applyForPost(PostApplyRequest request) {
+        applicationDAO.saveApplication(request.getUserId(), request.getPostId(), request.getRoles());
         messaging.newApplicationMessage(request);
-        return aBoolean;
     }
 
     @Override

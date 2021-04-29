@@ -106,10 +106,10 @@ public class ApplicationDialogService {
     }
 
     private void applyForPost(PostApplyRequest request) {
-        Call<Boolean> response = lfgService.applyForPost(request);
-        response.enqueue(new Callback<Boolean>() {
+        Call<Void> response = lfgService.applyForPost(request);
+        response.enqueue(new Callback<Void>() {
             @Override
-            public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+            public void onResponse(Call<Void> call, Response<Void> response) {
                 Log.i(PostActivity.class.getName(), "Response: " + response.isSuccessful());
                 noticeBoardFragment.loadPosts("applied for post");
                 Toast toast = Toast.makeText(activity, R.string.applied_for_post, Toast.LENGTH_SHORT);
@@ -118,7 +118,7 @@ public class ApplicationDialogService {
             }
 
             @Override
-            public void onFailure(Call<Boolean> call, Throwable t) {
+            public void onFailure(Call<Void> call, Throwable t) {
                 Log.i(PostActivity.class.getName(), "Failure: " + t.toString());
             }
         });

@@ -1,11 +1,6 @@
 package hu.blog.megosztanam.login;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.MediaRouteButton;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -38,7 +33,6 @@ import hu.blog.megosztanam.MainMenuActivity;
 import hu.blog.megosztanam.R;
 import hu.blog.megosztanam.model.parcelable.ParcelableLoginResponse;
 import hu.blog.megosztanam.model.shared.LoginResponse;
-import hu.blog.megosztanam.model.shared.Post;
 import hu.blog.megosztanam.model.shared.Summoner;
 import hu.blog.megosztanam.model.shared.User;
 import hu.blog.megosztanam.model.shared.summoner.Server;

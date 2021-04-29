@@ -19,7 +19,7 @@ public interface IPostService {
 
     List<Post> getSearchForMemberPosts(Server server, Integer userId, GameMap map, Boolean isRanked);
 
-    Boolean applyForPost(PostApplyRequest request);
+    void applyForPost(PostApplyRequest request);
 
     List<PostApplyResponse> getPostAppliesForUser(Integer userId);
 

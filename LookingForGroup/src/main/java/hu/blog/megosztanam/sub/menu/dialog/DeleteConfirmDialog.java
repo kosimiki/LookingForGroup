@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.util.Log;
+
 import hu.blog.megosztanam.R;
 import hu.blog.megosztanam.model.shared.Post;
 import hu.blog.megosztanam.sub.menu.NoticeBoardFragment;

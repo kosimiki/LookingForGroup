@@ -24,7 +24,6 @@ import java.util.List;
 import hu.blog.megosztanam.MainMenuActivity;
 import hu.blog.megosztanam.R;
 import hu.blog.megosztanam.login.LoginActivity;
-import hu.blog.megosztanam.messaging.MessagingService;
 import hu.blog.megosztanam.model.parcelable.ParcelableLoginResponse;
 import hu.blog.megosztanam.model.shared.messaging.MessageType;
 import hu.blog.megosztanam.model.shared.post.PostApplyResponse;

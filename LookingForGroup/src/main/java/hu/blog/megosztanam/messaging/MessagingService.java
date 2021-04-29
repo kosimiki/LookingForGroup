@@ -9,8 +9,6 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
-import hu.blog.megosztanam.model.shared.messaging.MessageType;
-
 
 /**
  * Created by Miklós on 2017. 05. 07..
@@ -45,7 +43,8 @@ public class MessagingService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         String from = remoteMessage.getFrom();
-        Log.d(TAG, "From: " + from);
+        Log.d(TAG, "Incoming message from: " + from);
+        Log.d(TAG, "Incoming message body: " + remoteMessage.getData());
         Intent intent;
 
         if ("/topics/NEW_POST".equals(from)) {

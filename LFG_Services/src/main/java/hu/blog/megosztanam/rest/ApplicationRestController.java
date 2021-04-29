@@ -24,9 +24,9 @@ public class ApplicationRestController {
     }
 
     @RequestMapping(value = "/posts/apply", method = RequestMethod.POST)
-    public Boolean applyForPost(
+    public void applyForPost(
             @RequestBody @NotNull PostApplyRequest request) {
-        return postService.applyForPost(request);
+        postService.applyForPost(request);
     }
 
     @RequestMapping(value = "/posts/{postId}/applications/{userId}", method = RequestMethod.PUT)

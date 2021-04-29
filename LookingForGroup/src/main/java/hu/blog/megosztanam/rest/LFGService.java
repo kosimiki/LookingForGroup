@@ -77,7 +77,7 @@ public class LFGService implements ILFGService {
     }
 
 
-    public Call<Boolean> applyForPost(PostApplyRequest request) {
+    public Call<Void> applyForPost(PostApplyRequest request) {
         return servicesHelper.applyForPost(request);
     }
 

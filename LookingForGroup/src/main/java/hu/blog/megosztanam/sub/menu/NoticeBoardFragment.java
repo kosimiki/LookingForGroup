@@ -234,7 +234,7 @@ public class NoticeBoardFragment extends Fragment {
         posts.enqueue(new Callback<List<Post>>() {
             @Override
             public void onResponse(Call<List<Post>> call, Response<List<Post>> response) {
-                if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
+                if (response.isSuccessful() && response.body() != null) {
                     final PostAdapter adapter = new PostAdapter(response.body(), getActivity().getBaseContext());
                     recyclerView.setAdapter(adapter);
                     recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getContext(), recyclerView, new RecyclerItemClickListener.OnItemClickListener() {

@@ -2,12 +2,9 @@ package hu.blog.megosztanam.sub.menu;
 
 
 import android.app.Activity;
-import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,7 +22,6 @@ import hu.blog.megosztanam.MainMenuActivity;
 import hu.blog.megosztanam.R;
 import hu.blog.megosztanam.login.GoogleAuthService;
 import hu.blog.megosztanam.login.LoginActivity;
-import hu.blog.megosztanam.login.SaveSharedPreference;
 import hu.blog.megosztanam.model.shared.LoginResponse;
 import hu.blog.megosztanam.model.shared.Summoner;
 import hu.blog.megosztanam.model.shared.User;

@@ -50,7 +50,7 @@ public interface ILFGService {
 
 
     @POST("/posts/apply")
-    Call<Boolean> applyForPost(@Body PostApplyRequest request);
+    Call<Void> applyForPost(@Body PostApplyRequest request);
 
     @GET("/users/{userId}/posts/applications")
     Call<List<PostApplyResponse>> getApplications(@Path("userId") Integer userId);
