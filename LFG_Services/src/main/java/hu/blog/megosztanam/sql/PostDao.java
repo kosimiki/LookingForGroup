@@ -44,15 +44,15 @@ public class PostDao {
     }
 
     private static final String INSERT_OPEN_ROLES =
-            "INSERT INTO open_position (looking_for_member_id, role) " +
+            "INSERT INTO open_positions (post_id, role) " +
                     "VALUES (:postId, :role)";
 
     private static final String SELECT_OPEN_ROLES =
-            "SELECT role FROM open_position WHERE looking_for_member_id = :looking_for_member_id";
+            "SELECT role FROM open_positions WHERE post_id = :looking_for_member_id";
 
     private static final String SELECT_LFM_POST =
             "SELECT l.*, :queryUser as query_user,  COALESCE(a.user_id, 0) as applied " +
-                    " FROM looking_for_member l" +
+                    " FROM posts l" +
                     " LEFT JOIN applications a on l.id = a.post_id AND a.user_id = :queryUser" +
                     " WHERE l.server = :server " +
                     "AND (:map is null or map = :map) " +
@@ -61,17 +61,17 @@ public class PostDao {
                     " ORDER BY created_at DESC, map, user_id";
 
     private static final String SELECT_LFM_POST_BY_ID =
-            "SELECT * FROM looking_for_member WHERE id = :postId ";
+            "SELECT * FROM posts WHERE id = :postId ";
 
     private static final String DELETE_POST =
-            "DELETE FROM looking_for_member where id = :postId";
+            "DELETE FROM posts where id = :postId";
     private static final String DELETE_POSITIONS =
-            "DELETE FROM open_position where looking_for_member_id = :postId";
+            "DELETE FROM open_positions where post_id = :postId";
     private static final String DELETE_APPLICATION =
             "DELETE FROM applications where post_id = :postId AND user_id = :userId";
 
     public Integer getOwnerId(Integer postId) {
-        return template.queryForObject("SELECT user_id FROM looking_for_member WHERE id = :postId", new MapSqlParameterSource("postId", postId), Integer.class);
+        return template.queryForObject("SELECT user_id FROM posts WHERE id = :postId", new MapSqlParameterSource("postId", postId), Integer.class);
     }
 
 
@@ -88,7 +88,6 @@ public class PostDao {
                 .addValue("max_div", isRanked ? post.getMaximumRank().getDivision().getValue() : null)
                 .addValue("description", post.getDescription())
                 .addValue("post_type", post.getPostType().getValue())
-                .addValue("persistent", post.getPersistent())
                 .addValue("created_at", new Date());
         Integer postId = insert.executeAndReturnKey(parameters).intValue();
 
@@ -114,7 +113,7 @@ public class PostDao {
     }
 
     public List<Integer> getPostsOfUser(Integer userId) {
-        return template.queryForList("SELECT id FROM looking_for_member WHERE user_id = :userId",
+        return template.queryForList("SELECT id FROM posts WHERE user_id = :userId",
                 new MapSqlParameterSource("userId", userId), Integer.class);
     }
 

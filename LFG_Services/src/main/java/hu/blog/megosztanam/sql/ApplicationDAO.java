@@ -25,7 +25,7 @@ public class ApplicationDAO {
     private static final String QUERY = "SELECT u.summoner_id, u.user_id, u.region, a.post_id, p.role, a.accepted, a.date_of_application, l.*\n" +
             "FROM applications a\n" +
             "JOIN positions p on a.id = p.application_id " +
-            "JOIN looking_for_member l ON a.post_id = l.id \n" +
+            "JOIN posts l ON a.post_id = l.id \n" +
             "JOIN users u ON a.user_id = u.user_id\n" +
             "WHERE l.user_id = :userId " +
             "ORDER BY a.date_of_application DESC";
@@ -33,7 +33,7 @@ public class ApplicationDAO {
     private static final String APPLICATIONS_OF_USER = "SELECT u.summoner_id, u.user_id, u.region, a.post_id, p.role, a.date_of_application, a.accepted, l.*\n" +
             "FROM applications a\n" +
             "JOIN positions p on a.id = p.application_id " +
-            "JOIN looking_for_member l ON a.post_id = l.id \n" +
+            "JOIN posts l ON a.post_id = l.id \n" +
             "JOIN users u ON a.user_id = u.user_id\n" +
             "WHERE a.user_id = :userId " +
             "ORDER BY a.date_of_application DESC";

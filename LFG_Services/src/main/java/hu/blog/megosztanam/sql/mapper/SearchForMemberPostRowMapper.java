@@ -41,12 +41,11 @@ public class SearchForMemberPostRowMapper implements RowMapper<Post> {
         post.setCreatedAt(rs.getTimestamp("created_at"));
         post.setDescription(rs.getString("description"));
         post.setGameType(new GameType(GameMap.valueOf(rs.getString("map")), rs.getBoolean("ranked")));
-        if(post.getGameType().isRanked()){
-            post.setMinimumRank( new Rank(Tier.valueOf(rs.getString("min_tier")), Division.valueOf(rs.getString("min_div"))));
-            post.setMaximumRank( new Rank(Tier.valueOf(rs.getString("max_tier")), Division.valueOf(rs.getString("max_div"))));
+        if (post.getGameType().isRanked()) {
+            post.setMinimumRank(new Rank(Tier.valueOf(rs.getString("min_tier")), Division.valueOf(rs.getString("min_div"))));
+            post.setMaximumRank(new Rank(Tier.valueOf(rs.getString("max_tier")), Division.valueOf(rs.getString("max_div"))));
         }
         post.setPostId(rs.getInt("id"));
-        post.setPersistent(rs.getBoolean("persistent"));
         post.setPostType(PostType.valueOf(rs.getString("post_type")));
 
         Boolean isOwner = post.getUserId() == rs.getInt("query_user");

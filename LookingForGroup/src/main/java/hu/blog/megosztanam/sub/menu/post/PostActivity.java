@@ -196,7 +196,6 @@ public class PostActivity extends AppCompatActivity implements
                     post.setGameType(new GameType(gameMap, isRanked));
                     post.setDescription(comment);
                     post.setOpenPositions(openPositions);
-                    post.setPersistent(false);
                     post.setMinimumRank(minRank);
                     post.setMaximumRank(maxRank);
                     post.setPostId(0);
