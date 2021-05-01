@@ -6,12 +6,15 @@ import hu.blog.megosztanam.login.GoogleAuthService;
 import hu.blog.megosztanam.rest.ILFGService;
 import hu.blog.megosztanam.rest.LFGService;
 
-public class AppContainer {
+/**
+ * Helper class, holds singleton instances of various Services.
+ */
+public class ServiceContainer {
 
     private final GoogleAuthService authService;
     private final ILFGService lfgService;
 
-    public AppContainer(Context context) {
+    public ServiceContainer(Context context) {
         this.authService = new GoogleAuthService(context);
         this.lfgService = new LFGService(context);
     }

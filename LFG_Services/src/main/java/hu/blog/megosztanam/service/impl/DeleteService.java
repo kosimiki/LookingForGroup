@@ -24,10 +24,9 @@ public class DeleteService {
 
     @Transactional
     public void deleteUser(Integer userId) {
-        userDao.deleteUser(userId);
         List<Integer> postIds = postDao.getPostsOfUser(userId);
         postIds.forEach(postId -> postDao.deletePost(postId, userId));
         applicationDAO.deleteApplicationsOfUser(userId);
-
+        userDao.deleteUser(userId);
     }
 }

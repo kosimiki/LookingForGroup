@@ -86,15 +86,14 @@ public class ApplicationDialogService {
 
     public Dialog managementDialog(Activity activity, final Integer userId, final Post post, final boolean accepted) {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-
-        builder.setMessage(R.string.confirm_application_question)
+        builder.setMessage(R.string.what_would_you_like_to_do_appplication)
                 .setPositiveButton(R.string.revoke_application, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
                         noticeBoardFragment.revokeApplication(userId, post);
                     }
                 });
-        if(accepted) {
+        if (accepted) {
             builder.setNegativeButton(R.string.confirm_application, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int id) {

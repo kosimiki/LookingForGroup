@@ -16,7 +16,7 @@ public class PostWizardModel extends AbstractWizardModel {
     }
 
     public static final String MAP_KEY = "Map";
-    public static final String SUMMONERS_RIFT = "Summoners Rift";
+    public static final String SUMMONERS_RIFT = "Summoner's Rift";
     public static final String TWISTED_TREELINE = "Twisted Treeline";
     public static final String HOWLING_FJORD = "Howling Fjord";
     public static final String OPEN_POSITIONS = "Open positions";

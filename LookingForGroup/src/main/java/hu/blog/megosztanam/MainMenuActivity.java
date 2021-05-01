@@ -55,30 +55,30 @@ public class MainMenuActivity extends AppCompatActivity implements BackendServic
 
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(userProfileFragment, "User Profile");
-        adapter.addFragment(noticeBoardFragment, "Notice Board");
-        adapter.addFragment(applicationsFragment, "Applicants");
+        adapter.addFragment(userProfileFragment, getString(R.string.user_profile_title));
+        adapter.addFragment(noticeBoardFragment, getString(R.string.notice_board_title));
+        adapter.addFragment(applicationsFragment, getString(R.string.application_tab_title));
         viewPager.setAdapter(adapter);
     }
 
     @Override
     public ILFGService getLfgService() {
         MainApplication application = (MainApplication) getApplication();
-        return application.getAppContainer().getLfgService();
+        return application.getServiceContainer().getLfgService();
     }
 
     @Override
     public GoogleAuthService getAuthService() {
         MainApplication application = (MainApplication) getApplication();
-        return application.getAppContainer().getAuthService();
+        return application.getServiceContainer().getAuthService();
     }
 
-    class ViewPagerAdapter extends FragmentPagerAdapter {
+    static class ViewPagerAdapter extends FragmentPagerAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();
         private final List<String> mFragmentTitleList = new ArrayList<>();
 
         public ViewPagerAdapter(FragmentManager manager) {
-            super(manager);
+            super(manager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         }
 
         @Override

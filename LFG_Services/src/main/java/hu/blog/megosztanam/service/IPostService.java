@@ -15,7 +15,7 @@ public interface IPostService {
 
     Integer saveLookingForMoreNotice(Post post);
 
-    Boolean deletePost(Integer userId, Integer postId);
+    void deletePost(Integer userId, Integer postId);
 
     List<Post> getSearchForMemberPosts(Server server, Integer userId, GameMap map, Boolean isRanked);
 

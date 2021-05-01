@@ -11,7 +11,7 @@ import hu.blog.megosztanam.messaging.MessagingService;
 
 public class MainApplication extends Application {
 
-    private AppContainer appContainer;
+    private ServiceContainer serviceContainer;
 
     private final BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
@@ -19,7 +19,7 @@ public class MainApplication extends Application {
             String firebaseToken = intent.getStringExtra(MessagingService.TOKEN_UPDATE);
             SaveSharedPreference.setFirebaseId(getBaseContext(), firebaseToken);
             int userId = SaveSharedPreference.getUserId(getBaseContext());
-            appContainer.getLfgService().updateFirebaseId(userId, firebaseToken);
+            serviceContainer.getLfgService().updateFirebaseId(userId, firebaseToken);
         }
     };
 
@@ -27,11 +27,11 @@ public class MainApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        appContainer = new AppContainer(getApplicationContext());
+        serviceContainer = new ServiceContainer(getApplicationContext());
         this.registerReceiver(mMessageReceiver, new IntentFilter(MessagingService.TOKEN_UPDATE));
     }
 
-    public AppContainer getAppContainer() {
-        return appContainer;
+    public ServiceContainer getServiceContainer() {
+        return serviceContainer;
     }
 }

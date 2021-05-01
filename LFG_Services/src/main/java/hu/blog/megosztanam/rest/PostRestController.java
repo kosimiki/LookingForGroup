@@ -34,8 +34,8 @@ public class PostRestController {
     }
 
     @RequestMapping(value = "{userId}/posts/{postId}", method = RequestMethod.DELETE)
-    public Boolean deletePost(@PathVariable("userId") Integer userId, @PathVariable("postId") Integer postId){
-        return postService.deletePost(userId, postId);
+    public void deletePost(@PathVariable("userId") Integer userId, @PathVariable("postId") Integer postId){
+        postService.deletePost(userId, postId);
     }
 
 }

@@ -89,4 +89,14 @@
     <string name="delete_profile">Delete profile</string>
     <string name="delete_profile_question">Do you want to delete your profile?</string>
     <string name="back_to_account_selecion">Back to account selecion</string>
+    <string name="user_profile_title">User Profile</string>
+    <string name="notice_board_title">Notice Board</string>
+    <string name="application_tab_title">Applicants</string>
+    <string name="filter_all_maps">All maps</string>
+    <string name="filter_howling_abyss">Howling Abyss</string>
+    <string name="filter_summoners_rift">Summoner\'s Rift</string>
+    <string name="filter_twisted_treeline">Twisted Treeline</string>
+    <string name="delete">delete</string>
+    <string name="revoke_application_question">Do you want to revoke your application?</string>
+    <string name="what_would_you_like_to_do_appplication">What would you like to do with your application?</string>
 </resources>

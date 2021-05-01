@@ -38,11 +38,10 @@ public class PostServiceImpl implements IPostService {
     }
 
     @Override
-    public Boolean deletePost(Integer userId, Integer postId) {
+    public void deletePost(Integer userId, Integer postId) {
         applicationDAO.deleteApplications(postId);
-        Boolean aBoolean = postDao.deletePost(postId, userId);
+        postDao.deletePost(postId, userId);
         messaging.postDeleted(postId);
-        return aBoolean;
     }
 
     @Override

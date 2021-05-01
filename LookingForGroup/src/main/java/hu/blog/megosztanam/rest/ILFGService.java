@@ -43,7 +43,7 @@ public interface ILFGService {
     );
 
     @DELETE("{userId}/posts/{postId}")
-    Call<Boolean> deletePost(@Path("userId") Integer userId, @Path("postId") Integer postId);
+    Call<Void> deletePost(@Path("userId") Integer userId, @Path("postId") Integer postId);
 
     @POST("/post")
     Call<Integer> savePost(@Body Post post);

@@ -68,7 +68,7 @@ public class LFGService implements ILFGService {
     }
 
     @Override
-    public Call<Boolean> deletePost(Integer userId, Integer postId) {
+    public Call<Void> deletePost(Integer userId, Integer postId) {
         return servicesHelper.deletePost(userId, postId);
     }
 

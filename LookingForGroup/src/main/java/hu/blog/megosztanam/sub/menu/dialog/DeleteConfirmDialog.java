@@ -23,7 +23,7 @@ public class DeleteConfirmDialog {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
 
         builder.setMessage(R.string.delete_post)
-                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
                         noticeBoardFragment.deletePost(userId, post, position);

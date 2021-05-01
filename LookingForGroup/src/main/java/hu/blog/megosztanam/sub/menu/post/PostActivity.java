@@ -96,7 +96,7 @@ public class PostActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         MainApplication application = (MainApplication) getApplication();
-        lfgService = application.getAppContainer().getLfgService();
+        lfgService = application.getServiceContainer().getLfgService();
 
 
         userDetails = getIntent().getParcelableExtra(LoginActivity.USER_DETAILS_EXTRA);

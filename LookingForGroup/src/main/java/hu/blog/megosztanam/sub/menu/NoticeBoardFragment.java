@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import hu.blog.megosztanam.MainMenuActivity;
 import hu.blog.megosztanam.R;
@@ -59,10 +60,10 @@ public class NoticeBoardFragment extends Fragment {
     private ParcelableLoginResponse userDetails;
     private ILFGService lfgService;
     private PostFilter postFilter;
-    private static final String filter_all_maps = "All maps";
-    private static final String filter_summoners_rift = "Summoners Rift";
-    private static final String filter_howling_abyss = "Howling Abyss";
-    private static final String filter_twisted_treeline = "Twisted Treeline";
+
+    private final List<String> mapNames = new ArrayList<>();
+    private final Map<String, GameMap> mapNameToMap = new HashMap<>();
+
     private RecyclerView recyclerView;
     private BroadcastReceiver mMessageReceiver;
 
@@ -168,6 +169,11 @@ public class NoticeBoardFragment extends Fragment {
     }
 
     private void loadFilter() {
+        String allMaps = getString(R.string.filter_all_maps);
+        String twistedTreeLine = getString(R.string.filter_twisted_treeline);
+        String summonersRift = getString(R.string.filter_summoners_rift);
+        String howlingAbyss = getString(R.string.filter_howling_abyss);
+        initializeMapNames(allMaps, summonersRift, twistedTreeLine, howlingAbyss);
         CheckBox rankedCheckbox = rootView.findViewById(R.id.ranked_checkbox);
         rankedCheckbox.setChecked(postFilter.showRanked);
         rankedCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -178,46 +184,51 @@ public class NoticeBoardFragment extends Fragment {
             }
         });
 
-        List<String> strings = new ArrayList<>();
-        strings.add(filter_all_maps);
-        strings.add(filter_summoners_rift);
-        strings.add(filter_howling_abyss);
-        strings.add(filter_twisted_treeline);
         Spinner spinner = rootView.findViewById(R.id.map_selector);
         final ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity().getBaseContext(), android.R.layout.simple_spinner_item);
-        adapter.addAll(strings);
+        adapter.addAll(mapNames);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        spinner.setOnItemSelectedListener(createMapSelectionListener(postFilter, new Consumer<String>() {
+            @Override
+            public void accept(String s) {
+                loadPosts(s);
+            }
+        }));
+    }
+
+    public void initializeMapNames(String allMaps, String summonersRift, String twistedTreeLine, String howlingAbyss) {
+        mapNames.add(allMaps);
+        mapNames.add(summonersRift);
+        mapNames.add(howlingAbyss);
+        mapNames.add(twistedTreeLine);
+        mapNameToMap.put(allMaps, null);
+        mapNameToMap.put(summonersRift, GameMap.SUMMONERS_RIFT);
+        mapNameToMap.put(howlingAbyss, GameMap.HOWLING_FJORD);
+        mapNameToMap.put(twistedTreeLine, GameMap.TWISTED_TREE_LINE);
+    }
+
+    public AdapterView.OnItemSelectedListener createMapSelectionListener(final PostFilter filter, final Consumer<String> action) {
+        return new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 String selected = (String) adapterView.getItemAtPosition(i);
-                switch (selected) {
-                    case filter_all_maps:
-                        postFilter.showAllMaps = true;
-                        break;
-                    case filter_summoners_rift:
-                        postFilter.showAllMaps = false;
-                        postFilter.map = GameMap.SUMMONERS_RIFT;
-                        break;
-                    case filter_howling_abyss:
-                        postFilter.showAllMaps = false;
-                        postFilter.map = GameMap.HOWLING_FJORD;
-                        break;
-                    case filter_twisted_treeline:
-                        postFilter.showAllMaps = false;
-                        postFilter.map = GameMap.TWISTED_TREE_LINE;
-                        break;
-                }
-                loadPosts("map selected");
+                GameMap gameMap = mapNameToMap.get(selected);
+                filter.showAllMaps = gameMap == null;
+                filter.map = gameMap;
+                action.accept(logMapFilter(filter.showAllMaps));
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-                postFilter.showAllMaps = true;
-                loadPosts("show all maps");
+                filter.showAllMaps = true;
+                action.accept(logMapFilter(true));
             }
-        });
+        };
+    }
+
+    private String logMapFilter(boolean allMaps) {
+        return allMaps? "show all maps" : "map selected";
     }
 
     public void loadPosts(String reason) {
@@ -279,10 +290,10 @@ public class NoticeBoardFragment extends Fragment {
     }
 
     public void deletePost(Integer userId, final Post post, final int position) {
-        Call<Boolean> response = lfgService.deletePost(userId, post.getPostId());
-        response.enqueue(new Callback<Boolean>() {
+        Call<Void> response = lfgService.deletePost(userId, post.getPostId());
+        response.enqueue(new Callback<Void>() {
             @Override
-            public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+            public void onResponse(Call<Void> call, Response<Void> response) {
                 Toast toast = Toast.makeText(getActivity(), R.string.deleted_post + " " + post.getPostId(), Toast.LENGTH_SHORT);
                 toast.show();
                 PostAdapter adapter = (PostAdapter) recyclerView.getAdapter();
@@ -290,7 +301,7 @@ public class NoticeBoardFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<Boolean> call, Throwable t) {
+            public void onFailure(Call<Void> call, Throwable t) {
                 Log.i(PostActivity.class.getName(), "Failure: " + t.toString());
             }
         });
@@ -317,7 +328,7 @@ public class NoticeBoardFragment extends Fragment {
 
 
     public void confirmApplication(Integer userId, Post post) {
-        Call<Void> response = lfgService.confirmApplication(userId, post.getPostId());
+        Call<Void> response = lfgService.confirmApplication(post.getPostId(), userId);
         response.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {

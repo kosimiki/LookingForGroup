@@ -28,6 +28,7 @@ public class SummonerServiceImpl implements ISummonerService {
     private static final String SUMMONER_LEAGUE_V4 = ".api.riotgames.com/api/lol/league/v4/entries/by-summoner/";
     private static final String HTTPS = "https://";
     private static final Logger LOGGER = LoggerFactory.getLogger(SummonerServiceImpl.class);
+    private static final String API = "?api_key=";
 
     @Value("${lol.api.key}")
     private String apiKey;
@@ -40,7 +41,7 @@ public class SummonerServiceImpl implements ISummonerService {
         summoner.setId(null);
         summoner.setName("NAME NOT FOUND");
         try {
-            String url = HTTPS + Servers.getServerV3(server) + SUMMONER_DETAILS_BY_NAME_V3 + summonerName + apiKey;
+            String url = HTTPS + Servers.getServerV3(server) + SUMMONER_DETAILS_BY_NAME_V3 + summonerName + API + apiKey;
             LOGGER.info("Calling GET on: " + url);
             return restTemplate.getForObject(url, Summoner.class);
         } catch (RestClientException e) {
@@ -55,7 +56,7 @@ public class SummonerServiceImpl implements ISummonerService {
         Summoner summoner = new Summoner();
         summoner.setId(null);
         summoner.setName("NAME NOT FOUND");
-        String url = HTTPS + Servers.getServerV3(server) + SUMMONER_DETAILS_BY_ID_V3 + summonerId + apiKey;
+        String url = HTTPS + Servers.getServerV3(server) + SUMMONER_DETAILS_BY_ID_V3 + summonerId + API + apiKey;
         LOGGER.info("Calling GET on: " + url);
         try {
             return restTemplate.getForObject(url, Summoner.class);
@@ -77,7 +78,7 @@ public class SummonerServiceImpl implements ISummonerService {
         gameStatistics.setFlexRank(unRanked);
         gameStatistics.setSoloRank(unRanked);
         String serverName = Servers.getServerV3(server);
-        String url = HTTPS + serverName + SUMMONER_LEAGUE_V4 + summonerId + apiKey;
+        String url = HTTPS + serverName + SUMMONER_LEAGUE_V4 + summonerId + API + apiKey;
         LOGGER.info("Calling GET on: " + url);
         String json = null;
         try {
@@ -87,7 +88,7 @@ public class SummonerServiceImpl implements ISummonerService {
         }
         if (json != null) {
             JSONObject jsonObject = new JSONObject(json);
-            JSONArray types = jsonObject.getJSONArray(summonerId.toString());
+            JSONArray types = jsonObject.getJSONArray(summonerId);
             for (int i = 0; i < types.length(); i++) {
                 JSONObject type = types.getJSONObject(i);
                 Tier tier = Tier.valueOf(type.getString("tier"));

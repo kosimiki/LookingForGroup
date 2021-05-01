@@ -45,7 +45,6 @@ public class PostRowMapper implements RowMapper<Post> {
             post.setMaximumRank( new Rank(Tier.valueOf(rs.getString("max_tier")), Division.valueOf(rs.getString("max_div"))));
         }
         post.setPostId(rs.getInt("id"));
-        post.setPersistent(rs.getBoolean("persistent"));
         post.setPostType(PostType.valueOf(rs.getString("post_type")));
 
         return post;

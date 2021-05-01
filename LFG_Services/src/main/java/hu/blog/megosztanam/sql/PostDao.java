@@ -39,7 +39,7 @@ public class PostDao {
                    JdbcTemplate simpleTemplate) {
         this.rowMapper = rowMapper;
         this.simplePostMapper = simplePostMapper;
-        this.insert = new SimpleJdbcInsert(simpleTemplate).withTableName("looking_for_member").usingGeneratedKeyColumns("id");
+        this.insert = new SimpleJdbcInsert(simpleTemplate).withTableName("posts").usingGeneratedKeyColumns("id");
         this.template = new NamedParameterJdbcTemplate(simpleTemplate);
     }
 
@@ -118,11 +118,13 @@ public class PostDao {
     }
 
     @Transactional
-    public Boolean deletePost(Integer postId, Integer userId) {
+    public void deletePost(Integer postId, Integer userId) {
         SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("postId", postId)
                 .addValue("userId", userId);
-        return template.update(DELETE_POST, parameterSource) > 0 && template.update(DELETE_POSITIONS, parameterSource) > 0 && template.update(DELETE_APPLICATION, parameterSource) > 0;
+        template.update(DELETE_APPLICATION, parameterSource);
+        template.update(DELETE_POSITIONS, parameterSource);
+        template.update(DELETE_POST, parameterSource);
     }
 
     public Post getPostById(Integer postId) {

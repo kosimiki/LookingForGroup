@@ -74,8 +74,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         MainApplication application = (MainApplication) getApplication();
-        authService = application.getAppContainer().getAuthService();
-        lfgService = application.getAppContainer().getLfgService();
+        authService = application.getServiceContainer().getAuthService();
+        lfgService = application.getServiceContainer().getLfgService();
         registrationRequired = false;
         setContentView(R.layout.activity_login);
         foundSummonerName = findViewById(R.id.found_summoner_name);
