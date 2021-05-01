@@ -1,12 +1,9 @@
 package hu.blog.megosztanam.model.shared;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 /**
  * Created by kosimiki on 2016. 11. 26..
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class Summoner {
 
     protected String id;

@@ -1,35 +1,16 @@
-//file:noinspection GroovyAssignabilityCheck
 group 'hu.blog.megosztanam'
 version '0.1'
 
-
-apply plugin: 'groovy'
 apply plugin: 'java'
 apply plugin: 'idea'
-apply plugin: 'maven'
 apply plugin: 'maven-publish'
 
 buildscript {
-    repositories {
-        mavenLocal()
-    }
     tasks.withType(JavaCompile) {
         sourceCompatibility = JavaVersion.VERSION_1_7
         targetCompatibility = JavaVersion.VERSION_1_7
     }
 }
-
-
-repositories {
-    mavenLocal()
-    mavenCentral()
-}
-
-dependencies {
-    compile 'com.fasterxml.jackson.core:jackson-annotations:2.8.4'
-}
-
-apply plugin: 'maven-publish'
 
 publishing {
     publications {

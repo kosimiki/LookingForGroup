@@ -8,8 +8,8 @@ apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 
 jar {
-    baseName = 'gs-spring-boot'
-    version =  '0.1.0'
+    baseName = 'lfg-service'
+    version =  '0.1'
 }
 
 buildscript {
