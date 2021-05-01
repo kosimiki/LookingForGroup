@@ -8,15 +8,15 @@ spring:
 
 lol:
   api:
-    key: ?api_key=RGAPI-c6bd2441-967a-4ad0-a10c-dd9ba5f1756d
+    key: ${LOL_API_KEY}
 
 google:
   cloud:
     messaging:
       server:
-        id: 212782821519
-        key: AAAAMYrYMI8:APA91bGvUE9avHSSk5OEnh1tRicqVk0QyT7jr3BaVoGojNJ9yyS3S-syTsHrYnK1QU27Zdd-lw_4a1-tsWmkRSdBtysYN1aET_zYKsHgMpAUdlutomTvrmgdmINaZAXghIypRUK90H6U
-
+        id: ${GOOGLE_SERVER_ID}
+        key: ${GOOGLE_MESSAGING_KEY}
   oauth:
     client:
-      id: 212782821519-vi2k0kd4jnp5ikasas879h3hm22ivtdd.apps.googleusercontent.com
+      id: ${AUTH_CLIENT_ID}
+

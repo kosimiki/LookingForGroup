@@ -1,3 +1,4 @@
+//file:noinspection GroovyAssignabilityCheck
 group 'hu.blog.megosztanam'
 version '0.1'
 
@@ -27,6 +28,8 @@ repositories {
 dependencies {
     compile 'com.fasterxml.jackson.core:jackson-annotations:2.8.4'
 }
+
+apply plugin: 'maven-publish'
 
 publishing {
     publications {

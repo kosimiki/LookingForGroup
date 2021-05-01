@@ -72,3 +72,4 @@ google-services.json
 libs/
 src/androidTest/
 gradle.properties
+/andorid_lfg.keystore
