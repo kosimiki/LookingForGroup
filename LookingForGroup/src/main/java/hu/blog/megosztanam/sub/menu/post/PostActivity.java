@@ -112,22 +112,19 @@ public class PostActivity extends AppCompatActivity implements
 
         mPagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
 
-        mPager = (ViewPager) findViewById(R.id.pager);
+        mPager = findViewById(R.id.pager);
         mPager.setAdapter(mPagerAdapter);
-        mStepPagerStrip = (StepPagerStrip) findViewById(R.id.strip);
+        mStepPagerStrip = findViewById(R.id.strip);
         mStepPagerStrip
-                .setOnPageSelectedListener(new StepPagerStrip.OnPageSelectedListener() {
-                    @Override
-                    public void onPageStripSelected(int position) {
-                        position = Math.min(mPagerAdapter.getCount() - 1,
-                                position);
-                        if (mPager.getCurrentItem() != position) {
-                            mPager.setCurrentItem(position);
-                        }
+                .setOnPageSelectedListener(position -> {
+                    position = Math.min(mPagerAdapter.getCount() - 1,
+                            position);
+                    if (mPager.getCurrentItem() != position) {
+                        mPager.setCurrentItem(position);
                     }
                 });
-        mNextButton = (Button) findViewById(R.id.next_button);
-        mPrevButton = (Button) findViewById(R.id.prev_button);
+        mNextButton = findViewById(R.id.next_button);
+        mPrevButton = findViewById(R.id.prev_button);
 
         mPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
@@ -160,7 +157,7 @@ public class PostActivity extends AppCompatActivity implements
                     Rank minRank = new Rank();
                     Rank maxRank = new Rank();
 
-                    Boolean isRanked = !map.equals(HOWLING_FJORD) && result.getBundle(map + ":" + GAME_TYPE).getString("_").contains(RANKED);
+                    boolean isRanked = !map.equals(HOWLING_FJORD) && result.getBundle(map + ":" + GAME_TYPE).getString("_").contains(RANKED);
                     if (isRanked) {
                         String minDiv = result.getBundle(RANKED + " : " + map + ":" + MIN_DIV).getString("_");
                         String maxDiv = result.getBundle(RANKED + " : " + map + ":" + MAX_DIV).getString("_");
@@ -219,12 +216,7 @@ public class PostActivity extends AppCompatActivity implements
         });
         Log.i(this.getClass().getName(), "setOnClickListener");
 
-        mPrevButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mPager.setCurrentItem(mPager.getCurrentItem() - 1);
-            }
-        });
+        mPrevButton.setOnClickListener(view -> mPager.setCurrentItem(mPager.getCurrentItem() - 1));
 
         Log.i(this.getClass().getName(), "setOnClickListener");
         onPageTreeChanged();
@@ -253,7 +245,7 @@ public class PostActivity extends AppCompatActivity implements
     private void updateBottomBar() {
         int position = mPager.getCurrentItem();
         if (position == mCurrentPageSequence.size()) {
-            mNextButton.setText("Finish");
+            mNextButton.setText(getString(R.string.finish));
             mNextButton.setBackgroundResource(R.drawable.finish_background);
             mNextButton.setTextAppearance(this, R.style.TextAppearanceFinish);
         } else {

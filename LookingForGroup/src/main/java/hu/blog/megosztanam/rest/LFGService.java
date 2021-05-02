@@ -36,12 +36,8 @@ public class LFGService implements ILFGService {
 
     public LFGService(Context context) {
         GsonBuilder builder = new GsonBuilder();
-        Gson gson =
-                builder.registerTypeAdapter(Date.class, new JsonDeserializer<Date>() {
-                    public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-                        return new Date(json.getAsJsonPrimitive().getAsLong());
-                    }
-                }).create();
+        Gson gson = builder.registerTypeAdapter(Date.class, (JsonDeserializer<Date>) (json, typeOfT, context1) ->
+                        new Date(json.getAsJsonPrimitive().getAsLong())).create();
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .client(okhttpClient(context))

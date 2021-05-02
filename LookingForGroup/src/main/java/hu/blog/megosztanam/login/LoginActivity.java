@@ -58,7 +58,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private String idToken;
     private Server server = Server.EUW;
     private Button acceptSummonerButton;
-    private Button searchSummonerButton;
     private SignInButton googleSignInButton;
     private ImageView summonerIcon;
     private TextView summonerLevel;
@@ -80,12 +79,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.activity_login);
         foundSummonerName = findViewById(R.id.found_summoner_name);
         CheckBox privacyAndPolicyCheckbox = findViewById(R.id.privacy_and_policy_checkbox);
-        privacyAndPolicyCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                privacyAccepted = isChecked;
-                acceptSummonerButton.setEnabled(foundSummoner && privacyAccepted);
-            }
+        privacyAndPolicyCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            privacyAccepted = isChecked;
+            acceptSummonerButton.setEnabled(foundSummoner && privacyAccepted);
         });
         mStatusTextView = findViewById(R.id.status);
         summonerName = findViewById(R.id.summonerName);
@@ -107,28 +103,18 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         final Activity activity = this;
         backToAcc = findViewById(R.id.back_to_account_selection);
         backToAcc.setVisibility(View.INVISIBLE);
-        backToAcc.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                authService.logoutUser(activity);
-            }
-        });
+        backToAcc.setOnClickListener(v -> authService.logoutUser(activity));
 
         googleSignInButton = findViewById(R.id.sign_in_button);
         googleSignInButton.setOnClickListener(this);
 
         acceptSummonerButton = findViewById(R.id.button_accept_summoner);
-        searchSummonerButton = findViewById(R.id.button_search_new);
+        Button searchSummonerButton = findViewById(R.id.button_search_new);
         acceptSummonerButton.setOnClickListener(this);
         acceptSummonerButton.setEnabled(false);
         searchSummonerButton.setOnClickListener(this);
 
-        summonerName.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                acceptSummonerButton.setEnabled(false);
-            }
-        });
+        summonerName.setOnClickListener(view -> acceptSummonerButton.setEnabled(false));
 
         summonerIcon = findViewById(R.id.summoner_icon);
         summonerLevel = findViewById(R.id.summoner_level);
@@ -136,17 +122,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         RadioGroup radioGroup = findViewById(R.id.region_group);
 
-        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                switch (checkedId) {
-                    case R.id.radio_button_eune:
-                        server = Server.EUNE;
-                        break;
-                    case R.id.radio_button_euw:
-                        server = Server.EUW;
-                        break;
-                }
+        radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            switch (checkedId) {
+                case R.id.radio_button_eune:
+                    server = Server.EUNE;
+                    break;
+                case R.id.radio_button_euw:
+                    server = Server.EUW;
+                    break;
             }
         });
         regForm = findViewById(R.id.email_login_form);
@@ -155,17 +138,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         authService.getGoogleSignInClient().silentSignIn()
                 .addOnCompleteListener(
                         this,
-                        new OnCompleteListener<GoogleSignInAccount>() {
-                            @Override
-                            public void onComplete(@NonNull Task<GoogleSignInAccount> task) {
-                                handleSignInResult(task);
-                            }
-                        });
+                        this::handleSignInResult);
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
 
@@ -395,22 +374,19 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private void updateFirebaseId(final LoginResponse loginResponse, final String token) {
         FirebaseMessaging.getInstance().getToken()
-                .addOnCompleteListener(new OnCompleteListener<String>() {
-                    @Override
-                    public void onComplete(@NonNull Task<String> task) {
-                        if (!task.isSuccessful()) {
-                            Log.w(TAG, "Fetching FCM registration token failed", task.getException());
-                            return;
-                        }
-                        String firebaseToken = task.getResult();
-                        Log.i(TAG, "Firebase token: " + firebaseToken);
-                        Integer userId = loginResponse.getUser().getUserId();
-                        SaveSharedPreference.setFirebaseId(getBaseContext(), firebaseToken);
-                        SaveSharedPreference.setUserId(getBaseContext(), userId);
-                        SaveSharedPreference.setTokenId(getBaseContext(), token);
-                        updateFirebaseId(userId, firebaseToken);
-                        updateUISuccessfulLogin(loginResponse);
+                .addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        Log.w(TAG, "Fetching FCM registration token failed", task.getException());
+                        return;
                     }
+                    String firebaseToken = task.getResult();
+                    Log.i(TAG, "Firebase token: " + firebaseToken);
+                    Integer userId = loginResponse.getUser().getUserId();
+                    SaveSharedPreference.setFirebaseId(getBaseContext(), firebaseToken);
+                    SaveSharedPreference.setUserId(getBaseContext(), userId);
+                    SaveSharedPreference.setTokenId(getBaseContext(), token);
+                    updateFirebaseId(userId, firebaseToken);
+                    updateUISuccessfulLogin(loginResponse);
                 });
     }
 

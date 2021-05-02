@@ -83,49 +83,30 @@ public class UserProfileFragment extends Fragment {
         final Button logoutButton = viewGroup.findViewById(R.id.logou_button);
 
 
-        logoutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                authService.logoutUser(getActivity());
-            }
-        });
+        logoutButton.setOnClickListener(view -> authService.logoutUser(getActivity()));
     }
 
 
     private void setupDeleteUser(ViewGroup rootView, final int userId) {
         Button deleteUserButton = rootView.findViewById(R.id.delete_profile);
-
-        deleteUserButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                createDeleteDialog(getActivity(), userId).show();
-            }
-        });
+        deleteUserButton.setOnClickListener(v -> createDeleteDialog(getActivity(), userId).show());
     }
 
     public Dialog createDeleteDialog(Activity activity, final Integer userId) {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setMessage(R.string.delete_profile_question)
-                .setPositiveButton(R.string.delete_profile, new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.delete_profile, (dialog, id) -> lfgService.deleteUser(userId).enqueue(new Callback<Void>() {
                     @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        lfgService.deleteUser(userId).enqueue(new Callback<Void>() {
-                            @Override
-                            public void onResponse(Call<Void> call, Response<Void> response) {
-                                authService.logoutUser(getActivity());
-                            }
-
-                            @Override
-                            public void onFailure(Call<Void> call, Throwable t) {
-
-                            }
-                        });
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        authService.logoutUser(getActivity());
                     }
-                })
-                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+
                     @Override
-                    public void onClick(DialogInterface dialog, int id) {
+                    public void onFailure(Call<Void> call, Throwable t) {
+
                     }
+                }))
+                .setNegativeButton(R.string.cancel, (dialog, id) -> {
                 });
         return builder.create();
     }

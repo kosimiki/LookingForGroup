@@ -4,7 +4,6 @@ package hu.blog.megosztanam.sub.menu;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -111,44 +110,8 @@ public class ApplicationsFragment extends Fragment {
                             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
                             builder.setMessage(R.string.appcept_or_reject_application)
-                                    .setPositiveButton(R.string.accept, new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int id) {
-                                            ilfgService.acceptApplication(postId, applicantUserId).enqueue(new Callback<Void>() {
-                                                @Override
-                                                public void onResponse(Call<Void> call, Response<Void> response) {
-                                                    Toast toast = Toast.makeText(getActivity(), R.string.accpted_application, Toast.LENGTH_SHORT);
-                                                    toast.show();
-                                                    adapter.remove(position);
-                                                }
-
-                                                @Override
-                                                public void onFailure(Call<Void> call, Throwable t) {
-                                                    Toast toast = Toast.makeText(getActivity(), R.string.failed_to_accep_application, Toast.LENGTH_SHORT);
-                                                    toast.show();
-                                                }
-                                            });
-                                        }
-                                    })
-                                    .setNegativeButton(R.string.reject, new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int id) {
-                                            ilfgService.rejectApplication(postId, applicantUserId).enqueue(new Callback<Void>() {
-                                                @Override
-                                                public void onResponse(Call<Void> call, Response<Void> response) {
-                                                    Toast toast = Toast.makeText(getActivity(), R.string.rejected_application, Toast.LENGTH_SHORT);
-                                                    toast.show();
-                                                    adapter.remove(position);
-                                                }
-
-                                                @Override
-                                                public void onFailure(Call<Void> call, Throwable t) {
-                                                    Toast toast = Toast.makeText(getActivity(), R.string.failed_to_reject_application, Toast.LENGTH_SHORT);
-                                                    toast.show();
-                                                }
-                                            });
-                                        }
-                                    });
+                                    .setPositiveButton(R.string.accept, (dialog, id) -> handleServiceResponse(position, adapter, ilfgService.acceptApplication(postId, applicantUserId), R.string.accpted_application, R.string.failed_to_accep_application))
+                                    .setNegativeButton(R.string.reject, (dialog, id) -> handleServiceResponse(position, adapter, ilfgService.rejectApplication(postId, applicantUserId), R.string.rejected_application, R.string.failed_to_reject_application));
                             AlertDialog alertDialog = builder.create();
                             alertDialog.show();
                         }
@@ -168,6 +131,23 @@ public class ApplicationsFragment extends Fragment {
             @Override
             public void onFailure(Call<List<PostApplyResponse>> call, Throwable t) {
                 Log.i(this.getClass().getName(), "Failure: " + t.toString());
+            }
+        });
+    }
+
+    private void handleServiceResponse(int position, ApplicationAdapter adapter, Call<Void> serviceCall, int p, int p2) {
+        serviceCall.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call1, Response<Void> response1) {
+                Toast toast = Toast.makeText(getActivity(), p, Toast.LENGTH_SHORT);
+                toast.show();
+                adapter.remove(position);
+            }
+
+            @Override
+            public void onFailure(Call<Void> call1, Throwable t) {
+                Toast toast = Toast.makeText(getActivity(), p2, Toast.LENGTH_SHORT);
+                toast.show();
             }
         });
     }

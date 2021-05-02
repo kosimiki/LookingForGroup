@@ -27,7 +27,7 @@ public class ApplicationDialogService {
     private List<String> selectedRoles;
     private List<String> selectableRoles;
     private Activity activity;
-    private NoticeBoardFragment noticeBoardFragment;
+    private final NoticeBoardFragment noticeBoardFragment;
 
     public ApplicationDialogService(NoticeBoardFragment noticeBoardFragment, ILFGService lfgService) {
         this.noticeBoardFragment = noticeBoardFragment;
@@ -51,35 +51,25 @@ public class ApplicationDialogService {
 
         builder.setTitle(R.string.pick_your_role)
                 .setMultiChoiceItems(selectableRoles.toArray(new CharSequence[selectableRoles.size()]), null,
-                        new DialogInterface.OnMultiChoiceClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which,
-                                                boolean isChecked) {
-                                if (isChecked) {
-                                    selectedRoles.add(selectableRoles.get(which));
-                                } else {
-                                    selectedRoles.remove(selectableRoles.get(which));
-                                }
+                        (dialog, which, isChecked) -> {
+                            if (isChecked) {
+                                selectedRoles.add(selectableRoles.get(which));
+                            } else {
+                                selectedRoles.remove(selectableRoles.get(which));
                             }
                         })
-                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        PostApplyRequest request = new PostApplyRequest();
-                        List<Role> roles = new ArrayList<>();
-                        for (String role : selectedRoles) {
-                            roles.add(Role.valueOf(role));
-                        }
-                        request.setRoles(roles);
-                        request.setPostId(postId);
-                        request.setUserId(userId);
-                        applyForPost(request);
+                .setPositiveButton(R.string.ok, (dialog, id) -> {
+                    PostApplyRequest request = new PostApplyRequest();
+                    List<Role> roles1 = new ArrayList<>();
+                    for (String role : selectedRoles) {
+                        roles1.add(Role.valueOf(role));
                     }
+                    request.setRoles(roles1);
+                    request.setPostId(postId);
+                    request.setUserId(userId);
+                    applyForPost(request);
                 })
-                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                    }
+                .setNegativeButton(R.string.cancel, (dialog, id) -> {
                 });
         return builder.create();
     }
@@ -87,19 +77,9 @@ public class ApplicationDialogService {
     public Dialog managementDialog(Activity activity, final Integer userId, final Post post, final boolean accepted) {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setMessage(R.string.what_would_you_like_to_do_appplication)
-                .setPositiveButton(R.string.revoke_application, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        noticeBoardFragment.revokeApplication(userId, post);
-                    }
-                });
+                .setPositiveButton(R.string.revoke_application, (dialog, id) -> noticeBoardFragment.revokeApplication(userId, post));
         if (accepted) {
-            builder.setNegativeButton(R.string.confirm_application, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int id) {
-                    noticeBoardFragment.confirmApplication(userId, post);
-                }
-            });
+            builder.setNegativeButton(R.string.confirm_application, (dialog, id) -> noticeBoardFragment.confirmApplication(userId, post));
         }
         return builder.create();
     }

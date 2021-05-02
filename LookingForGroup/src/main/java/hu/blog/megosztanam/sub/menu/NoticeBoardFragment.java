@@ -85,23 +85,17 @@ public class NoticeBoardFragment extends Fragment {
         userDetails = getArguments().getParcelable(LoginActivity.USER_DETAILS_EXTRA);
         getMyApplications();
 
-        reloadPostsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                loadPosts("reload button");
-                reloadPostsButton.setVisibility(View.INVISIBLE);
-                reloadPostsButton.setEnabled(false);
-            }
+        reloadPostsButton.setOnClickListener(v -> {
+            loadPosts("reload button");
+            reloadPostsButton.setVisibility(View.INVISIBLE);
+            reloadPostsButton.setEnabled(false);
         });
 
-        newPostButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent redirect = new Intent(parentActivity, PostActivity.class);
-                ParcelableLoginResponse parcelableLoginResponse = new ParcelableLoginResponse(userDetails);
-                redirect.putExtra(LoginActivity.USER_DETAILS_EXTRA, parcelableLoginResponse);
-                parentActivity.startActivity(redirect);
-            }
+        newPostButton.setOnClickListener(view -> {
+            Intent redirect = new Intent(parentActivity, PostActivity.class);
+            ParcelableLoginResponse parcelableLoginResponse = new ParcelableLoginResponse(userDetails);
+            redirect.putExtra(LoginActivity.USER_DETAILS_EXTRA, parcelableLoginResponse);
+            parentActivity.startActivity(redirect);
         });
 
         loadPosts("activity created");
