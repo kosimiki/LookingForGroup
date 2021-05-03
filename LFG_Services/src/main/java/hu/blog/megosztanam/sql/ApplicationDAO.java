@@ -56,7 +56,6 @@ public class ApplicationDAO {
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
         template.update(INSERT, new BeanPropertySqlParameterSource(application), keyHolder);
         int applicationId = (int) keyHolder.getKeys().get("id");
-
         SqlParameterSource[] roleParameters = SqlParameterSourceUtils
                 .createBatch(roles.stream()
                         .map(role -> new RoleObject(applicationId, role.name()))

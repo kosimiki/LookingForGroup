@@ -35,5 +35,4 @@ public interface IPostService {
 
     void confirmApplication(Integer postId, Integer applicantUserId);
 
-    void deletePostsAndApplications(Integer userId);
 }

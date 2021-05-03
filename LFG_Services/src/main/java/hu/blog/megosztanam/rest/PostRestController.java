@@ -39,6 +39,8 @@ public class PostRestController {
     public void deletePost(@AuthenticationPrincipal AuthenticatedUser user, @PathVariable("userId") Integer userId, @PathVariable("postId") Integer postId) {
         if(user.getUserId() == userId) {
             postService.deletePost(userId, postId);
+        } else {
+            throw new RuntimeException("Not authorized");
         }
     }
 
