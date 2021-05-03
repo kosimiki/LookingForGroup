@@ -85,7 +85,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         });
         mStatusTextView = findViewById(R.id.status);
         summonerName = findViewById(R.id.summonerName);
-        summonerName.setQueryHint("Summoner name");
+        summonerName.setQueryHint(getString(R.string.summoner_name_placeholder));
         summonerName.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                                                 @Override
                                                 public boolean onQueryTextSubmit(String s) {
@@ -217,16 +217,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         mStatusTextView.setText(text);
         findViewById(R.id.sign_in_button).setVisibility(View.GONE);
         summonerName.setVisibility(View.GONE);
-        Log.i(TAG, "START NEW ACTIVITY");
         startMainMenu(response);
     }
 
     private void startMainMenu(LoginResponse response) {
         Intent intent = new Intent(this, MainMenuActivity.class);
-        Log.i(TAG, response.toString());
         ParcelableLoginResponse parcelableLoginResponse = new ParcelableLoginResponse(response);
-        Log.i(TAG, parcelableLoginResponse.toString());
-
         intent.putExtra(USER_DETAILS_EXTRA, parcelableLoginResponse);
         startActivity(intent);
     }

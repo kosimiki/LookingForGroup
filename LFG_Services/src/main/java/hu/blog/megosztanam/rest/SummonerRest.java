@@ -11,6 +11,7 @@ import hu.blog.megosztanam.service.IUserService;
 import hu.blog.megosztanam.service.impl.DeleteService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -53,9 +54,8 @@ public class SummonerRest {
     }
 
     @RequestMapping(value = "/users/{userId}", method = RequestMethod.DELETE)
-    public void deleteUser(
+    public void deleteUser(@AuthenticationPrincipal AuthenticatedUser user,
             @PathVariable("userId") @Min(0) Integer userId) {
-        AuthenticatedUser user = getPrincipal();
         if (user.getUserId() == userId) {
             deleteService.deleteUser(userId);
         } else {
@@ -79,10 +79,6 @@ public class SummonerRest {
     public SummonerGameStatistics getStats(@PathVariable @NotNull @Min(1) String summonerId,
                                            @PathVariable Server server) {
         return summonerService.getStatistics(summonerId, server);
-    }
-
-    private AuthenticatedUser getPrincipal() {
-        return (AuthenticatedUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
 }

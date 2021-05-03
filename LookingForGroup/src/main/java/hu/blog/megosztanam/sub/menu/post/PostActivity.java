@@ -172,14 +172,6 @@ public class PostActivity extends AppCompatActivity implements
                         openPositions.add(Role.valueOf(position));
                     }
 
-                    Log.i(this.getClass().getName(), map);
-                    Log.i(this.getClass().getName(), "Is ranked? " + isRanked);
-                    if(isRanked){
-                        Log.i(this.getClass().getName(), "Min Rank " + minRank);
-                        Log.i(this.getClass().getName(), "Max Rank " + maxRank);
-                    }
-                    Log.i(this.getClass().getName(), "Open positions: " + openPositions);
-                    Log.i(this.getClass().getName(), "Comment: " + comment);
 
                     GameMap gameMap = GameMap.SUMMONERS_RIFT;
                     switch (map){
@@ -200,11 +192,9 @@ public class PostActivity extends AppCompatActivity implements
                     post.setOwner(userDetails.getUser().getSummoner());
                     post.setServer(userDetails.getUser().getServer());
 
-                    Log.i(PostActivity.class.getName(), "Created post: " +  post.toString());
                     savePost(post);
                     navigateBack();
 
-                    //todo
                 } else {
                     if (mEditingAfterReview) {
                         mPager.setCurrentItem(mPagerAdapter.getCount() - 1);
@@ -310,7 +300,6 @@ public class PostActivity extends AppCompatActivity implements
     }
 
     private boolean recalculateCutOffPage() {
-        // Cut off the pager adapter at first required page that isn't completed
         int cutOffPage = mCurrentPageSequence.size() + 1;
         for (int i = 0; i < mCurrentPageSequence.size(); i++) {
             Page page = mCurrentPageSequence.get(i);
@@ -347,9 +336,7 @@ public class PostActivity extends AppCompatActivity implements
 
         @Override
         public int getItemPosition(Object object) {
-            // TODO: be smarter about this
             if (object == mPrimaryItem) {
-                // Re-use the current fragment (its position never changes)
                 return POSITION_UNCHANGED;
             }
 
@@ -382,8 +369,8 @@ public class PostActivity extends AppCompatActivity implements
     }
 
     private void savePost(Post post) {
-        Call<Integer> loginResponse = lfgService.savePost(post);
-        loginResponse.enqueue(new Callback<Integer>() {
+        Call<Integer> postResponse = lfgService.savePost(post);
+        postResponse.enqueue(new Callback<Integer>() {
             @Override
             public void onResponse(Call<Integer> call, Response<Integer> response) {
                 Log.i(PostActivity.class.getName(), "Response: " + response.isSuccessful());

@@ -33,12 +33,5 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     }
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(googleId -> {
-            Optional<Integer> userIdByGoogleId = userService.getUserByGoogleId(googleId);
-            return userIdByGoogleId.map(integer -> GoogleAuthFilter.getUserDetails(googleId, integer)).orElse(null);
-        });
-    }
 
 }

@@ -32,6 +32,7 @@ import hu.blog.megosztanam.sub.menu.post.RecyclerItemClickListener;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.http.GET;
 
 /**
  * Created by Miklós on 2017. 04. 19..

@@ -11,6 +11,8 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.text.DateFormat;
@@ -35,10 +37,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     private final Drawable twistedTreelineMap;
 
     public PostAdapter(List<Post> posts, Context context) {
-        summonersRiftMap = context.getResources().getDrawable(R.drawable.summoners_rift_map_small);
-        howlingAbyssMap = context.getResources().getDrawable(R.drawable.howling_abyss_map_small);
-        twistedTreelineMap = context.getResources().getDrawable(R.drawable.twisted_treeline_map_small);
-        anyRole = context.getResources().getDrawable(R.drawable.role_any);
+        summonersRiftMap = ContextCompat.getDrawable(context, R.drawable.summoners_rift_map_small);
+        howlingAbyssMap = ContextCompat.getDrawable(context, R.drawable.howling_abyss_map_small);
+        twistedTreelineMap = ContextCompat.getDrawable(context, R.drawable.twisted_treeline_map_small);
+        anyRole = ContextCompat.getDrawable(context, R.drawable.role_any);
 
         this.list = new ArrayList<>();
         this.list.addAll(posts);
