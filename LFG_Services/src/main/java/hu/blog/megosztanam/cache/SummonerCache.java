@@ -6,7 +6,11 @@ import hu.blog.megosztanam.model.shared.SummonerGameStatistics;
 import hu.blog.megosztanam.model.shared.summoner.Server;
 import hu.blog.megosztanam.service.ISummonerService;
 import hu.blog.megosztanam.service.IUserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 /**
@@ -15,6 +19,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class SummonerCache {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(SummonerCache.class);
+    public static final int THIRTY_MINUTES = 30 * 60 * 1000;
     private final ISummonerService summonerService;
     private final IUserService userService;
 
@@ -35,7 +41,13 @@ public class SummonerCache {
     }
 
     @Cacheable("rank")
-    public SummonerGameStatistics getRank(String summonerId, Server server){
+    public SummonerGameStatistics getRank(String summonerId, Server server) {
         return summonerService.getStatistics(summonerId, server);
+    }
+
+    @Scheduled(fixedDelay = THIRTY_MINUTES)
+    @CacheEvict({"rank", "summerBySummonerId", "summonerByUserId"})
+    public void clearCaches() {
+        LOGGER.info("Clearing caches...");
     }
 }
