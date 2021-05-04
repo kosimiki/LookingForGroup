@@ -19,8 +19,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class SummonerCache {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SummonerCache.class);
-    public static final int THIRTY_MINUTES = 30 * 60 * 1000;
     private final ISummonerService summonerService;
     private final IUserService userService;
 

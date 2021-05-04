@@ -37,6 +37,8 @@ import com.tech.freak.wizardpager.ui.PageFragmentCallbacks;
 import com.tech.freak.wizardpager.ui.ReviewFragment;
 import com.tech.freak.wizardpager.ui.StepPagerStrip;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -98,11 +100,7 @@ public class PostActivity extends AppCompatActivity implements
         MainApplication application = (MainApplication) getApplication();
         lfgService = application.getServiceContainer().getLfgService();
 
-
         userDetails = getIntent().getParcelableExtra(LoginActivity.USER_DETAILS_EXTRA);
-        Log.i(this.getClass().getName(), "User: " + userDetails.toString());
-
-
         mWizardModel = new PostWizardModel(this);
         if (savedInstanceState != null) {
             mWizardModel.load(savedInstanceState.getBundle("model"));
@@ -115,14 +113,12 @@ public class PostActivity extends AppCompatActivity implements
         mPager = findViewById(R.id.pager);
         mPager.setAdapter(mPagerAdapter);
         mStepPagerStrip = findViewById(R.id.strip);
-        mStepPagerStrip
-                .setOnPageSelectedListener(position -> {
-                    position = Math.min(mPagerAdapter.getCount() - 1,
-                            position);
-                    if (mPager.getCurrentItem() != position) {
-                        mPager.setCurrentItem(position);
-                    }
-                });
+        mStepPagerStrip.setOnPageSelectedListener(position -> {
+            position = Math.min(mPagerAdapter.getCount() - 1, position);
+            if (mPager.getCurrentItem() != position) {
+                mPager.setCurrentItem(position);
+            }
+        });
         mNextButton = findViewById(R.id.next_button);
         mPrevButton = findViewById(R.id.prev_button);
 
@@ -142,65 +138,18 @@ public class PostActivity extends AppCompatActivity implements
         });
 
 
-        mNextButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mPager.getCurrentItem() == mCurrentPageSequence.size()) {
-                    Bundle result = mWizardModel.save();
-                    Log.i(this.getClass().getName(), result.toString());
+        mNextButton.setOnClickListener(view -> {
+            if (mPager.getCurrentItem() == mCurrentPageSequence.size()) {
+                Bundle result = mWizardModel.save();
+                Post post = getPost(result);
+                savePost(post);
+                navigateBack();
 
-                    String map = result.getBundle(MAP_KEY).getString("_");
-                    String comment = "";
-                    if (!result.getBundle(COMMENT).isEmpty()) {
-                        comment = result.getBundle(COMMENT).getString("_");
-                    }
-                    Rank minRank = new Rank();
-                    Rank maxRank = new Rank();
-
-                    boolean isRanked = !map.equals(HOWLING_FJORD) && result.getBundle(map + ":" + GAME_TYPE).getString("_").contains(RANKED);
-                    if (isRanked) {
-                        String minDiv = result.getBundle(RANKED + " : " + map + ":" + MIN_DIV).getString("_");
-                        String maxDiv = result.getBundle(RANKED + " : " + map + ":" + MAX_DIV).getString("_");
-                        String minTier = result.getBundle(RANKED + " : " + map + ":" + MIN_TIER).getString("_");
-                        String maxTier = result.getBundle(RANKED + " : " + map + ":" + MAX_TIER).getString("_");
-                        minRank = new Rank(Tier.valueOf(minTier), Division.valueOf(minDiv));
-                        maxRank = new Rank(Tier.valueOf(maxTier), Division.valueOf(maxDiv));
-                    }
-                    final List<Role> openPositions = new ArrayList<>();
-                    List<String> stringPositions = result.getBundle(map+":"+OPEN_POSITIONS).getStringArrayList("_");
-                    for (String position: stringPositions){
-                        openPositions.add(Role.valueOf(position));
-                    }
-
-
-                    GameMap gameMap = GameMap.SUMMONERS_RIFT;
-                    switch (map){
-                        case SUMMONERS_RIFT : gameMap =GameMap.SUMMONERS_RIFT;break;
-                        case TWISTED_TREELINE : gameMap =GameMap.TWISTED_TREE_LINE;break;
-                        case HOWLING_FJORD : gameMap =GameMap.HOWLING_FJORD;break;
-                    }
-
-                    Post post = new Post();
-                    post.setPostType(PostType.LOOKING_FOR_MEMBER);
-                    post.setGameType(new GameType(gameMap, isRanked));
-                    post.setDescription(comment);
-                    post.setOpenPositions(openPositions);
-                    post.setMinimumRank(minRank);
-                    post.setMaximumRank(maxRank);
-                    post.setPostId(0);
-                    post.setUserId(userDetails.getUser().getUserId());
-                    post.setOwner(userDetails.getUser().getSummoner());
-                    post.setServer(userDetails.getUser().getServer());
-
-                    savePost(post);
-                    navigateBack();
-
+            } else {
+                if (mEditingAfterReview) {
+                    mPager.setCurrentItem(mPagerAdapter.getCount() - 1);
                 } else {
-                    if (mEditingAfterReview) {
-                        mPager.setCurrentItem(mPagerAdapter.getCount() - 1);
-                    } else {
-                        mPager.setCurrentItem(mPager.getCurrentItem() + 1);
-                    }
+                    mPager.setCurrentItem(mPager.getCurrentItem() + 1);
                 }
             }
         });
@@ -213,7 +162,60 @@ public class PostActivity extends AppCompatActivity implements
         updateBottomBar();
     }
 
-    private void navigateBack(){
+    @NotNull
+    private Post getPost(Bundle result) {
+        String map = result.getBundle(MAP_KEY).getString("_");
+        String comment = "";
+        if (!result.getBundle(COMMENT).isEmpty()) {
+            comment = result.getBundle(COMMENT).getString("_");
+        }
+        Rank minRank = new Rank();
+        Rank maxRank = new Rank();
+
+        boolean isRanked = !map.equals(HOWLING_FJORD) && result.getBundle(map + ":" + GAME_TYPE).getString("_").contains(RANKED);
+        if (isRanked) {
+            String minDiv = result.getBundle(RANKED + " : " + map + ":" + MIN_DIV).getString("_");
+            String maxDiv = result.getBundle(RANKED + " : " + map + ":" + MAX_DIV).getString("_");
+            String minTier = result.getBundle(RANKED + " : " + map + ":" + MIN_TIER).getString("_");
+            String maxTier = result.getBundle(RANKED + " : " + map + ":" + MAX_TIER).getString("_");
+            minRank = new Rank(Tier.valueOf(minTier), Division.valueOf(minDiv));
+            maxRank = new Rank(Tier.valueOf(maxTier), Division.valueOf(maxDiv));
+        }
+        final List<Role> openPositions = new ArrayList<>();
+        List<String> stringPositions = result.getBundle(map + ":" + OPEN_POSITIONS).getStringArrayList("_");
+        for (String position : stringPositions) {
+            openPositions.add(Role.valueOf(position));
+        }
+
+
+        GameMap gameMap = GameMap.SUMMONERS_RIFT;
+        switch (map) {
+            case SUMMONERS_RIFT:
+                gameMap = GameMap.SUMMONERS_RIFT;
+                break;
+            case TWISTED_TREELINE:
+                gameMap = GameMap.TWISTED_TREE_LINE;
+                break;
+            case HOWLING_FJORD:
+                gameMap = GameMap.HOWLING_FJORD;
+                break;
+        }
+
+        Post post = new Post();
+        post.setPostType(PostType.LOOKING_FOR_MEMBER);
+        post.setGameType(new GameType(gameMap, isRanked));
+        post.setDescription(comment);
+        post.setOpenPositions(openPositions);
+        post.setMinimumRank(minRank);
+        post.setMaximumRank(maxRank);
+        post.setPostId(0);
+        post.setUserId(userDetails.getUser().getUserId());
+        post.setOwner(userDetails.getUser().getSummoner());
+        post.setServer(userDetails.getUser().getServer());
+        return post;
+    }
+
+    private void navigateBack() {
         Intent intent = new Intent(this, MainMenuActivity.class);
         ParcelableLoginResponse parcelableLoginResponse = new ParcelableLoginResponse(userDetails);
         intent.putExtra(LoginActivity.USER_DETAILS_EXTRA, parcelableLoginResponse);
@@ -225,9 +227,7 @@ public class PostActivity extends AppCompatActivity implements
     public void onPageTreeChanged() {
         mCurrentPageSequence = mWizardModel.getCurrentPageSequence();
         recalculateCutOffPage();
-        mStepPagerStrip.setPageCount(mCurrentPageSequence.size() + 1); // + 1 =
-        // review
-        // step
+        mStepPagerStrip.setPageCount(mCurrentPageSequence.size() + 1);
         mPagerAdapter.notifyDataSetChanged();
         updateBottomBar();
     }
@@ -239,19 +239,15 @@ public class PostActivity extends AppCompatActivity implements
             mNextButton.setBackgroundResource(R.drawable.finish_background);
             mNextButton.setTextAppearance(this, R.style.TextAppearanceFinish);
         } else {
-            mNextButton.setText(mEditingAfterReview ? R.string.review
-                    : R.string.next);
-            mNextButton
-                    .setBackgroundResource(R.drawable.selectable_item_background);
+            mNextButton.setText(mEditingAfterReview ? R.string.review : R.string.next);
+            mNextButton.setBackgroundResource(R.drawable.selectable_item_background);
             TypedValue v = new TypedValue();
-            getTheme().resolveAttribute(android.R.attr.textAppearanceMedium, v,
-                    true);
+            getTheme().resolveAttribute(android.R.attr.textAppearanceMedium, v, true);
             mNextButton.setTextAppearance(this, v.resourceId);
             mNextButton.setEnabled(position != mPagerAdapter.getCutOffPage());
         }
 
-        mPrevButton
-                .setVisibility(position <= 0 ? View.INVISIBLE : View.VISIBLE);
+        mPrevButton.setVisibility(position <= 0 ? View.INVISIBLE : View.VISIBLE);
     }
 
     @Override
