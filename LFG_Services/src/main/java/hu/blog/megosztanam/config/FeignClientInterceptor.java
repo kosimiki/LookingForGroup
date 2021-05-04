@@ -12,7 +12,7 @@ import static hu.blog.megosztanam.service.impl.SummonerServiceImpl.RIOT_GAMES;
 @Component
 public class FeignClientInterceptor implements RequestInterceptor {
 
-    private final Logger LOGGER = LoggerFactory.getLogger(FeignClientInterceptor.class.getName());
+    private final Logger LOGGER = LoggerFactory.getLogger(FeignClientInterceptor.class);
 
     private final String apiKey;
 
