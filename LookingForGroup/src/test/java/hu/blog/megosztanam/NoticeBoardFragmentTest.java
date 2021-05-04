@@ -1,6 +1,7 @@
 package hu.blog.megosztanam;
 
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Spinner;
 
 import org.junit.Before;
@@ -27,7 +28,10 @@ public class NoticeBoardFragmentTest {
     @Before
     public void setup() {
         noticeBoardFragment = new NoticeBoardFragment();
-        noticeBoardFragment.initializeMapNames("all", "sum", "tw", "how");
+        noticeBoardFragment.initializeMapNames("all",
+                "sum",
+                "tw",
+                "how");
     }
 
     @Test
@@ -36,15 +40,9 @@ public class NoticeBoardFragmentTest {
         Spinner spinner = Mockito.mock(Spinner.class);
         when(spinner.getItemAtPosition(0)).thenReturn("all");
         when(spinner.getItemAtPosition(1)).thenReturn("sum");
-        when(spinner.getItemAtPosition(2)).thenReturn("tw");
-        when(spinner.getItemAtPosition(3)).thenReturn("how");
         final AtomicReference<String> methodCallResult = new AtomicReference<>();
-        AdapterView.OnItemSelectedListener listener = noticeBoardFragment.createMapSelectionListener(postFilter, new Consumer<String>() {
-            @Override
-            public void accept(String s) {
-                methodCallResult.set(s);
-            }
-        });
+        OnItemSelectedListener listener =
+                noticeBoardFragment.createMapSelectionListener(postFilter, methodCallResult::set);
 
         listener.onItemSelected(spinner, null, 0, 0);
         assertTrue(postFilter.showAllMaps);
@@ -55,19 +53,10 @@ public class NoticeBoardFragmentTest {
         assertEquals(GameMap.SUMMONERS_RIFT, postFilter.map);
         assertEquals("map selected", methodCallResult.get());
 
-        listener.onItemSelected(spinner, null, 2, 0);
-        assertFalse(postFilter.showAllMaps);
-        assertEquals(GameMap.TWISTED_TREE_LINE, postFilter.map);
-        assertEquals("map selected", methodCallResult.get());
-
-        listener.onItemSelected(spinner, null, 3, 0);
-        assertFalse(postFilter.showAllMaps);
-        assertEquals(GameMap.HOWLING_FJORD, postFilter.map);
-        assertEquals("map selected", methodCallResult.get());
-
         listener.onNothingSelected(spinner);
         assertTrue(postFilter.showAllMaps);
         assertEquals("show all maps", methodCallResult.get());
 
     }
+    
 }
