@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  */
 @EnableTransactionManagement
 @Configuration
-@EnableCaching
 @EnableFeignClients(basePackages = "hu.blog.megosztanam")
 @SpringBootApplication(scanBasePackages = "hu.blog.megosztanam")
 public class LFGApplication {

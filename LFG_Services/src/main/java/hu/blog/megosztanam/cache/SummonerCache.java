@@ -45,9 +45,4 @@ public class SummonerCache {
         return summonerService.getStatistics(summonerId, server);
     }
 
-    @Scheduled(fixedDelay = THIRTY_MINUTES)
-    @CacheEvict({"rank", "summerBySummonerId", "summonerByUserId"})
-    public void clearCaches() {
-        LOGGER.info("Clearing caches...");
-    }
 }

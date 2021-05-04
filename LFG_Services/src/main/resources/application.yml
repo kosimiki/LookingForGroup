@@ -7,6 +7,9 @@ spring:
     driverClassName: org.postgresql.Driver
 
 lol:
+  cache:
+    minutes: 30
+    size: 20000
   api:
     key: ${LOL_API_KEY}
 
