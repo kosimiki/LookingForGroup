@@ -47,7 +47,7 @@
     <string name="twisted_treeline_map_name">Twisted Treeline</string>
     <string name="special_map_name">Special</string>
     <string name="pick_your_role">Select your roles</string>
-    <string name="delete_post">Do you really want to delete this post?</string>
+    <string name="delete_post_question">Do you really want to delete this post?</string>
 
     <string name="ok">Apply</string>
     <string name="cancel">Cancel</string>
@@ -88,7 +88,7 @@
     <string name="posts_changed">posts changed</string>
     <string name="delete_profile">Delete profile</string>
     <string name="delete_profile_question">Do you want to delete your profile?</string>
-    <string name="back_to_account_selecion">Back to account selecion</string>
+    <string name="back_to_account_selection">Back to account selection</string>
     <string name="user_profile_title">User Profile</string>
     <string name="notice_board_title">Notice Board</string>
     <string name="application_tab_title">Applicants</string>
@@ -98,7 +98,7 @@
     <string name="filter_twisted_treeline">Twisted Treeline</string>
     <string name="delete">delete</string>
     <string name="revoke_application_question">Do you want to revoke your application?</string>
-    <string name="what_would_you_like_to_do_appplication">What would you like to do with your application?</string>
+    <string name="handle_application_question">What would you like to do with your application?</string>
     <string name="finish">Finish</string>
     <string name="summoner_name_placeholder">summoner name</string>
 </resources>

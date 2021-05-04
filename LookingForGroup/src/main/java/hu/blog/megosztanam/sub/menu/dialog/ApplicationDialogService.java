@@ -3,7 +3,6 @@ package hu.blog.megosztanam.sub.menu.dialog;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -76,7 +75,7 @@ public class ApplicationDialogService {
 
     public Dialog managementDialog(Activity activity, final Integer userId, final Post post, final boolean accepted) {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        builder.setMessage(R.string.what_would_you_like_to_do_appplication)
+        builder.setMessage(R.string.handle_application_question)
                 .setPositiveButton(R.string.revoke_application, (dialog, id) -> noticeBoardFragment.revokeApplication(userId, post));
         if (accepted) {
             builder.setNegativeButton(R.string.confirm_application, (dialog, id) -> noticeBoardFragment.confirmApplication(userId, post));

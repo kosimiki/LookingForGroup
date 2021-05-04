@@ -3,7 +3,6 @@ package hu.blog.megosztanam.sub.menu.dialog;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.DialogInterface;
 
 import hu.blog.megosztanam.R;
 import hu.blog.megosztanam.model.shared.Post;
@@ -22,7 +21,7 @@ public class DeleteConfirmDialog {
     public Dialog createDialog(Activity activity, final Integer userId, final Post post, final int position) {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
 
-        builder.setMessage(R.string.delete_post)
+        builder.setMessage(R.string.delete_post_question)
                 .setPositiveButton(R.string.delete, (dialog, id) -> noticeBoardFragment.deletePost(userId, post, position))
                 .setNegativeButton(R.string.cancel, (dialog, id) -> {
                 });

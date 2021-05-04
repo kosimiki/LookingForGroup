@@ -141,7 +141,7 @@
         android:id="@+id/back_to_account_selection"
         android:layout_width="238dp"
         android:layout_height="51dp"
-        android:text="@string/back_to_account_selecion"
+        android:text="@string/back_to_account_selection"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
