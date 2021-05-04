@@ -21,10 +21,10 @@ public class FeignClientInterceptor implements RequestInterceptor {
     }
 
     @Override
-    public void apply(RequestTemplate requestTemplate) {
-        LOGGER.info("[" + requestTemplate.method() + "] " + requestTemplate.url() + requestTemplate.queryLine());
-        if (requestTemplate.url().contains(RIOT_GAMES)) {
-            requestTemplate.query("api_key", apiKey);
+    public void apply(RequestTemplate request) {
+        LOGGER.info("[" + request.method() + "] " + request.url() + request.queryLine());
+        if (request.url().contains(RIOT_GAMES)) {
+            request.query("api_key", apiKey);
         }
     }
 
