@@ -14,6 +14,9 @@ import hu.blog.megosztanam.model.shared.GameMap;
 import hu.blog.megosztanam.sub.menu.NoticeBoardFragment;
 import hu.blog.megosztanam.sub.menu.post.PostFilter;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 
@@ -42,24 +45,29 @@ public class NoticeBoardFragmentTest {
                 methodCallResult.set(s);
             }
         });
+
         listener.onItemSelected(spinner, null, 0, 0);
-        assert postFilter.showAllMaps;
-        assert methodCallResult.get().equals("show all maps");
+        assertTrue(postFilter.showAllMaps);
+        assertEquals("show all maps", methodCallResult.get());
+
         listener.onItemSelected(spinner, null, 1, 0);
-        assert !postFilter.showAllMaps;
-        assert postFilter.map == GameMap.SUMMONERS_RIFT;
-        assert methodCallResult.get().equals("map selected");
+        assertFalse(postFilter.showAllMaps);
+        assertEquals(GameMap.SUMMONERS_RIFT, postFilter.map);
+        assertEquals("map selected", methodCallResult.get());
+
         listener.onItemSelected(spinner, null, 2, 0);
-        assert !postFilter.showAllMaps;
-        assert postFilter.map == GameMap.TWISTED_TREE_LINE;
-        assert methodCallResult.get().equals("map selected");
+        assertFalse(postFilter.showAllMaps);
+        assertEquals(GameMap.TWISTED_TREE_LINE, postFilter.map);
+        assertEquals("map selected", methodCallResult.get());
+
         listener.onItemSelected(spinner, null, 3, 0);
-        assert !postFilter.showAllMaps;
-        assert postFilter.map == GameMap.HOWLING_FJORD;
-        assert methodCallResult.get().equals("map selected");
+        assertFalse(postFilter.showAllMaps);
+        assertEquals(GameMap.HOWLING_FJORD, postFilter.map);
+        assertEquals("map selected", methodCallResult.get());
+
         listener.onNothingSelected(spinner);
-        assert postFilter.showAllMaps;
-        assert methodCallResult.get().equals("show all maps");
+        assertTrue(postFilter.showAllMaps);
+        assertEquals("show all maps", methodCallResult.get());
 
     }
 }
