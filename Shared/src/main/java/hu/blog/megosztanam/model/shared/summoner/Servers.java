@@ -17,7 +17,7 @@ public class Servers {
         serversV2 = Collections.unmodifiableMap(aMap);
 
         Map<Server, String> aMap2 = new HashMap<>();
-        aMap2.put(Server.EUNE, "eun1");
+        aMap2.put(Server.EUNE, "eune1");
         aMap2.put(Server.EUW,"euw1");
         serversV3 = Collections.unmodifiableMap(aMap2);
     }

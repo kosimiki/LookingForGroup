@@ -30,7 +30,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authenticated();
 
         http.addFilterBefore(new GoogleAuthFilter(verifier, userService), UsernamePasswordAuthenticationFilter.class);
-
     }
 
 
