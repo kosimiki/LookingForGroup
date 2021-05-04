@@ -17,6 +17,7 @@ import hu.blog.megosztanam.sub.menu.post.PostFilter;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
@@ -46,6 +47,7 @@ public class NoticeBoardFragmentTest {
 
         listener.onItemSelected(spinner, null, 0, 0);
         assertTrue(postFilter.showAllMaps);
+        assertNull(postFilter.map);
         assertEquals("show all maps", methodCallResult.get());
 
         listener.onItemSelected(spinner, null, 1, 0);
@@ -55,8 +57,9 @@ public class NoticeBoardFragmentTest {
 
         listener.onNothingSelected(spinner);
         assertTrue(postFilter.showAllMaps);
+        assertNull(postFilter.map);
         assertEquals("show all maps", methodCallResult.get());
 
     }
-    
+
 }

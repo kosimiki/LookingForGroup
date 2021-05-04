@@ -183,12 +183,7 @@ public class NoticeBoardFragment extends Fragment {
         adapter.addAll(mapNames);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
-        spinner.setOnItemSelectedListener(createMapSelectionListener(postFilter, new Consumer<String>() {
-            @Override
-            public void accept(String s) {
-                loadPosts(s);
-            }
-        }));
+        spinner.setOnItemSelectedListener(createMapSelectionListener(postFilter, this::loadPosts));
     }
 
     public void initializeMapNames(String allMaps, String summonersRift, String twistedTreeLine, String howlingAbyss) {
