@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.net.URI;
 
-@FeignClient(name = "league-of-legends")
+@FeignClient(name = "league-of-legends", url = "https://localhost")
 public interface RiotFeignClient {
 
     @RequestMapping(method = RequestMethod.GET, path = "lol/summoner/v4/summoners/by-name/{name}")
@@ -17,6 +17,6 @@ public interface RiotFeignClient {
     @RequestMapping(method = RequestMethod.GET, path = "lol/summoner/v4/summoners/{id}")
     Summoner getSummonerById(URI host, @PathVariable("id") String id);
 
-    @RequestMapping(method = RequestMethod.GET, path = "api/lol/league/v4/entries/by-summoner/{id}")
+    @RequestMapping(method = RequestMethod.GET, path = "lol/league/v4/entries/by-summoner/{id}")
     String getStatsById(URI host, @PathVariable("id") String id);
 }

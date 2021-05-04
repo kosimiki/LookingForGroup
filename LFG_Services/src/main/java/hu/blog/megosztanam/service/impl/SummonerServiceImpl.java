@@ -25,7 +25,7 @@ import java.net.URI;
 @Service
 public class SummonerServiceImpl implements ISummonerService {
     public static final String RIOT_GAMES = "riotgames.com";
-    private static final String SERVER_HOST = "https.%s.api." + RIOT_GAMES;
+    private static final String SERVER_HOST = "https://%s.api." + RIOT_GAMES;
     private static final Logger LOGGER = LoggerFactory.getLogger(SummonerServiceImpl.class);
 
     private final RiotFeignClient riotFeignClient;
@@ -68,18 +68,13 @@ public class SummonerServiceImpl implements ISummonerService {
 
     private SummonerGameStatistics getSummonerGameStatistics(String summonerId, String json) {
         SummonerGameStatistics gameStatistics = getSummonerGameStatistics();
-        JSONObject jsonObject = new JSONObject(json);
-        JSONArray types = jsonObject.getJSONArray(summonerId);
+        JSONArray types = new JSONArray(json);
         for (int i = 0; i < types.length(); i++) {
             JSONObject type = types.getJSONObject(i);
             Tier tier = Tier.valueOf(type.getString("tier"));
-            String queue = type.getString("queue");
-            JSONArray entries = type.getJSONArray("entries");
-            Division division = Division.I;
-            if (entries.length() == 1) {
-                division = Division.valueOf(entries.getJSONObject(0).getString("division"));
-                gameStatistics.setSummonerName(entries.getJSONObject(0).getString("playerOrTeamName"));
-            }
+            String queue = type.getString("queueType");
+            Division division = Division.valueOf(type.getString("rank"));
+            gameStatistics.setSummonerName(type.getString("summonerName"));
             Rank rank = new Rank();
             rank.setDivision(division);
             rank.setTier(tier);
