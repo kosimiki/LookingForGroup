@@ -24,11 +24,9 @@ import java.net.URI;
  */
 @Service
 public class SummonerServiceImpl implements ISummonerService {
-    private static final String SERVER_HOST = "https.%s.api.riotgames.com";
+    public static final String RIOT_GAMES = "riotgames.com";
+    private static final String SERVER_HOST = "https.%s.api." + RIOT_GAMES;
     private static final Logger LOGGER = LoggerFactory.getLogger(SummonerServiceImpl.class);
-
-    @Value("${lol.api.key}")
-    private String apiKey;
 
     private final RiotFeignClient riotFeignClient;
     private final Rank unRanked;
@@ -43,13 +41,13 @@ public class SummonerServiceImpl implements ISummonerService {
     @Override
     public Summoner getSummoner(String summonerName, Server server) {
         URI serverHost = getServerHost(server);
-        return riotFeignClient.getSummonerByName(serverHost, summonerName, apiKey);
+        return riotFeignClient.getSummonerByName(serverHost, summonerName);
     }
 
     @Override
     public Summoner getById(String summonerId, Server server) {
         URI serverHost = getServerHost(server);
-        return riotFeignClient.getSummonerById(serverHost, summonerId, apiKey);
+        return riotFeignClient.getSummonerById(serverHost, summonerId);
     }
 
     @Override
@@ -57,7 +55,7 @@ public class SummonerServiceImpl implements ISummonerService {
         String json = null;
         try {
             URI serverHost = getServerHost(server);
-            json = riotFeignClient.getSummonerStatistics(serverHost, summonerId, apiKey);
+            json = riotFeignClient.getStatsById(serverHost, summonerId);
         } catch (HttpClientErrorException exception) {
             LOGGER.warn("Failed to get competitive statistics", exception);
         }
