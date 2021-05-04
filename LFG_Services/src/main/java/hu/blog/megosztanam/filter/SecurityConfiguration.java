@@ -25,11 +25,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable();
         http.authorizeRequests()
-                .antMatchers( "/login", "/lol/**").permitAll()
+                .antMatchers("/login", "/lol/**").permitAll()
                 .anyRequest()
                 .authenticated();
 
-        http.addFilterBefore(new GoogleAuthFilter(verifier, userService), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new GoogleAuthFilter(verifier, userService),
+                UsernamePasswordAuthenticationFilter.class);
     }
 
 

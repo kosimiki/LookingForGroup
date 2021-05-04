@@ -211,6 +211,7 @@ public class NoticeBoardFragment extends Fragment {
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
                 filter.showAllMaps = true;
+                filter.map = null;
                 action.accept(logMapFilter(true));
             }
         };
